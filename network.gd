@@ -1,5 +1,8 @@
 extends Node
 
+### Network node component in charge of creating games, joining game, connection, disconnection
+# This component was created by someone else so it isn't as well documented by me until I need to modify it
+
 const DEFAULT_PORT = 31416
 const MAX_PEERS    = 10
 var   players      = {}

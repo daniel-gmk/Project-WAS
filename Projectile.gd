@@ -1,5 +1,7 @@
 extends RigidBody2D
 
+### Root node for projectile, handling behavior when hitting entities
+
 export var explosion_radius : float = 20
 export var explosion_scene : PackedScene
 

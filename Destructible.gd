@@ -1,5 +1,8 @@
 extends Node2D
 
+### This node is in charge of terrain generation, destruction, and updating. Main component of Destructible.tscn.
+# This component was created by someone else so it isn't as well documented by me until I need to modify it
+
 export var viewport_destruction_nodepath : NodePath
 export var collision_holder_node_path : NodePath
 

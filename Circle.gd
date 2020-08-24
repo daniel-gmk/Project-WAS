@@ -1,5 +1,7 @@
 extends Node2D
 
+### This node is for terrain destruction as a part of Destructible.tscn, circle geometry drawn on terrain from an explosion
+
 # Controls the size of the explosion
 var _radius = 40
 

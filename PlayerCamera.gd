@@ -1,15 +1,24 @@
 extends Camera2D
 
+### Handles camera attached to the player. Camera focus can be on player or map
 
+# Track previous position
 var _previous_position : Vector2 = Vector2.ZERO
+# Track if camera is panned
 var _move_camera := false
+# Tracks if the camera is focused on player
 var lastPlayerOwnerPosition = false
-var playerOwner
+
+### Variables passed from root
+# Stores the player's root node for when the player is not being focused.
 var root
+# Stores the player's playerPhysicsBody child for when the player is being focused.
+var playerOwner
+# Decides if this is the local player so this only happens to the local player character.
 var control = false
 
 func _unhandled_input(event):
-	# Click and drag - begin / end clicking
+	# Handles the initial and final trigger for dragging the camera
 	if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT and control:
 		get_tree().set_input_as_handled()
 		if event.is_pressed():
@@ -22,20 +31,20 @@ func _unhandled_input(event):
 		else:
 			_move_camera = false
 
-	# Reset camera
+	# Reset camera focus back to the player when reset button is pressed
 	if event.is_action_pressed("reset_camera") and control:
 		changeToPlayerOwner()
 		lastPlayerOwnerPosition = false
 		position = Vector2.ZERO
 
-	# Click and drag - dragging
+	# Handle panning when dragging the camera
 	elif event is InputEventMouseMotion and _move_camera and control:
 		get_tree().set_input_as_handled()
 		changeToRoot()
 		position += (_previous_position - event.position)
 		_previous_position = event.position
 
-	# Zoom, turn off eventually
+	# Zoom, this will be turned off for non-spectators eventually
 	elif event is InputEventMouseButton and control:
 		var new_zoom := Vector2.ZERO
 		if event.button_index == BUTTON_WHEEL_UP:
@@ -47,10 +56,12 @@ func _unhandled_input(event):
 			get_tree().set_input_as_handled()
 			zoom = new_zoom
 
+# Handles changing focus to the player (or specifically, the playerPhysicsBody)
 func changeToPlayerOwner():
 	get_parent().remove_child(self)
 	playerOwner.add_child(self)
 
+# Handles changing focus off the player to allow panning around the map
 func changeToRoot():
 	get_parent().remove_child(self)
 	root.add_child(self)

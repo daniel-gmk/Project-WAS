@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://assets/charge-filled.png" type="Texture" id=6]
 [ext_resource path="res://assets/charge-empty.png" type="Texture" id=7]
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
+[ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
 
 [sub_resource type="RayShape2D" id=1]
 length = 36.0
@@ -22,6 +23,7 @@ script = ExtResource( 1 )
 script = ExtResource( 3 )
 weapon_projectile = ExtResource( 5 )
 _reticule_anchor_node_path = NodePath("ReticuleAnchor")
+GUI_node_path = NodePath("../PlayerCamera/GUI")
 
 [node name="playrPhysicsShape" type="CollisionShape2D" parent="playerPhysicsBody"]
 shape = SubResource( 1 )
@@ -57,3 +59,9 @@ texture = ExtResource( 8 )
 [node name="PlayerCamera" type="Camera2D" parent="."]
 smoothing_speed = 10.0
 script = ExtResource( 4 )
+
+[node name="GUI" parent="PlayerCamera" instance=ExtResource( 9 )]
+margin_left = -513.318
+margin_top = -302.323
+margin_right = 510.682
+margin_bottom = 297.677
