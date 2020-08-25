@@ -6,7 +6,7 @@ var control   = false
 var player_id = 0
 var root      = false
 var console   = false
-var tree      = {}
+# Tracks all players, only fills if server
 onready var playerPhysicsBody = $playerPhysicsBody
 
 func _ready():

@@ -4,11 +4,15 @@ extends RigidBody2D
 
 export var explosion_radius : float = 20
 export var explosion_scene : PackedScene
+# Tracks whether the projectile is local to the client or from the server
+var server = false
 
 func _on_Projectile_body_entered(_body):
-	# Tell the destruction system that we're causing an explosion
-	get_tree().call_group("destructibles", "destroy", global_position, explosion_radius)
-	
+	# Only if this is the server's projectile
+	if server:
+		# Tell the destruction system that we're causing an explosion
+		get_tree().call_group("destructibles", "destroy", global_position, explosion_radius)
+		
 	# Display explosion animation
 	var explosion = explosion_scene.instance()
 	explosion.global_position = position

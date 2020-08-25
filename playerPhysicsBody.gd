@@ -115,12 +115,6 @@ func _input(event):
 
 			if _attack_clicked:
 				shoot()
-			# Reset the charge
-			_attack_power = 0
-			_attack_clicked = false
-			# Hide the reticule now that firing is done
-			chargeProgress.visible = false
-			chargeProgress.value = 0
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
@@ -174,17 +168,21 @@ func shoot():
 	var reticule := reticule_anchor.find_node("Reticule")
 	# Grab position of reticule as starting position of projectile
 	var reticule_position = reticule.global_position
-	# Spawn instance of proejctile node
-	var new_projectile := weapon_projectile.instance() as RigidBody2D
-	# Apply reticule position as projectile's starting position
-	new_projectile.global_position = reticule_position
-	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
-	new_projectile.linear_velocity = (reticule_position - global_position) * 30 * (_attack_power * _attack_scale)
-	# Bring the configured projectile into the scene/world
-	get_parent().add_child(new_projectile)
 
-	# Do the whole above process to RPC with the same parameters so projectile can be shown to other players/server
-	rpc("summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale)
+	# If server, launch locally and broadcast to all
+	if get_tree().is_network_server():
+		summonProjectile(reticule_position, global_position, 30, _attack_power, _attack_scale, true)
+		# Loop through clients and launch projectile to each
+		rpc("summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, player_id)
+	else:
+		# Do the whole above process to RPC with the same parameters so projectile can be shown to other players/server
+		rpc_id(1, "summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, player_id)
+	# Reset the charge
+	_attack_power = 0
+	_attack_clicked = false
+	# Hide the reticule now that firing is done
+	chargeProgress.visible = false
+	chargeProgress.value = 0
 
 # Handles when damage is taken
 func takeDamage(damage):
@@ -211,17 +209,29 @@ remote func updateRPCposition(pos, pid):
 	pnode.position = pos
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale):
-	# Spawn instance of proejctile node
+remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, pid):
+	# If server
+	if get_tree().is_network_server():	
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, true)
+		# Loop through clients and launch projectile to each
+		rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, 2)
+	else:
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false)
+
+#################################HELPER FUNCTIONS
+
+# Launches projectile/attack
+func summonProjectile(startpos, position2, speed, attack_power, attack_scale, local):
+	# Spawn instance of projectile node
 	var new_projectile := weapon_projectile.instance() as RigidBody2D
 	# Apply reticule position as projectile's starting position
 	new_projectile.global_position = startpos
 	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
 	new_projectile.linear_velocity = (startpos - position2) * speed * (attack_power * attack_scale)
+	# Projectile is server so set variable
+	new_projectile.local = local
 	# Bring the configured projectile into the scene/world
 	get_parent().add_child(new_projectile)
-
-#################################HELPER FUNCTIONS
 
 # Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
 func _get_input_direction() -> Vector2:

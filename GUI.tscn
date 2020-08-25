@@ -11,6 +11,7 @@ anchor_bottom = 1.0
 margin_left = -512.0
 margin_top = -600.0
 margin_right = 512.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -19,6 +20,7 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 346, 20 )
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -26,73 +28,87 @@ __meta__ = {
 [node name="MainVContainer" type="VBoxContainer" parent="MainGUIContainer"]
 margin_right = 1028.0
 margin_bottom = 600.0
+mouse_filter = 2
 
 [node name="OneThirdContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer"]
 margin_right = 1028.0
 margin_bottom = 116.0
 rect_min_size = Vector2( 1024, 116 )
+mouse_filter = 2
 
 [node name="TwoThirdContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer"]
 margin_top = 120.0
 margin_right = 1028.0
 margin_bottom = 416.0
 rect_min_size = Vector2( 1024, 296 )
+mouse_filter = 2
 
 [node name="ThreeThirdContainer2" type="MarginContainer" parent="MainGUIContainer/MainVContainer"]
 margin_top = 420.0
 margin_right = 1028.0
 margin_bottom = 600.0
 rect_min_size = Vector2( 1024, 180 )
+mouse_filter = 2
 
 [node name="ThreeThirdHContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2"]
 margin_right = 1028.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 1024, 180 )
+mouse_filter = 2
 
 [node name="ChatContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
 margin_right = 208.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 208, 180 )
+mouse_filter = 2
 
 [node name="ActionContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
 margin_left = 212.0
 margin_right = 812.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 596, 180 )
+mouse_filter = 2
 
 [node name="MainHealthContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
 margin_right = 600.0
 margin_bottom = 86.0
 rect_min_size = Vector2( 0, 86 )
+mouse_filter = 2
 
 [node name="HealthCenterContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer"]
 margin_right = 600.0
 margin_bottom = 86.0
+mouse_filter = 2
 
 [node name="LeftMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer"]
 margin_right = 96.0
 margin_bottom = 86.0
 rect_min_size = Vector2( 96, 0 )
+mouse_filter = 2
 
 [node name="CenterContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer"]
 margin_left = 100.0
 margin_right = 500.0
 margin_bottom = 86.0
+mouse_filter = 2
 
 [node name="VerticalCenter" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer"]
 margin_right = 400.0
 margin_bottom = 86.0
+mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
 margin_right = 400.0
 margin_bottom = 62.0
 rect_min_size = Vector2( 0, 62 )
+mouse_filter = 2
 
 [node name="MainHealthBar" type="ProgressBar" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
 margin_top = 66.0
 margin_right = 400.0
 margin_bottom = 86.0
 rect_min_size = Vector2( 400, 20 )
+mouse_filter = 2
 custom_styles/fg = SubResource( 1 )
 step = 1.0
 percent_visible = false
@@ -121,15 +137,18 @@ margin_left = 504.0
 margin_right = 600.0
 margin_bottom = 86.0
 rect_min_size = Vector2( 96, 0 )
+mouse_filter = 2
 
 [node name="AttacksContainer" type="GridContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
 margin_top = 90.0
 margin_right = 600.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 0, 90 )
+mouse_filter = 2
 
 [node name="MapContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
 margin_left = 816.0
 margin_right = 1028.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 212, 180 )
+mouse_filter = 2
