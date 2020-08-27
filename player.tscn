@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -15,6 +15,9 @@ length = 36.0
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 15.0
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 30.0
 
 [node name="player" type="Node2D"]
 script = ExtResource( 1 )
@@ -55,6 +58,11 @@ visible = false
 position = Vector2( 33, 0 )
 scale = Vector2( 0.01, 0.01 )
 texture = ExtResource( 8 )
+
+[node name="DamageCollisionArea" type="Area2D" parent="playerPhysicsBody"]
+
+[node name="DamageCollision" type="CollisionShape2D" parent="playerPhysicsBody/DamageCollisionArea"]
+shape = SubResource( 3 )
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 smoothing_speed = 10.0

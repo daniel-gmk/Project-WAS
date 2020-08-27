@@ -9,7 +9,7 @@
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 3 )
 
-[node name="root" type="Node2D"]
+[node name="environment" type="Node2D"]
 
 [node name="Map" type="Sprite" parent="."]
 material = SubResource( 1 )
@@ -17,6 +17,8 @@ texture = ExtResource( 5 )
 centered = false
 
 [node name="Destructible" parent="Map" instance=ExtResource( 4 )]
+viewport_destruction_nodepath = NodePath("../../../environment/Map/Destructible/Viewport/Circle")
+collision_holder_node_path = NodePath("../../../environment/Map/Destructible/CollisionHolder")
 
 [node name="Control" type="Control" parent="."]
 margin_left = -503.431

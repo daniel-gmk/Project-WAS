@@ -70,6 +70,9 @@ func _ready():
 	# Set spawn position
 	self.position = pos
 	
+	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
+	$DamageCollisionArea.monitorable = true
+	
 	# Set health
 	health = maxHealth
 	
@@ -112,9 +115,9 @@ func _input(event):
 
 		# Handle launching projectile based on charge strength when input is let go
 		elif event.is_action_released("shoot"):
-
 			if _attack_clicked:
-				shoot()
+				# Standard typeless attack
+				shoot(500, 84, true, false)
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
@@ -128,7 +131,8 @@ func _physics_process(_delta : float):
 		
 		# If the player has been holding the attack button long enough it auto fires
 		if _attack_power >= _auto_attack_power:
-			shoot()
+			# Same standard typeless attack as line 120
+			shoot(500, 84, true, false)
 		
 		# If starting to fall, make sure ground snap physics is re-enabled for good sliding/snap physics in movement
 		if _velocity.y >= 0 and !is_on_floor():
@@ -162,21 +166,21 @@ func movePlayer():
 		jump_direction = Vector2.ZERO
 
 # Handles attacking, for now using a base projectile
-func shoot():
+func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 	## This is local execution of projectile
-	# Spawn projectile
+	# Get reticule to find position of reticule
 	var reticule := reticule_anchor.find_node("Reticule")
 	# Grab position of reticule as starting position of projectile
 	var reticule_position = reticule.global_position
 
 	# If server, launch locally and broadcast to all
 	if get_tree().is_network_server():
-		summonProjectile(reticule_position, global_position, 30, _attack_power, _attack_scale, true)
+		summonProjectile(reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
 		# Loop through clients and launch projectile to each
-		rpc("summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, player_id)
+		rpc("summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf)
 	else:
 		# Do the whole above process to RPC with the same parameters so projectile can be shown to other players/server
-		rpc_id(1, "summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, player_id)
+		rpc_id(1, "summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -189,17 +193,25 @@ func takeDamage(damage):
 	health -= damage
 	# Update health bar HUD
 	health_bar_root.value = health
-	health_bar_text.text = String(health)
-	
+	health_bar_text.text = String(round(health))
 	# Dead if health falls below min value
 	if health <= minHealth:
 		death()
 
-# Handles when dead
+# Handles when dead, not implemented yet since gamemode should be created first
 func death():
 	print("I died")
 
 #################################SERVER FUNCTIONS
+# Server receives call to locally execute damage and also replicate damage to clients
+func serverBroadcastDamageRPC(damage):
+	takeDamage(damage)
+	rpc("takeDamageRPC", damage)
+
+# I abstracted takeDamage as a local call instead of just making it a remote function in case I want to make local
+# calls down the road and not quite sure if I need to yet.
+remote func takeDamageRPC(damage):
+	takeDamage(damage)
 
 # Send update of position to server/players
 remote func updateRPCposition(pos, pid):
@@ -209,29 +221,37 @@ remote func updateRPCposition(pos, pid):
 	pnode.position = pos
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, pid):
+remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf):
 	# If server
 	if get_tree().is_network_server():	
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, true)
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
 		# Loop through clients and launch projectile to each
-		rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, 2)
+		rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, damage, explosion_radius, damage_falloff, ignoreSelf)
 	else:
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false)
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf)
 
 #################################HELPER FUNCTIONS
 
 # Launches projectile/attack
-func summonProjectile(startpos, position2, speed, attack_power, attack_scale, local):
+func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf):
 	# Spawn instance of projectile node
 	var new_projectile := weapon_projectile.instance() as RigidBody2D
+	# Initialize other variables for Projectile, details on the variables are on Projectile.gd
+	new_projectile.damage = damage
+	new_projectile.explosion_radius = explosion_radius
+	new_projectile.damage_falloff = damage_falloff
+	new_projectile.ignoreCaster = ignoreSelf
+	new_projectile.casterID = get_parent()
+	if ignoreSelf: 
+		new_projectile.add_collision_exception_with(self)
 	# Apply reticule position as projectile's starting position
 	new_projectile.global_position = startpos
 	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
 	new_projectile.linear_velocity = (startpos - position2) * speed * (attack_power * attack_scale)
 	# Projectile is server so set variable
-	new_projectile.local = local
+	new_projectile.server = isServer
 	# Bring the configured projectile into the scene/world
-	get_parent().add_child(new_projectile)
+	get_parent().get_parent().get_node("environment").add_child(new_projectile)
 
 # Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
 func _get_input_direction() -> Vector2:
