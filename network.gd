@@ -22,18 +22,18 @@ func start_server():
 	var err = host.create_server(DEFAULT_PORT, MAX_PEERS)
 	
 	if (err!=OK):
-		join_server()
+		join_server('127.0.0.1')
 		return
 		
 	get_tree().set_network_peer(host)
 	
 	spawn_player(1)
 	
-func join_server():
+func join_server(ip):
 	player_name = 'Client'
 	var host    = NetworkedMultiplayerENet.new()
 	
-	host.create_client('127.0.0.1', DEFAULT_PORT)
+	host.create_client(ip, DEFAULT_PORT)
 	get_tree().set_network_peer(host)
 	
 func _player_connected(id):

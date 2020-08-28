@@ -11,5 +11,6 @@ func _on_CreateButton_pressed():
 # Button function for joining server
 func _on_JoinButton_pressed():
 	var network = get_node("/root/Network")
-	network.join_server()
+	var text = get_node("LineEdit").get_text()
+	network.join_server(text)
 	get_parent().remove_child(self)

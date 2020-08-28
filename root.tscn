@@ -50,6 +50,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="LineEdit" type="LineEdit" parent="Control"]
+margin_left = 504.874
+margin_top = 138.593
+margin_right = 764.874
+margin_bottom = 169.593
+
 [node name="Camera" type="Camera2D" parent="."]
 current = true
 script = ExtResource( 6 )
