@@ -8,6 +8,15 @@ export var weapon_projectile : PackedScene
 #func _ready():
 #	pass # Replace with function body.
 
+# Insert desc here
+remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
+	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate
+	if resultingDamage < 0:
+		print("Error, damage is negative when they should be taking damage")
+	else:
+		get_parent().get_node(sender).get_node("playerPhysicsBody").takeDamage(resultingDamage)
+		get_parent().get_node(sender).get_node("playerPhysicsBody").rpc("takeDamageRPC", resultingDamage)
+
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
 	# If server

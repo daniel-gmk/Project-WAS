@@ -33,6 +33,16 @@ var JUMP_FORCE = 2000
 # Tracking jump direction (left or right)
 var jump_direction = Vector2.ZERO
 
+### Fall Damage
+# Tracks the peak height position so it can decide if there is fall damage
+var peakHeight
+# Tracks when to stop recording peak height and also when character is rising
+var rising
+# Variable that determines the cutoff in height before damage starts being dealt
+var fallDamageHeight = 800
+# Variable that determines damage increase rate based on falloff
+var fallDamageRate = 5
+
 ### Attack
 # Allow setting attack projectile 
 # Plan to replace this twice, once with basic attack, other with dynamic spellbook selection
@@ -100,6 +110,7 @@ func _input(event):
 			jump_direction = Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
 			_velocity.y += -JUMP_FORCE
 			jumping = true
+			rising = true
 
 		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
 		if event.is_action_released("jump") and jumping and _velocity.y <= -500:
@@ -137,6 +148,10 @@ func _physics_process(_delta : float):
 		# If starting to fall, make sure ground snap physics is re-enabled for good sliding/snap physics in movement
 		if _velocity.y >= 0 and !is_on_floor():
 			snap = Vector2(0, 32)
+			# At peak height, detect as variable for calculating fall damage
+			if rising == true:
+				peakHeight = position.y
+				rising = false
 			
 		# Handle player movement
 		# Note: Probably can do this not every tick but poll for correction of location every x time
@@ -161,9 +176,11 @@ func movePlayer():
 	rpc_unreliable("updateRPCposition", position, player_id)
 
 	# Stop jumping when landing on floor
-	if jumping and is_on_floor():
+	if jumping and is_on_floor() and ((position.y - peakHeight) > fallDamageHeight):
 		jumping = false
 		jump_direction = Vector2.ZERO
+		# Check fall height and send data to server node to determine damage dealt
+		get_parent().get_parent().get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, get_parent().get_name())
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
