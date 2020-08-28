@@ -10,6 +10,9 @@ var console   = false
 onready var playerPhysicsBody = $playerPhysicsBody
 
 func _ready():
+	# Don't show any GUI elements to the server
+	if get_tree().is_network_server():
+		$PlayerCamera.get_node("GUI").visible = false
 	# Pass variables to children only if local player
 	if control:
 		$playerPhysicsBody.control = control

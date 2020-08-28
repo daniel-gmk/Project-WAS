@@ -173,14 +173,8 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 	# Grab position of reticule as starting position of projectile
 	var reticule_position = reticule.global_position
 
-	# If server, launch locally and broadcast to all
-	if get_tree().is_network_server():
-		summonProjectile(reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
-		# Loop through clients and launch projectile to each
-		rpc("summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf)
-	else:
-		# Do the whole above process to RPC with the same parameters so projectile can be shown to other players/server
-		rpc_id(1, "summonProjectileRPC", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
+	# Broadcast RPC so projectile can be shown to other players/server
+	get_parent().get_parent().get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().get_name())
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -220,19 +214,9 @@ remote func updateRPCposition(pos, pid):
 	
 	pnode.position = pos
 
-# Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf):
-	# If server
-	if get_tree().is_network_server():	
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf)
-		# Loop through clients and launch projectile to each
-		rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, damage, explosion_radius, damage_falloff, ignoreSelf)
-	else:
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf)
-
 #################################HELPER FUNCTIONS
 
-# Launches projectile/attack
+# Launches projectile/attack. The server also has a copy of this.
 func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf):
 	# Spawn instance of projectile node
 	var new_projectile := weapon_projectile.instance() as RigidBody2D

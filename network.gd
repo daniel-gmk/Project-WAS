@@ -89,13 +89,20 @@ func spawn_player(id):
 	var player_scene = load("res://player.tscn")
 	var player       = player_scene.instance()
 	
-	player.set_name(str(id))
+	if id == 1:
+		var server_scene = load("res://Server.tscn")
+		var server = server_scene.instance()
+		server.set_name(str(id))
+		get_parent().add_child(server)
+
+	else:
+		player.set_name(str(id))
 	
-	if id == get_tree().get_network_unique_id():
-		player.set_network_master(id)
-		
-		player.player_id = id
-		player.control   = true
-		
-	get_parent().add_child(player)
+		if id == get_tree().get_network_unique_id():
+			player.set_network_master(id)
+			
+			player.player_id = id
+			player.control   = true
+			
+		get_parent().add_child(player)
 	
