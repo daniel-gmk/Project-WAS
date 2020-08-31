@@ -1,24 +1,16 @@
 [gd_scene load_steps=7 format=2]
 
+[ext_resource path="res://TestMap.gd" type="Script" id=1]
 [ext_resource path="res://Control.gd" type="Script" id=2]
 [ext_resource path="res://parent_material.shader" type="Shader" id=3]
-[ext_resource path="res://Destructible.tscn" type="PackedScene" id=4]
-[ext_resource path="res://assets/Map.png" type="Texture" id=5]
+[ext_resource path="res://assets/test-terrain-base-3.png" type="Texture" id=4]
 [ext_resource path="res://Camera.gd" type="Script" id=6]
 
 [sub_resource type="ShaderMaterial" id=1]
+render_priority = 1
 shader = ExtResource( 3 )
 
 [node name="environment" type="Node2D"]
-
-[node name="Map" type="Sprite" parent="."]
-material = SubResource( 1 )
-texture = ExtResource( 5 )
-centered = false
-
-[node name="Destructible" parent="Map" instance=ExtResource( 4 )]
-viewport_destruction_nodepath = NodePath("../../../environment/Map/Destructible/Viewport/Circle")
-collision_holder_node_path = NodePath("../../../environment/Map/Destructible/CollisionHolder")
 
 [node name="Control" type="Control" parent="."]
 margin_left = -503.431
@@ -59,5 +51,11 @@ margin_bottom = 169.593
 [node name="Camera" type="Camera2D" parent="."]
 current = true
 script = ExtResource( 6 )
+
+[node name="TestMap" type="Sprite" parent="."]
+material = SubResource( 1 )
+texture = ExtResource( 4 )
+centered = false
+script = ExtResource( 1 )
 [connection signal="pressed" from="Control/CreateButton" to="Control" method="_on_CreateButton_pressed"]
 [connection signal="pressed" from="Control/JoinButton" to="Control" method="_on_JoinButton_pressed"]

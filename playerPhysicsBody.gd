@@ -10,7 +10,7 @@ var control = false
 
 ### Physics
 # Initial position/spawn in map TO BE REPLACED
-var pos = Vector2(2100, 1400)
+var pos = Vector2(100, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 32)
 # Vector tracking player movement speed
@@ -41,7 +41,7 @@ var rising
 # Variable that determines the cutoff in height before damage starts being dealt
 var fallDamageHeight = 800
 # Variable that determines damage increase rate based on falloff
-var fallDamageRate = 5
+var fallDamageRate = 1
 
 ### Attack
 # Allow setting attack projectile 
@@ -281,6 +281,7 @@ func _calculate_move_velocity(
 		
 		return new_velocity
 
+# Render the reticle so it shows projectile charge
 func _render_reticule():
 	# Change rotation of reticule to mouse
 	reticule_anchor.look_at(get_global_mouse_position())

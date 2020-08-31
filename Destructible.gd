@@ -18,6 +18,9 @@ var _destruction_threads := Array()
 var _viewport_destruction_node : Node
 
 func _ready():
+	readyFunc()
+	
+func readyFunc():
 	add_to_group("destructibles")
 	
 	collision_holder = get_node(collision_holder_node_path)
@@ -46,6 +49,12 @@ func _ready():
 	yield(VisualServer, "frame_post_draw")
 	build_collisions_from_image()
 
+func calculate_bounds(tilemap):
+	var cell_bounds = tilemap.get_used_rect()
+	# create transform
+	var cell_to_pixel = Transform2D(Vector2(tilemap.cell_size.x * tilemap.scale.x, 0), Vector2(0, tilemap.cell_size.y * tilemap.scale.y), Vector2())
+	# apply transform
+	return Rect2(cell_to_pixel * cell_bounds.position, cell_to_pixel * cell_bounds.size).size
 
 func _exit_tree():
 	for thread in _destruction_threads:

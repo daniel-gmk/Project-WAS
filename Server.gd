@@ -3,10 +3,7 @@ extends Node2D
 # Allow setting attack projectile 
 # Plan to replace this twice, once with basic attack, other with dynamic spellbook selection
 export var weapon_projectile : PackedScene
-
 # Called when the node enters the scene tree for the first time.
-#func _ready():
-#	pass # Replace with function body.
 
 # Insert desc here
 remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
