@@ -21,7 +21,9 @@ var oldPlayerID
 # Preload the scenes for placeholder player, server, and post terrain render player
 var placeholderPlayerScene = preload("res://temporaryPlayer.tscn")
 var server_scene = preload("res://Server.tscn")
-var player_scene = preload("res://player.tscn")
+var player_scene = preload("res://Client.tscn")
+
+var host
 
 # Link Godot networking functions to the local functions here
 func _ready():
@@ -29,13 +31,13 @@ func _ready():
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
-	get_tree().connect("server_disconnected", self, "_server_disconnect")
+	get_tree().connect("server_disconnected", self, "_server_disconnected")
 
 # Function for server when hosting
 func start_server():
 	# Name can be customizable, but for server will not be visible anyway
 	player_name = 'Server'
-	var host    = NetworkedMultiplayerENet.new()
+	host    = NetworkedMultiplayerENet.new()
 	# Atempt to create server
 	var err = host.create_server(DEFAULT_PORT, MAX_PEERS)
 	# Joins its own server when successfully created
@@ -56,7 +58,7 @@ func start_server():
 func join_server(ip):
 	# Name can be changed to steam name or custom name down the road
 	player_name = 'Client'
-	var host    = NetworkedMultiplayerENet.new()
+	host    = NetworkedMultiplayerENet.new()
 	# Track the IP used to connect when clicking connect button for reconnecting after terrain loaded
 	serverIp = ip
 	# Create client connection
@@ -95,14 +97,8 @@ func _connected_ok():
 	if !loadedTerrain:
 		rpc_id(1, "server_send_terrain_seed", get_tree().get_network_unique_id())
 	else:
-		# If terrain has been already loaded and this is a reconnection, delete the old client id node
-		# This is because when a client is loading the terrain, it disconnects from the server and the server removes
-		# the old client id node, but the client does not know it is disconnected so it will not delete its own old node
-		# So this will re-sync that hierarchy
-		if get_node("/root/").has_node(str(oldPlayerID)):
-			get_node("/root/").get_node(str(oldPlayerID)).queue_free()
-	# Receive handshake from server, notifying it is connected and having server allow client to proceed registration
-	rpc_id(1, "user_ready", get_tree().get_network_unique_id(), player_name, loadedTerrain)
+		# Receive handshake from server, notifying it is connected and having server allow client to proceed registration
+		rpc_id(1, "user_ready", get_tree().get_network_unique_id(), player_name, loadedTerrain)
 
 # Server receives handshake from client, sends client back instructions on registration
 remote func user_ready(id, player_name, loadedTerrain):
@@ -113,7 +109,7 @@ remote func user_ready(id, player_name, loadedTerrain):
 remote func register_in_game(player_name, loadedTerrain):
 	rpc("register_new_player", get_tree().get_network_unique_id(), player_name, loadedTerrain)
 	register_new_player(get_tree().get_network_unique_id(), player_name, loadedTerrain)
-
+	
 # Register player data of all other connected entities and spawn their characters in to the new client
 remote func register_new_player(id, name, loadedTerrain):
 	# If server, register and spawn character node in the new client
@@ -122,7 +118,7 @@ remote func register_new_player(id, name, loadedTerrain):
 		# Loop through other players and register/spawn their characters in to the new client
 		for peer_id in players:
 			rpc_id(id, "register_new_player", peer_id, players[peer_id], loadedTerrain)
-			
+		
 	# Populate list of players, including new player
 	players[id] = name
 	# Spawn the character/nodes
@@ -134,49 +130,61 @@ func spawn_player(id, loadedTerrain):
 	if id == 1:
 		var server = server_scene.instance()
 		server.set_name(str(id))
-		get_parent().add_child(server)
+		get_node("/root/").add_child(server)
 	else:
-		# If player and terrain is not loaded yet
-		if !loadedTerrain:
-			# Load in a placeholder player node
-			var placeholderPlayer = placeholderPlayerScene.instance()
-			placeholderPlayer.set_name(str(id))
-			get_parent().add_child(placeholderPlayer)
-			# Locally load the terrain with the seed received from the server
-			if id == get_tree().get_network_unique_id():
-				oldPlayerID = id
-				get_parent().get_node("environment").get_node("TestMap").loadTerrain(terrainSeed, serverIp)
-		else:
-			# If player and terrain is now loaded
-			# Load the normal character node
-			var player = player_scene.instance()
-			player.set_name(str(id))
-		
-			# Set variables locally for the actual client's player
-			if id == get_tree().get_network_unique_id():
-				player.set_network_master(id)
-				
-				player.player_id = id
-				player.control   = true
-				
-			# Instantiate the character
-			get_parent().add_child(player)
+		# If player and terrain is now loaded
+		# Load the normal character node
+		var player = player_scene.instance()
+		player.set_name(str(id))
+	
+		# Set variables locally for the actual client's player
+		if id == get_tree().get_network_unique_id():
+			player.set_network_master(id)
+			
+			player.player_id = id
+			player.control   = true
+			
+		# Instantiate the character
+		get_node("/root/").add_child(player)
 
 # Server sends terrain seed to client
 remote func server_send_terrain_seed(id):
 	if get_tree().is_network_server():
 		rpc_id(id, "client_receive_terrain_seed", terrainSeed)
+	host.disconnect_peer(id)
 
 # Client receives terrain seed from server
 remote func client_receive_terrain_seed(rpcSeed):
 	terrainSeed = rpcSeed
+	get_node("/root/").get_node("environment").get_node("TestMap").loadTerrain(terrainSeed, serverIp)
 
 # Called from the Map after loading is complete, since client disconnected now we reconnect
 func rejoin_server_after_terrain(ip):
 	player_name = 'Client'
-	var host    = NetworkedMultiplayerENet.new()
-	serverIp = ip
+	host    = NetworkedMultiplayerENet.new()
 	loadedTerrain = true
-	
 	host.create_client(ip, DEFAULT_PORT)
 	get_tree().set_network_peer(host)
+
+# Called when the server clicks "start" game in base control node
+func start_game():
+	if get_tree().is_network_server():
+		# For all clients, instantiate their player and playerPhysicsBody nodes
+		for peer_id in players:
+			if peer_id != 1:
+				rpc_id(peer_id, "startPlayerGameCharacterRPC", peer_id)
+				startPlayerGameCharacter(peer_id)
+
+# Have the client tell other clients to instantiate their player/playerPhysicsBody nodes
+# And then instantiate their player/playerPhysicsBody node locally
+remote func startPlayerGameCharacterRPC(peer_id):
+	rpc("startPlayerGameCharacterRPC2", peer_id)
+	startPlayerGameCharacter(peer_id)
+
+# This is for other clients when a different client tells it to instantiate their player/playerPhysicsBody nodes
+remote func startPlayerGameCharacterRPC2(peer_id):
+	startPlayerGameCharacter(peer_id)
+
+# Called by all clients to have their client node instantiate the player/playerPhysicsBody node
+func startPlayerGameCharacter(peer_id):
+	get_node("/root/").get_node(str(peer_id)).startGameCharacter()

@@ -86,11 +86,14 @@ func _ready():
 	# Set health
 	health = maxHealth
 	
-	# Set Main player's Health Bar
-	health_bar_root.max_value = maxHealth
-	health_bar_root.min_value = minHealth
-	health_bar_root.value = health
-	health_bar_text.text = String(health)
+	if control:
+		# Set Main player's Health Bar
+		health_bar_root.max_value = maxHealth
+		health_bar_root.min_value = minHealth
+		health_bar_root.value = health
+		health_bar_text.text = String(health)
+	else:
+		health_bar_root.visible = false
 
 # Execute every tick
 func _process(delta):
@@ -180,7 +183,7 @@ func movePlayer():
 		jumping = false
 		jump_direction = Vector2.ZERO
 		# Check fall height and send data to server node to determine damage dealt
-		get_parent().get_parent().get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, get_parent().get_name())
+		get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
@@ -191,7 +194,7 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 	var reticule_position = reticule.global_position
 
 	# Broadcast RPC so projectile can be shown to other players/server
-	get_parent().get_parent().get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().get_name())
+	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, player_id)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -226,8 +229,8 @@ remote func takeDamageRPC(damage):
 
 # Send update of position to server/players
 remote func updateRPCposition(pos, pid):
-	var root  = get_parent().get_parent()
-	var pnode = root.get_node(str(pid)).find_node("playerPhysicsBody")
+	var root  = get_node("/root/")
+	var pnode = root.get_node(str(pid)).get_node("player").get_node("playerPhysicsBody")
 	
 	pnode.position = pos
 
@@ -242,7 +245,7 @@ func summonProjectile(startpos, position2, speed, attack_power, attack_scale, is
 	new_projectile.explosion_radius = explosion_radius
 	new_projectile.damage_falloff = damage_falloff
 	new_projectile.ignoreCaster = ignoreSelf
-	new_projectile.casterID = get_parent()
+	new_projectile.casterID = get_parent().get_parent()
 	if ignoreSelf: 
 		new_projectile.add_collision_exception_with(self)
 	# Apply reticule position as projectile's starting position
@@ -252,7 +255,7 @@ func summonProjectile(startpos, position2, speed, attack_power, attack_scale, is
 	# Projectile is server so set variable
 	new_projectile.server = isServer
 	# Bring the configured projectile into the scene/world
-	get_parent().get_parent().get_node("environment").add_child(new_projectile)
+	get_node("/root/").get_node("environment").add_child(new_projectile)
 
 # Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
 func _get_input_direction() -> Vector2:
