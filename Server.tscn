@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Server.gd" type="Script" id=1]
 [ext_resource path="res://Projectile.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Explosion.tscn" type="PackedScene" id=3]
 
 [node name="Server" type="Node2D"]
 script = ExtResource( 1 )
+explosion_scene = ExtResource( 3 )
 weapon_projectile = ExtResource( 2 )

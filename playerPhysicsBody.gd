@@ -86,14 +86,14 @@ func _ready():
 	# Set health
 	health = maxHealth
 	
-	if control:
-		# Set Main player's Health Bar
-		health_bar_root.max_value = maxHealth
-		health_bar_root.min_value = minHealth
-		health_bar_root.value = health
-		health_bar_text.text = String(health)
-	else:
-		health_bar_root.visible = false
+	#if control:
+	# Set Main player's Health Bar
+	health_bar_root.max_value = maxHealth
+	health_bar_root.min_value = minHealth
+	health_bar_root.value = health
+	health_bar_text.text = String(health)
+#	else:
+#		health_bar_root.visible = false
 
 # Execute every tick
 func _process(delta):
@@ -193,6 +193,8 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 	# Grab position of reticule as starting position of projectile
 	var reticule_position = reticule.global_position
 
+	# Summon projectile locally but have it just disappear on impact
+	get_node("/root/").get_node("1").summonProjectile(reticule_position, global_position, 30, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, player_id)
 	# Broadcast RPC so projectile can be shown to other players/server
 	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, player_id)
 	# Reset the charge
@@ -235,27 +237,6 @@ remote func updateRPCposition(pos, pid):
 	pnode.position = pos
 
 #################################HELPER FUNCTIONS
-
-# Launches projectile/attack. The server also has a copy of this.
-func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf):
-	# Spawn instance of projectile node
-	var new_projectile := weapon_projectile.instance() as RigidBody2D
-	# Initialize other variables for Projectile, details on the variables are on Projectile.gd
-	new_projectile.damage = damage
-	new_projectile.explosion_radius = explosion_radius
-	new_projectile.damage_falloff = damage_falloff
-	new_projectile.ignoreCaster = ignoreSelf
-	new_projectile.casterID = get_parent().get_parent()
-	if ignoreSelf: 
-		new_projectile.add_collision_exception_with(self)
-	# Apply reticule position as projectile's starting position
-	new_projectile.global_position = startpos
-	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
-	new_projectile.linear_velocity = (startpos - position2) * speed * (attack_power * attack_scale)
-	# Projectile is server so set variable
-	new_projectile.server = isServer
-	# Bring the configured projectile into the scene/world
-	get_node("/root/").get_node("environment").add_child(new_projectile)
 
 # Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
 func _get_input_direction() -> Vector2:

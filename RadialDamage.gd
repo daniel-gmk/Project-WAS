@@ -41,7 +41,7 @@ func setExplosion():
 			var calculatedDamage
 
 			# If ignoreCaster is enabled and you're the caster, don't deal damage
-			if ignoreCaster and area.get_parent().get_parent() == casterID:
+			if ignoreCaster and area.get_parent().get_parent().get_parent() == casterID:
 				calculatedDamage = 0
 			else:
 				# Calculate falloff if damage falloff is enabled

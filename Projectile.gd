@@ -23,7 +23,9 @@ var server
 
 func _on_Projectile_body_entered(_body):
 	# Only if this is the server's projectile
-	if server:
+	if !server:
+		queue_free()
+	else:
 		var newRadius = explosion_radius
 		# Hole left in terrain is relatively smaller than explosion itself if damage falloff is enabled
 		if damage_falloff == true:
@@ -31,8 +33,6 @@ func _on_Projectile_body_entered(_body):
 		
 		# Damage the terrain from the server side
 		get_tree().call_group("destructibles", "destroy", global_position, newRadius)
-		# Replicate terrain damage to clients. This is to keep the server as authority and prevent desync of terrain
-		rpc("destroyTerrainRPC", global_position, newRadius)
 		
 		# Summon a radial damage node, which will issue the damage.
 		var rd = radialDamage.instance()
@@ -40,7 +40,7 @@ func _on_Projectile_body_entered(_body):
 		rd.position = position
 		rd.damage = damage
 		rd.damage_falloff = damage_falloff
-		rd.casterID = casterID
+		rd.casterID = casterID.get_node("player").get_node("playerPhysicsBody")
 		rd.ignoreCaster = ignoreCaster
 		# Add the child with a deferred call approach to avoid collision/propogation errors
 		get_parent().call_deferred("add_child", rd)
@@ -51,33 +51,10 @@ func _on_Projectile_body_entered(_body):
 		# Calls in deferred fashion to avoid collision/propogation errors, initiates the scan to detect overlapping nodes and issue damage
 		rd.call_deferred("setExplosion")
 		
-		# Display explosion animation
-		var explosion = explosion_scene.instance()
-		explosion.global_position = position
 		
-		# Explosion added to our parent, as we'll free ourselves.
-		# If we attached the explosion to ourself it'd get free'd as well,
-		# which would make them immediately vanish.
-		get_parent().add_child(explosion)
+		# Show purely visual explosion to clients
+		get_node("/root/").get_node("1").broadcastExplosionServer(position, newRadius)
 		
 		# Self terminate after all this is over. Again, this is only for the server's projectile.
 		# There is also a "fake" projectile sent for clients for user experience
 		queue_free()
-
-# Remote function called by server to also execute terrain destruction but from server's perspective instead
-# of client's perspective as an authoritative approach.
-remote func destroyTerrainRPC(pos, rad):
-	# Damage the terrain from the client side
-	get_tree().call_group("destructibles", "destroy", pos, rad)
-	# Display explosion animation
-	var explosion = explosion_scene.instance()
-	explosion.global_position = pos
-	
-	# Explosion added to our parent, as we'll free ourselves.
-	# If we attached the explosion to ourself it'd get free'd as well,
-	# which would make them immediately vanish.
-	get_parent().add_child(explosion)
-	
-	# Self terminate after all this is over. Server calls for the client's projectile to be destroyed. If there
-	# is ever an error from the server, this might not disappear and just bounce around. Hope this doesn't happen... 
-	queue_free()
