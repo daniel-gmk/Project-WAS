@@ -183,7 +183,8 @@ remote func startPlayerGameCharacterRPC(peer_id):
 
 # This is for other clients when a different client tells it to instantiate their player/playerPhysicsBody nodes
 remote func startPlayerGameCharacterRPC2(peer_id):
-	startPlayerGameCharacter(peer_id)
+	if !get_tree().is_network_server():
+		startPlayerGameCharacter(peer_id)
 
 # Called by all clients to have their client node instantiate the player/playerPhysicsBody node
 func startPlayerGameCharacter(peer_id):

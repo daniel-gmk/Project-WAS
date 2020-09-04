@@ -10,16 +10,24 @@ var console   = false
 func _ready():
 	# Don't show any GUI elements to the server
 	if get_tree().is_network_server():
-		$PlayerCamera.get_node("GUI").visible = false
-	# Pass variables to children only if local player
-	if control:
-		$playerPhysicsBody.control = control
-		$playerPhysicsBody.player_id = player_id
-		$PlayerCamera.control = control
-
-		# Set camera focus to player
-		var camera = $PlayerCamera
-		camera.root = self
-		camera.playerOwner = $playerPhysicsBody
-		camera.make_current()
-		camera.changeToPlayerOwner()
+		$PlayerCamera.queue_free()
+		if control:
+			$playerPhysicsBody.control = control
+			$playerPhysicsBody.player_id = player_id
+	else:
+		# Pass variables to children only if local player
+		if control:
+			$playerPhysicsBody.control = control
+			$playerPhysicsBody.player_id = player_id
+			$playerPhysicsBody.initiate_ui()
+	
+			# Set camera focus to player
+			$PlayerCamera.control = control
+			var camera = $PlayerCamera
+			camera.root = self
+			camera.playerOwner = $playerPhysicsBody
+			camera.make_current()
+			camera.changeToPlayerOwner()
+		else:
+			# remove UI for other players
+			$PlayerCamera.get_node("GUI").queue_free()

@@ -79,21 +79,18 @@ onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 func _ready():
 	# Set spawn position
 	self.position = pos
-	
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
-	
 	# Set health
 	health = maxHealth
-	
-	#if control:
+
+func initiate_ui():
 	# Set Main player's Health Bar
 	health_bar_root.max_value = maxHealth
 	health_bar_root.min_value = minHealth
 	health_bar_root.value = health
 	health_bar_text.text = String(health)
-#	else:
-#		health_bar_root.visible = false
+
 
 # Execute every tick
 func _process(delta):
@@ -208,8 +205,9 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 func takeDamage(damage):
 	health -= damage
 	# Update health bar HUD
-	health_bar_root.value = health
-	health_bar_text.text = String(round(health))
+	if get_tree().get_network_unique_id() == player_id:
+		health_bar_root.value = health
+		health_bar_text.text = String(round(health))
 	# Dead if health falls below min value
 	if health <= minHealth:
 		death()
