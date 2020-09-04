@@ -1,5 +1,9 @@
 extends Sprite
-	
+
+# Track the max length and height of the map for boundary checks
+var maxLength
+var maxHeight
+
 # Generates the entire terrain and collision from seed, unique and dynamic shape
 # TODO: Save colors as variables. For now:
 # Color 1 1 1 1 is white
@@ -163,6 +167,9 @@ func loadTerrain(terrainSeed, ip):
 	# Change size to set pixels
 	image.resize(2000, 1500, 0)
 	#image.resize(5000, 3750, 0)
+
+	maxLength = position.x + image.get_width()
+	maxHeight = position.y + image.get_height()
 
 	# Converts image to texture and has sprite use the new texture
 	var newtexture = ImageTexture.new()

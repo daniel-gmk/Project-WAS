@@ -10,7 +10,7 @@ var control = false
 
 ### Physics
 # Initial position/spawn in map TO BE REPLACED
-var pos = Vector2(100, 100)
+var pos = Vector2(300, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 32)
 # Vector tracking player movement speed
