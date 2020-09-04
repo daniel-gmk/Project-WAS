@@ -41,7 +41,7 @@ var rising
 # Variable that determines the cutoff in height before damage starts being dealt
 var fallDamageHeight = 800
 # Variable that determines damage increase rate based on falloff
-var fallDamageRate = 1
+var fallDamageRate = 2
 
 ### Attack
 # Allow setting attack projectile 
@@ -109,6 +109,7 @@ func _input(event):
 			snap = Vector2()
 			jump_direction = Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
 			_velocity.y += -JUMP_FORCE
+			peakHeight = position.y
 			jumping = true
 			rising = true
 

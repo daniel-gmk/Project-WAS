@@ -13,8 +13,8 @@ remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRa
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")
 	else:
-		get_parent().get_node(sender).get_node("player").get_node("playerPhysicsBody").takeDamage(resultingDamage)
-		get_parent().get_node(sender).get_node("player").get_node("playerPhysicsBody").rpc("takeDamageRPC", resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody").takeDamage(resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody").rpc("takeDamageRPC", resultingDamage)
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
