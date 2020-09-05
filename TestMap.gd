@@ -10,8 +10,7 @@ var maxHeight
 # Color 1 1 0 1 is yellow
 # Color 0 0 1 1 is blue
 # Color 0 0 0 1 is black
-func loadTerrain(terrainSeed, ip):	
-	
+func loadTerrain(terrainSeed, ip):
 	# Loads the image into file
 	var image = texture.get_data()
 	# Locks image so pixels can be retrieved and modified
@@ -165,18 +164,57 @@ func loadTerrain(terrainSeed, ip):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 	# Change size to set pixels
-	image.resize(2000, 1500, 0)
-	#image.resize(5000, 3750, 0)
+	#image.resize(2000, 1500, 0)
+	image.resize(6000, 4500, 0)
 
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
+	# Break image down and add them as children sprites
+	var childrenImages = {}
+	var count = 0
+	var placingWidth = 0
+	var placingHeight = 0
+	var cropWidth = 500
+	var cropHeight = 375
+	
+
+	while placingWidth < image.get_width():
+		placingHeight = 0
+		while placingHeight < image.get_height():
+			var rect = Rect2(Vector2(placingWidth,placingHeight), Vector2(cropWidth,cropHeight))
+			
+			childrenImages[count] = Sprite.new()
+			childrenImages[count].name = name + "-" + str(count)
+			childrenImages[count].material = material
+			childrenImages[count].centered = false
+			childrenImages[count].position = Vector2(placingWidth, placingHeight)
+			add_child(childrenImages[count])
+			var image2 = Image.new()
+			image2.create_from_data(image.get_width(), image.get_height(), false, 5, image.get_data())
+			image2 = image2.get_rect(rect)
+			var newtexture2 = ImageTexture.new()
+			newtexture2.create_from_image(image2)
+			childrenImages[count].set_texture(newtexture2)
+			
+			# Add destructible nodes to each child
+			# Generate destructible node so terrain collision and destruction can be applied
+			var destructible_scene = load("res://Destructible.tscn")
+			var destructible       = destructible_scene.instance()
+			childrenImages[count].call_deferred("add_child", destructible)
+			
+			count += 1
+			
+			placingHeight += cropHeight
+		placingWidth += cropWidth
+	
+	# Empty out the original image
+	image.resize(1,1,0)
 	# Converts image to texture and has sprite use the new texture
 	var newtexture = ImageTexture.new()
 	newtexture.create_from_image(image)
 	self.set_texture(newtexture)
 
-	# Generate destructible node so terrain collision and destruction can be applied
 	var destructible_scene = load("res://Destructible.tscn")
 	var destructible       = destructible_scene.instance()
 	call_deferred("add_child", destructible)
