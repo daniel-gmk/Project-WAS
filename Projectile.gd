@@ -21,12 +21,11 @@ var casterID
 # Tracks whether the projectile is local to the client or from the server
 var server
 
-var inActionTimer
+# Start a timer looping each second to destroy projectiles out of bounds
+var inActionTimer = Timer.new()
 
 # Execute when this node loads
 func _ready():
-	# Start a timer looping each second to destroy projectiles out of bounds
-	inActionTimer = Timer.new()
 	# Loop the timer each second
 	inActionTimer.set_wait_time(1.0)
 	# Make sure its not just a one time execution and loops infinitely
@@ -39,12 +38,14 @@ func _ready():
 
 # Checks if it is outside 500 pixels of the bounds of the map
 func inAction_loop():
-	if position.x >= get_parent().get_node("TestMap").maxLength + 500 or position.x <= -500 or position.y >= get_parent().get_node("TestMap").maxHeight + 500 or position.y <= -500:
+	if position.x >= get_parent().get_node("TestMap").maxLength + 500 or position.x <= -500 or position.y <= -500:
 		removeinActionTimer()
+		queue_free()
 
 # Remove the timer before removing this projectile
 func removeinActionTimer():
-	inActionTimer.queue_free()
+	if inActionTimer.get_time_left() > 0:
+		inActionTimer.queue_free()
 
 func _on_Projectile_body_entered(_body):
 	# Only if this is the server's projectile

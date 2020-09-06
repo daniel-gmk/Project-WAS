@@ -39,8 +39,7 @@ func summonProjectile(startpos, position2, speed, attack_power, attack_scale, is
 	new_projectile.damage_falloff = damage_falloff
 	new_projectile.ignoreCaster = ignoreSelf
 	new_projectile.casterID = get_node("/root/").get_node(str(sender))
-	if ignoreSelf: 
-		new_projectile.add_collision_exception_with(self)
+	new_projectile.add_collision_exception_with(get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody"))
 	# Apply reticule position as projectile's starting position
 	new_projectile.global_position = startpos
 	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
