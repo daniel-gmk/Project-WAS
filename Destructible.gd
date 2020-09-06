@@ -84,7 +84,13 @@ func destroy(position : Vector2, radius : float):
 
 	# Wait until all viewports have re-rendered before pushing our viewport to the destruction shader.
 	yield(VisualServer, "frame_post_draw")
-	republish_sprite()
+	
+	# Sprite rebuild thread!
+	var thread2 := Thread.new()
+	var error2 = thread2.start(self, "republish_sprite", [1])
+	if error2 != OK:
+		print("Error creating destruction thread: ", error2)
+	_destruction_threads.push_back(thread2)
 
 
 func _cull_foreground_duplicates():
@@ -177,10 +183,10 @@ func build_collisions_from_image():
 		collision_holder.add_child(collider)
 
 
-func republish_sprite() -> void:
+func republish_sprite(arguments : Array):
 	# Assume the image has changed, so we'll need to update our ImageTexture
 	_image_republish_texture.create_from_image($Sprite.texture.get_data())
-
+	_image_republish_texture.set_flags(0)
 	# If our parent has the proper src/destruction/parent_material shader
 	# We can set our destruction_mask parameter against it, 
 	# which will carve out our destruction map!

@@ -164,66 +164,87 @@ func loadTerrain(terrainSeed, ip):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 	# Change size to set pixels
-	#image.resize(2000, 1500, 0)
 	image.resize(8000, 6000, 0)
 
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
-	# Break image down and add them as children sprites
-	var childrenImages = {}
+	# Variables used for below optimization function
+
+	# Tracks which sub-image we are at
 	var count = 0
+	# Tracks current location in overall image
 	var placingWidth = 0
 	var placingHeight = 0
-	var cropWidth = 600
-	var cropHeight = 450
-	
+	# Size of chunks
+	var cropWidth = 300
+	var cropHeight = 225
 
+	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
 	while placingWidth < image.get_width():
+		# Reset the height every time we get to a new width chunk (reset column every row)
 		placingHeight = 0
 		while placingHeight < image.get_height():
-			var rect = Rect2(Vector2(placingWidth-2,placingHeight-2), Vector2(cropWidth+4,cropHeight+4))
-			
-			childrenImages[count] = Sprite.new()
-			childrenImages[count].name = name + "-" + str(count)
-			
-			childrenImages[count].material = ShaderMaterial.new()
-			childrenImages[count].material.shader = load("res://parent_material.shader")
-			
-			childrenImages[count].centered = false
-			childrenImages[count].position = Vector2(placingWidth, placingHeight)
-			add_child(childrenImages[count])
+			# Make children sprites of overall sprite with sub-images
+			var childSprite = Sprite.new()
+			childSprite.name = name + "-" + str(count)
+			# Set the material so destruction works
+			childSprite.material = ShaderMaterial.new()
+			childSprite.material.shader = load("res://parent_material.shader")
+			# Set position and remove center so it is placed in the right location
+			childSprite.centered = false
+			childSprite.position = Vector2(placingWidth, placingHeight)
+			# Add the sprite as a child to the main sprite (main sprite will be cleared at the end so we dont have redundant images)
+			add_child(childSprite)
+			# Now need to create the image to put in the texture that the sprite used. Hierarchy goes: image -> texture -> sub-image sprite -> main image sprite
 			var image2 = Image.new()
+			# Grab image from the main image, then crop
 			image2.create_from_data(image.get_width(), image.get_height(), false, 5, image.get_data())
+			# Define the rectangle to crop the overall image to, make it 2 pixels larger to fill potential >1px gaps
+			var rect = Rect2(Vector2(placingWidth-2,placingHeight-2), Vector2(cropWidth+4,cropHeight+4))
+			# Crop image to the rectangle
 			image2 = image2.get_rect(rect)
+			# Lock image to do pixels check to track if transparent
+			image2.lock()
+			# Track whether the sub-image is fully transparent or not
+			var transparent = true
+			# Checks if transparent so it can save time and not have to add destructible nodes if fully transparent
+			for w in image2.get_width():
+				if !transparent:
+					break
+				for h in image2.get_height():
+					if image2.get_pixel(w,h) != Color(0,0,0,0): # Might change this later
+						transparent = false
+						break
+			image2.unlock()
+			# Remove mipmaps so there arent weird aliasing/filter/mipmap lines between sub-images, especially when zooming
 			image2.clear_mipmaps()
+
+			# Create texture for image to go in
 			var newtexture2 = ImageTexture.new()
 			newtexture2.create_from_image(image2)
-			newtexture2.set_flags(2)
+			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
+			newtexture2.set_flags(0)
 			newtexture2.set_storage(0)
-			childrenImages[count].set_texture(newtexture2)
+			# Add texture to sprite
+			childSprite.set_texture(newtexture2)
+			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
+			childSprite.set_region_filter_clip(true)
 			
-			# Add destructible nodes to each child
+			# Add destructible nodes to non-transparent sub-images
 			# Generate destructible node so terrain collision and destruction can be applied
-			var destructible_scene = load("res://Destructible.tscn")
-			var destructible       = destructible_scene.instance()
-			childrenImages[count].call_deferred("add_child", destructible)
+			if !transparent:
+				var destructible_scene = load("res://Destructible.tscn")
+				var destructible       = destructible_scene.instance()
+				childSprite.call_deferred("add_child", destructible)
 			
 			count += 1
 			
 			placingHeight += cropHeight
 		placingWidth += cropWidth
 	
-	# Empty out the original image
-	image.resize(1,1,0)
-	# Converts image to texture and has sprite use the new texture
-	var newtexture = ImageTexture.new()
-	newtexture.create_from_image(image)
-	self.set_texture(newtexture)
-
-	var destructible_scene = load("res://Destructible.tscn")
-	var destructible       = destructible_scene.instance()
-	call_deferred("add_child", destructible)
+	# Remove main image texture
+	self.set_texture(null)
 	
 	# After everything is loaded and done, client can reconnect to server
 	if !get_tree().is_network_server():
