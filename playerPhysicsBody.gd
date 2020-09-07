@@ -16,7 +16,7 @@ var snap = Vector2(0, 32)
 # Vector tracking player movement speed
 export (Vector2) var _speed = Vector2(400, 600)
 # Vector tracking gravity on player
-export (Vector2) var gravity = Vector2(0, 4800)
+export (Vector2) var gravity = Vector2(0, 0)#4800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 
