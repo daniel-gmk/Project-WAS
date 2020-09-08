@@ -35,12 +35,6 @@ func loadTerrain(terrainSeed, ip):
 	noise.octaves = 1
 	noise.period = 384.0
 	noise.persistence = .6
-	# Second perlin noise is for the background as second layer
-	var noise2 = OpenSimplexNoise.new()
-	noise2.seed = terrainSeed
-	noise2.octaves = 1
-	noise2.period = 128.0
-	noise2.persistence = 0.6
 
 	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
 	var threshold = 40
@@ -52,13 +46,6 @@ func loadTerrain(terrainSeed, ip):
 			# Grab perlin noises based on threshold for blue contour
 			var value = abs(noise.get_noise_2d(w, h))
 			value = max(0, (threshold - value * 256) * 8)
-
-			# Grab perlin noises based on threshold for black background
-			var value2
-			if image.get_pixel(w, h) == Color(0,0,0,1): # Black
-				value2 = abs(noise2.get_noise_2d(w, h))
-				value2 = max(0, (25 - value2 * 256) * 8)
-				value = (value + value2) / 2.0
 			
 			# Do not apply changes to base (white)
 			if image.get_pixel(w, h) != Color(1,1,1,1): # White
@@ -103,26 +90,31 @@ func loadTerrain(terrainSeed, ip):
 	# This component removes perlin yellow placeholder colors
 	for w in image.get_width():
 		for h in image.get_height():
-			# Grab pixels that are the contour
-			if image.get_pixel(w, h) == Color(1,1,0,1) or image.get_pixel(w, h) == Color(0,0,0,1):
+			if image.get_pixel(w, h) == Color(0,0,0,1):
 				image.set_pixel(w, h, Color(0,0,0,0))
+			elif image.get_pixel(w, h) == Color(1,1,0,1):
+				if w > 0 and h > 0 and w < image.get_width()-1 and h < image.get_height()-1:
+					if (image.get_pixel(w+1, h) == Color(1,1,1,1) or image.get_pixel(w-1, h) == Color(1,1,1,1) or image.get_pixel(w, h+1) == Color(1,1,1,1) or image.get_pixel(w, h-1) == Color(1,1,1,1)):
+						points['bg'].push_back([w, h, 0])
 	
-	for u in range(0,10):
-		for w in image.get_width():
-			for h in image.get_height():
-				if image.get_pixel(w, h) == Color(1,1,1,1):
-					if w > 0 and image.get_pixel(w-1, h) == Color(0,0,0,0):
-						image.set_pixel(w-1, h, Color(1,1,0,1))
-					if h > 0 and image.get_pixel(w, h-1) == Color(0,0,0,0):
-						image.set_pixel(w, h-1, Color(1,1,0,1))
-					if w+1 < image.get_width() and image.get_pixel(w+1, h) == Color(0,0,0,0):
-						image.set_pixel(w+1, h, Color(1,1,0,1))
-					if h+1 < image.get_height() and image.get_pixel(w, h+1) == Color(0,0,0,0):
-						image.set_pixel(w, h+1, Color(1,1,0,1))
-		for w in image.get_width():
-			for h in image.get_height():
-				if image.get_pixel(w, h) == Color(1,1,0,1):
-					image.set_pixel(w, h, Color(1,1,1,1))
+	var wrapthreshold = 25
+	var z
+	while points['bg'].size() > 0:
+		pt = points['bg'].pop_back()
+		x = pt[0]
+		y = pt[1]
+		z = pt[2]
+		if z < wrapthreshold and x > 0 and y > 0 and x < image.get_width()-1 and y < image.get_height()-1:
+			image.set_pixel(x, y, Color(1,1,1,1))
+			if image.get_pixel(x, y) == Color(1,1,0,1):
+				points['bg'].push_back([x-1, y+1, z+1])
+				points['bg'].push_back([x, y+1, z+1])
+				points['bg'].push_back([x+1, y+1, z+1])
+				points['bg'].push_back([x-1, y, z+1])
+				points['bg'].push_back([x+1, y, z+1])
+				points['bg'].push_back([x-1, y-1, z+1])
+				points['bg'].push_back([x, y-1, z+1])
+				points['bg'].push_back([x+1, y-1, z+1])
 
 	# Unlocks image so size can be adjusted
 	image.unlock()
