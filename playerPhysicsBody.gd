@@ -10,13 +10,13 @@ var control = false
 
 ### Physics
 # Initial position/spawn in map TO BE REPLACED
-var pos = Vector2(1000, 100)
+var pos = Vector2(500, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 32)
 # Vector tracking player movement speed
-export (Vector2) var _speed = Vector2(400, 600)
+export (Vector2) var _speed = Vector2(100, 150)
 # Vector tracking gravity on player
-export (Vector2) var gravity = Vector2(0, 0)#4800)
+export (Vector2) var gravity = Vector2(0, 1200)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 
@@ -29,7 +29,7 @@ var health
 # Tracking if Jumping
 var jumping
 # Jumping power
-var JUMP_FORCE = 2000
+var JUMP_FORCE = 500
 # Tracking jump direction (left or right)
 var jump_direction = Vector2.ZERO
 
@@ -39,7 +39,7 @@ var peakHeight
 # Tracks when to stop recording peak height and also when character is rising
 var rising
 # Variable that determines the cutoff in height before damage starts being dealt
-var fallDamageHeight = 800
+var fallDamageHeight = 200
 # Variable that determines damage increase rate based on falloff
 var fallDamageRate = 2
 
@@ -129,7 +129,7 @@ func _input(event):
 		elif event.is_action_released("shoot"):
 			if _attack_clicked:
 				# Standard typeless attack
-				shoot(500, 84, true, false)
+				shoot(500, 21, true, false)
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
@@ -144,7 +144,7 @@ func _physics_process(_delta : float):
 		# If the player has been holding the attack button long enough it auto fires
 		if _attack_power >= _auto_attack_power:
 			# Same standard typeless attack as line 120
-			shoot(500, 84, true, false)
+			shoot(500, 21, true, false)
 		
 		# If starting to fall, make sure ground snap physics is re-enabled for good sliding/snap physics in movement
 		if _velocity.y >= 0 and !is_on_floor():

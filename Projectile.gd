@@ -38,7 +38,7 @@ func _ready():
 
 # Checks if it is outside 500 pixels of the bounds of the map
 func inAction_loop():
-	if position.x >= get_parent().get_node("TestMap").maxLength + 500 or position.x <= -500 or position.y <= -500:
+	if position.x >= get_parent().get_node("TestMap").maxLength + 200 or position.x <= -200 or position.y <= -200:
 		removeinActionTimer()
 		queue_free()
 

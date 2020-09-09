@@ -33,11 +33,11 @@ func loadTerrain(terrainSeed, ip):
 	var noise = OpenSimplexNoise.new()
 	noise.seed = terrainSeed
 	noise.octaves = 1
-	noise.period = 384.0
-	noise.persistence = .6
+	noise.period = 86.0
+	noise.persistence = .7
 
 	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
-	var threshold = 40
+	var threshold = 35
 	
 	# Parse through image 
 	for w in image.get_width():
@@ -92,29 +92,47 @@ func loadTerrain(terrainSeed, ip):
 		for h in image.get_height():
 			if image.get_pixel(w, h) == Color(0,0,0,1):
 				image.set_pixel(w, h, Color(0,0,0,0))
-			elif image.get_pixel(w, h) == Color(1,1,0,1):
-				if w > 0 and h > 0 and w < image.get_width()-1 and h < image.get_height()-1:
-					if (image.get_pixel(w+1, h) == Color(1,1,1,1) or image.get_pixel(w-1, h) == Color(1,1,1,1) or image.get_pixel(w, h+1) == Color(1,1,1,1) or image.get_pixel(w, h-1) == Color(1,1,1,1)):
-						points['bg'].push_back([w, h, 0])
+			if image.get_pixel(w, h) == Color(1,1,0,1):
+				if w >= 0 and h >= 0 and w < image.get_width() and h < image.get_height():
+					#if (image.get_pixel(w+1, h) == Color(1,1,1,1) or image.get_pixel(w-1, h) == Color(1,1,1,1) or image.get_pixel(w, h+1) == Color(1,1,1,1) or image.get_pixel(w, h-1) == Color(1,1,1,1)):
+					points['bg'].push_back([w, h])
 	
-	var wrapthreshold = 25
-	var z
+	var x2
 	while points['bg'].size() > 0:
+		var whiteL = false
+		var whiteR = false
 		pt = points['bg'].pop_back()
 		x = pt[0]
 		y = pt[1]
-		z = pt[2]
-		if z < wrapthreshold and x > 0 and y > 0 and x < image.get_width()-1 and y < image.get_height()-1:
-			image.set_pixel(x, y, Color(1,1,1,1))
-			if image.get_pixel(x, y) == Color(1,1,0,1):
-				points['bg'].push_back([x-1, y+1, z+1])
-				points['bg'].push_back([x, y+1, z+1])
-				points['bg'].push_back([x+1, y+1, z+1])
-				points['bg'].push_back([x-1, y, z+1])
-				points['bg'].push_back([x+1, y, z+1])
-				points['bg'].push_back([x-1, y-1, z+1])
-				points['bg'].push_back([x, y-1, z+1])
-				points['bg'].push_back([x+1, y-1, z+1])
+		x1 = x
+		var topBottomFlag = false
+		while (x1 >= 0) and (image.get_pixel(x1, y) == Color(1,1,0,1)):
+			if y > 0 and y < image.get_height()-1:
+				if image.get_pixel(x1, y+1) == Color(0,0,0,0) or image.get_pixel(x1, y+1) == Color(0,0,0,0):
+					topBottomFlag = true
+			x1 -= 1
+		if (x1 != -1 and image.get_pixel(x1, y) == Color(1,1,1,1)):
+			whiteL = true
+		x2 = max(0, x1)
+		x1 = x
+		while (x1 < image.get_width()) and (image.get_pixel(x1, y) == Color(1,1,0,1)):
+			if y > 0 and y < image.get_height()-1 and !topBottomFlag:
+				if image.get_pixel(x1, y+1) == Color(0,0,0,0) or image.get_pixel(x1, y+1) == Color(0,0,0,0):
+					topBottomFlag = true
+			x1 += 1
+		if (x1 != image.get_width() and image.get_pixel(x1, y) == Color(1,1,1,1)):
+			whiteR = true
+
+		for u in range(x2, x1):
+			if whiteL and whiteR and !topBottomFlag:
+				image.set_pixel(u, y, Color(0,0,1,1))
+			else:
+				image.set_pixel(u, y, Color(0,0,0,0))
+
+	for w in image.get_width():
+		for h in image.get_height():
+			if image.get_pixel(w, h) == Color(0,0,1,1):
+				image.set_pixel(w, h, Color(1,1,1,1))
 
 	# Unlocks image so size can be adjusted
 	image.unlock()
@@ -131,15 +149,13 @@ func loadTerrain(terrainSeed, ip):
 
 	var newtexture2 = ImageTexture.new()
 	newtexture2.create_from_image(image)
+	newtexture2.set_flags(0)
 	# Add texture to sprite
 	set_texture(newtexture2)
 
-	#var destructible_scene = load("res://Destructible.tscn")
-	#var destructible       = destructible_scene.instance()
-	#call_deferred("add_child", destructible)
-	
-	# Remove main image texture
-	#self.set_texture(null)
+	var destructible_scene = load("res://Destructible.tscn")
+	var destructible       = destructible_scene.instance()
+	call_deferred("add_child", destructible)
 	
 	# After everything is loaded and done, client can reconnect to server
 	if !get_tree().is_network_server():
