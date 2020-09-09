@@ -33,17 +33,11 @@ func loadTerrain(terrainSeed, ip):
 	var noise = OpenSimplexNoise.new()
 	noise.seed = terrainSeed
 	noise.octaves = 1
-	noise.period = 384.0
-	noise.persistence = .6
-	# Second perlin noise is for the background as second layer
-	var noise2 = OpenSimplexNoise.new()
-	noise2.seed = terrainSeed
-	noise2.octaves = 1
-	noise2.period = 128.0
-	noise2.persistence = 0.6
+	noise.period = 150.0
+	noise.persistence = .8
 
 	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
-	var threshold = 40
+	var threshold = 30
 	
 	# Parse through image 
 	for w in image.get_width():
@@ -52,13 +46,6 @@ func loadTerrain(terrainSeed, ip):
 			# Grab perlin noises based on threshold for blue contour
 			var value = abs(noise.get_noise_2d(w, h))
 			value = max(0, (threshold - value * 256) * 8)
-
-			# Grab perlin noises based on threshold for black background
-			var value2
-			if image.get_pixel(w, h) == Color(0,0,0,1): # Black
-				value2 = abs(noise2.get_noise_2d(w, h))
-				value2 = max(0, (25 - value2 * 256) * 8)
-				value = (value + value2) / 2.0
 			
 			# Do not apply changes to base (white)
 			if image.get_pixel(w, h) != Color(1,1,1,1): # White
