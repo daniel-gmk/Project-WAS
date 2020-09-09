@@ -16,6 +16,16 @@ func loadTerrain(terrainSeed, ip):
 	# Locks image so pixels can be retrieved and modified
 	image.lock()
 	
+	# First perlin noise is for the blue contour
+	var noise = OpenSimplexNoise.new()
+	noise.seed = terrainSeed
+	noise.octaves = 1
+	noise.period = 120.0
+	noise.persistence = .7
+
+	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
+	var threshold = 40
+	
 	# Save data into main dictionary.
 	# Array fg is foreground, has all pixels touching the base that are blue
 	# Array bg is background, all pixels that are black
@@ -26,22 +36,6 @@ func loadTerrain(terrainSeed, ip):
 			if image.get_pixel(w, h) == Color(0,0,1,1):
 				if (image.get_pixel(w+1, h) == Color(1,1,1,1) or image.get_pixel(w-1, h) == Color(1,1,1,1) or image.get_pixel(w, h+1) == Color(1,1,1,1) or image.get_pixel(w, h-1) == Color(1,1,1,1)): # Blue
 					points['fg'].push_back([w, h])
-
-	# Load two perlin noises
-	
-	# First perlin noise is for the blue contour
-	var noise = OpenSimplexNoise.new()
-	noise.seed = terrainSeed
-	noise.octaves = 1
-	noise.period = 150.0
-	noise.persistence = .8
-
-	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
-	var threshold = 30
-	
-	# Parse through image 
-	for w in image.get_width():
-		for h in image.get_height():
 
 			# Grab perlin noises based on threshold for blue contour
 			var value = abs(noise.get_noise_2d(w, h))
@@ -54,6 +48,7 @@ func loadTerrain(terrainSeed, ip):
 				# Apply yellow marker color to perlin patterns
 				if value > threshold:
 					image.set_pixel(w, h, Color(1,1,0,1)) # Yellow
+
 
 	# This component grows the base terrain (white) to the areas touching it that are surrounded by perlin patterns.
 	var pt
@@ -124,40 +119,92 @@ func loadTerrain(terrainSeed, ip):
 
 		for u in range(x2, x1):
 			if whiteL and whiteR and !topBottomFlag:
-				image.set_pixel(u, y, Color(0,0,1,1))
+				image.set_pixel(u, y, Color(1,1,1,1))
 			else:
 				image.set_pixel(u, y, Color(0,0,0,0))
 
-	for w in image.get_width():
-		for h in image.get_height():
-			if image.get_pixel(w, h) == Color(0,0,1,1):
-				image.set_pixel(w, h, Color(1,1,1,1))
-
 	# Unlocks image so size can be adjusted
 	image.unlock()
-	# Change size to set pixels
-	#image.resize(8000, 6000, 0)
 
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
 	# Variables used for below optimization function
+
+	# Tracks which sub-image we are at
+	var count = 0
+	# Tracks current location in overall image
+	var placingWidth = 0
+	var placingHeight = 0
+	# Size of chunks
+	var cropWidth = 600
+	var cropHeight = 450
+	
+	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
+	while placingWidth < image.get_width():
+		# Reset the height every time we get to a new width chunk (reset column every row)
+		placingHeight = 0
+		while placingHeight < image.get_height():
+			# Make children sprites of overall sprite with sub-images
+			var childSprite = Sprite.new()
+			childSprite.name = name + "-" + str(count)
+			# Set the material so destruction works
+			childSprite.material = ShaderMaterial.new()
+			childSprite.material.shader = load("res://parent_material.shader")
+			# Set position and remove center so it is placed in the right location
+			childSprite.centered = false
+			childSprite.position = Vector2(placingWidth, placingHeight)
+			# Add the sprite as a child to the main sprite (main sprite will be cleared at the end so we dont have redundant images)
+			add_child(childSprite)
+			# Now need to create the image to put in the texture that the sprite used. Hierarchy goes: image -> texture -> sub-image sprite -> main image sprite
+			var image2 = Image.new()
+			# Grab image from the main image, then crop
+			image2.create_from_data(image.get_width(), image.get_height(), false, 5, image.get_data())
+			# Define the rectangle to crop the overall image to, make it 2 pixels larger to fill potential >1px gaps
+			var rect = Rect2(Vector2(placingWidth-2,placingHeight-2), Vector2(cropWidth+4,cropHeight+4))
+			# Crop image to the rectangle
+			image2 = image2.get_rect(rect)
+			# Lock image to do pixels check to track if transparent
+			image2.lock()
+			# Track whether the sub-image is fully transparent or not
+			var transparent = true
+			# Checks if transparent so it can save time and not have to add destructible nodes if fully transparent
+			for w in image2.get_width():
+				if !transparent:
+					break
+				for h in image2.get_height():
+					if image2.get_pixel(w,h) != Color(0,0,0,0): # Might change this later
+						transparent = false
+						break
+			image2.unlock()
+			# Remove mipmaps so there arent weird aliasing/filter/mipmap lines between sub-images, especially when zooming
+			image2.clear_mipmaps()
+	
+			# Create texture for image to go in
+			var newtexture2 = ImageTexture.new()
+			newtexture2.create_from_image(image2)
+			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
+			newtexture2.set_flags(0)
+			newtexture2.set_storage(0)
+			# Add texture to sprite
+			childSprite.set_texture(newtexture2)
+			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
+			childSprite.set_region_filter_clip(true)
 			
 			# Add destructible nodes to non-transparent sub-images
 			# Generate destructible node so terrain collision and destruction can be applied
-
-	var newtexture2 = ImageTexture.new()
-	newtexture2.create_from_image(image)
-	# Add texture to sprite
-	set_texture(newtexture2)
-
-	#var destructible_scene = load("res://Destructible.tscn")
-	#var destructible       = destructible_scene.instance()
-	#call_deferred("add_child", destructible)
+			if !transparent:
+				var destructible_scene = load("res://Destructible.tscn")
+				var destructible       = destructible_scene.instance()
+				childSprite.call_deferred("add_child", destructible)
+			
+			count += 1
 	
-	# Remove main image texture
-	#self.set_texture(null)
-	
+			placingHeight += cropHeight
+		placingWidth += cropWidth
+
+	self.set_texture(null)
+
 	# After everything is loaded and done, client can reconnect to server
 	if !get_tree().is_network_server():
 		var network = get_node("/root/Network")

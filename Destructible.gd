@@ -17,11 +17,6 @@ var _parent_material : Material
 var _destruction_threads := Array()
 var _viewport_destruction_node : Node
 
-func _draw():
-	if get_node("CollisionHolder").get_child_count() > 0:
-		print("yes")
-		#draw_polygon(get_node("CollisionHolder").get_children()[0].get_polygon(), PoolColorArray([Color(1,1,1,1)]))
-
 func _ready():
 	readyFunc()
 	
@@ -42,7 +37,7 @@ func readyFunc():
 	_to_cull.append(dup)
 	
 	# Then reposition, so we're in the right spot
-	dup.position = _world_to_viewport(dup.position) / 8
+	dup.position = _world_to_viewport(dup.position)
 
 	# Add to the viewport, so that our destructible viewport has our starting point
 	$Viewport.add_child(dup)
@@ -53,7 +48,6 @@ func readyFunc():
 	# Wait for all viewports to re-render before we build our image
 	yield(VisualServer, "frame_post_draw")
 	build_collisions_from_image()
-	update()
 
 func calculate_bounds(tilemap):
 	var cell_bounds = tilemap.get_used_rect()
@@ -164,12 +158,9 @@ func rebuild_collisions_from_geometry(arguments : Array):
 
 
 func build_collisions_from_image():	
-	
-	var image = $Sprite.texture.get_data()
-	image.resize(2000,1500, 0)
 	# Create bitmap from the Viewport (which projects into our sprite)
 	var bitmap := BitMap.new()
-	bitmap.create_from_image_alpha(image)
+	bitmap.create_from_image_alpha($Sprite.texture.get_data())
 	
 	# DEBUG:
 	#$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
@@ -205,8 +196,8 @@ func republish_sprite(arguments : Array):
 func _viewport_to_world(var point : Vector2) -> Vector2:
 	var dynamic_texture_size = $Viewport.get_size()
 	return Vector2(
-		((point.x + get_viewport_rect().position.x) / dynamic_texture_size.x) * world_size.x * 8,
-		((point.y + get_viewport_rect().position.y) / dynamic_texture_size.y) * world_size.y * 8
+		((point.x + get_viewport_rect().position.x) / dynamic_texture_size.x) * world_size.x,
+		((point.y + get_viewport_rect().position.y) / dynamic_texture_size.y) * world_size.y
 	)
 
 
@@ -214,6 +205,6 @@ func _world_to_viewport(var point : Vector2) -> Vector2:
 	var dynamic_texture_size = $Viewport.get_size()
 	var parent_offset = get_parent().position
 	return Vector2(
-		(((point.x - parent_offset.x ) / world_size.x) * dynamic_texture_size.x + get_viewport_rect().position.x)/8,
-		(((point.y - parent_offset.y ) / world_size.y) * dynamic_texture_size.y + get_viewport_rect().position.y)/8
+		(((point.x - parent_offset.x ) / world_size.x) * dynamic_texture_size.x + get_viewport_rect().position.x),
+		(((point.y - parent_offset.y ) / world_size.y) * dynamic_texture_size.y + get_viewport_rect().position.y)
 	)
