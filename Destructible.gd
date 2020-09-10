@@ -158,7 +158,6 @@ func rebuild_collisions_from_geometry(arguments : Array):
 
 
 func build_collisions_from_image():	
-	
 	# Create bitmap from the Viewport (which projects into our sprite)
 	var bitmap := BitMap.new()
 	bitmap.create_from_image_alpha($Sprite.texture.get_data())

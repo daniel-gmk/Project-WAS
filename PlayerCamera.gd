@@ -41,16 +41,16 @@ func _unhandled_input(event):
 	elif event is InputEventMouseMotion and _move_camera and control:
 		get_tree().set_input_as_handled()
 		changeToRoot()
-		position += (_previous_position - event.position) / 2
+		position += (_previous_position - event.position)
 		_previous_position = event.position
 
 	# Zoom, this will be turned off for non-spectators eventually
 	elif event is InputEventMouseButton and control:
 		var new_zoom := Vector2.ZERO
 		if event.button_index == BUTTON_WHEEL_UP:
-			new_zoom = zoom.linear_interpolate(Vector2(0.1, 0.1), 0.1)
+			new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)
 		elif event.button_index == BUTTON_WHEEL_DOWN:
-			new_zoom = zoom.linear_interpolate(Vector2(.8,.8), 0.1)
+			new_zoom = zoom.linear_interpolate(Vector2(2,2), 0.2)
 		
 		if (new_zoom != Vector2.ZERO):
 			get_tree().set_input_as_handled()
