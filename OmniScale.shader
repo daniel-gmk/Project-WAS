@@ -1,9 +1,48 @@
 shader_type canvas_item;
 
-uniform sampler2D destruction_mask : hint_black;
+//#version 130
+
+// OmniScale
+// by Lior Halphon
+// original GLSL code from hunterk by way of RetroArch
+// ported to Godot3 shader language by Nobuyuki
+
+//
+// MIT License
+//
+// Copyright (c) 2015-2016 Lior Halphon
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// 
 
 uniform int ScaleMultiplier : hint_range(2, 12) = 4;
 uniform bool screen_space;
+
+// vertex compatibility #defines
+// #define vTexCoord TEX0.xy
+// #define outsize vec4(OutputSize, 1.0 / OutputSize)
+
+
+
+
+//uniform sampler2D Texture;
+
 
 // We use the same colorspace as the HQx algorithms. (YUV?)
 vec3 rgb_to_hq_colospace(vec4 rgb)
@@ -19,6 +58,11 @@ bool is_different(vec4 a, vec4 b)
     vec3 diff = abs(rgb_to_hq_colospace(a) - rgb_to_hq_colospace(b));
     return diff.x > 0.125 || diff.y > 0.027 || diff.z > 0.031;
 }
+
+// This define could've made code a ton more readable if godot shaders supported it, but it doesn't.
+// 55 occurances of this in code;  use regexp to turn it back once supported?
+// #define P(m, r) ((pattern & (m)) == (r))
+
 
 vec4 scale(sampler2D image, vec2 coord, vec2 pxSize) {
 
@@ -42,6 +86,8 @@ vec4 scale(sampler2D image, vec2 coord, vec2 pxSize) {
         o.y = -o.y;
         p.y = 1.0 - p.y;
     }
+
+
 
     vec4 w0 = texture(image, texCoord + vec2( -o.x, -o.y));
     vec4 w1 = texture(image, texCoord + vec2(    0, -o.y));
@@ -249,12 +295,13 @@ vec4 scale(sampler2D image, vec2 coord, vec2 pxSize) {
     
     return w4;
 }
-void fragment() {
-	//vec4 original_colour = texture(TEXTURE, UV).rgba;
-	vec4 original_colour = scale(TEXTURE, UV, TEXTURE_PIXEL_SIZE).rgba;
-	vec4 destruction_map_colour = scale(destruction_mask, UV, vec2(.25,.25) / vec2(textureSize(destruction_mask, 1))).rgba;
 
-	COLOR = vec4(original_colour.r, original_colour.g, original_colour.b, original_colour.a * destruction_map_colour.a);
 
-	//COLOR = scale(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
-}
+void fragment()
+{
+	if (screen_space) {
+			COLOR = scale(SCREEN_TEXTURE, SCREEN_UV, SCREEN_PIXEL_SIZE);
+		} else { 
+			COLOR = scale(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
+		}
+} 

@@ -9,6 +9,8 @@
 [sub_resource type="ShaderMaterial" id=1]
 render_priority = 1
 shader = ExtResource( 3 )
+shader_param/ScaleMultiplier = 4
+shader_param/screen_space = null
 
 [node name="environment" type="Node2D"]
 
