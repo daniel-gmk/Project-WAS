@@ -2,7 +2,7 @@ shader_type canvas_item;
 
 uniform sampler2D destruction_mask : hint_black;
 
-uniform int ScaleMultiplier : hint_range(2, 12) = 4;
+uniform int ScaleMultiplier : hint_range(2, 12) = 8;
 uniform bool screen_space;
 
 // We use the same colorspace as the HQx algorithms. (YUV?)

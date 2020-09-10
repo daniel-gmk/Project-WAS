@@ -126,6 +126,8 @@ func loadTerrain(terrainSeed, ip):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 
+	image.resize(6000,4500,3)
+
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
