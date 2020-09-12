@@ -126,7 +126,7 @@ func loadTerrain(terrainSeed, ip):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 
-	image.resize(6000,4500,3)
+	image.resize(6000,4500,0)
 
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
@@ -153,6 +153,9 @@ func loadTerrain(terrainSeed, ip):
 			# Set the material so destruction works
 			childSprite.material = ShaderMaterial.new()
 			childSprite.material.shader = load("res://parent_material.shader")
+			childSprite.material.set_shader_param("mask_texture", load("res://assets/test-background.png"))
+			childSprite.material.set_shader_param("outline_color", Color(0,.7,0,1))
+			childSprite.material.set_shader_param("outline_width", 1)
 			# Set position and remove center so it is placed in the right location
 			childSprite.centered = false
 			childSprite.position = Vector2(placingWidth, placingHeight)
@@ -186,8 +189,9 @@ func loadTerrain(terrainSeed, ip):
 			var newtexture2 = ImageTexture.new()
 			newtexture2.create_from_image(image2)
 			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
-			newtexture2.set_flags(0)
-			newtexture2.set_storage(0)
+			if !get_tree().is_network_server():
+				newtexture2.set_flags(0)
+				newtexture2.set_storage(0)
 			# Add texture to sprite
 			childSprite.set_texture(newtexture2)
 			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
@@ -199,9 +203,9 @@ func loadTerrain(terrainSeed, ip):
 				var destructible_scene = load("res://Destructible.tscn")
 				var destructible       = destructible_scene.instance()
 				childSprite.call_deferred("add_child", destructible)
-			
+
 			count += 1
-	
+
 			placingHeight += cropHeight
 		placingWidth += cropWidth
 

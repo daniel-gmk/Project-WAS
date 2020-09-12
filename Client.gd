@@ -21,4 +21,4 @@ func startGameCharacter():
 	player.control   = control
 		
 	# Instantiate the character
-	add_child(player)
+	call_deferred("add_child", player)

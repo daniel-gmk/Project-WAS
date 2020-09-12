@@ -130,7 +130,7 @@ func spawn_player(id, loadedTerrain):
 	if id == 1:
 		var server = server_scene.instance()
 		server.set_name(str(id))
-		get_node("/root/").add_child(server)
+		get_node("/root/").call_deferred("add_child", server)
 	else:
 		# If player and terrain is now loaded
 		# Load the normal character node
@@ -145,7 +145,7 @@ func spawn_player(id, loadedTerrain):
 			player.control   = true
 			
 		# Instantiate the character
-		get_node("/root/").add_child(player)
+		get_node("/root/").call_deferred("add_child", player)
 
 # Server sends terrain seed to client
 remote func server_send_terrain_seed(id):
@@ -174,6 +174,12 @@ func start_game():
 			if peer_id != 1:
 				rpc_id(peer_id, "startPlayerGameCharacterRPC", peer_id)
 				startPlayerGameCharacter(peer_id)
+	else:
+		rpc_id(1, "start_game_server")
+
+remote func start_game_server():
+	if get_tree().is_network_server():
+		start_game()
 
 # Have the client tell other clients to instantiate their player/playerPhysicsBody nodes
 # And then instantiate their player/playerPhysicsBody node locally
