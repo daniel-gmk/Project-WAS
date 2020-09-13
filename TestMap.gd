@@ -139,8 +139,8 @@ func loadTerrain(terrainSeed, ip):
 	var placingWidth = 0
 	var placingHeight = 0
 	# Size of chunks
-	var cropWidth = 240
-	var cropHeight = 180
+	var cropWidth = 500
+	var cropHeight = 375
 	
 	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
 	while placingWidth < image.get_width():
@@ -189,9 +189,8 @@ func loadTerrain(terrainSeed, ip):
 			var newtexture2 = ImageTexture.new()
 			newtexture2.create_from_image(image2)
 			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming
-			if !get_tree().is_network_server():
-				newtexture2.set_flags(0)
-				newtexture2.set_storage(0)
+			newtexture2.set_flags(0)
+			newtexture2.set_storage(0)
 			# Add texture to sprite
 			childSprite.set_texture(newtexture2)
 			# Remove aliasing/filter/mipmap flags to remove weird lines between sub-images, especially when zooming

@@ -7,6 +7,18 @@ export var explosion_scene : PackedScene
 export var weapon_projectile : PackedScene
 # Called when the node enters the scene tree for the first time.
 
+func _ready():
+	# Don't show any GUI elements to the server
+	if get_tree().is_network_server():
+		# Set camera focus to player
+		print("server-camera")
+		$ServerCamera.control = true
+		var camera = $ServerCamera
+		camera.root = self
+		camera.playerOwner = self
+		camera.make_current()
+		#camera.changeToPlayerOwner()
+
 # Has the server calculate fall damage and distribute that information to clients
 remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
 	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate
