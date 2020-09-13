@@ -19,6 +19,8 @@ export (Vector2) var _speed = Vector2(250, 360)
 export (Vector2) var gravity = Vector2(0, 2400)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
+# Track when falling NOT from jumping
+var falling = true
 
 ### Health
 var minHealth = 0
@@ -27,7 +29,7 @@ var health
 
 ###Jump
 # Tracking if Jumping
-var jumping
+var jumping = false
 # Jumping power
 var JUMP_FORCE = 1000
 # Tracking jump direction (left or right)
@@ -94,6 +96,10 @@ func initiate_ui():
 
 # Execute every tick
 func _process(delta):
+	if !is_on_floor() and !jumping:
+		falling = true
+	else:
+		falling = false
 	if control:
 		# Locally render the reticule every tick, optimize this to only be needed when attacking
 		_render_reticule()
@@ -171,17 +177,22 @@ func movePlayer():
 	
 	# Applies physics (speed, gravity) to the direction
 	_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
-	# Applies Godot's native collision detection
-	_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
+	
+	if falling:
+		_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0))
+	else:
+		# Applies Godot's native collision detection
+		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
 	# Broadcasts resulting location/position to RPC (players, server)
 	rpc("updateRPCposition", position, player_id)
 
 	# Stop jumping when landing on floor
-	if jumping and is_on_floor() and ((position.y - peakHeight) > fallDamageHeight):
+	if jumping and is_on_floor():
 		jumping = false
 		jump_direction = Vector2.ZERO
-		# Check fall height and send data to server node to determine damage dealt
-		get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
+		if ((position.y - peakHeight) > fallDamageHeight):
+			# Check fall height and send data to server node to determine damage dealt
+			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
