@@ -189,7 +189,6 @@ func movePlayer():
 	# Stop jumping when landing on floor
 	if jumping and is_on_floor():
 		jumping = false
-		jump_direction = Vector2.ZERO
 		if ((position.y - peakHeight) > fallDamageHeight):
 			# Check fall height and send data to server node to determine damage dealt
 			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
