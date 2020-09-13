@@ -174,7 +174,7 @@ func movePlayer():
 	# Applies Godot's native collision detection
 	_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
 	# Broadcasts resulting location/position to RPC (players, server)
-	rpc_unreliable("updateRPCposition", position, player_id)
+	rpc("updateRPCposition", position, player_id)
 
 	# Stop jumping when landing on floor
 	if jumping and is_on_floor() and ((position.y - peakHeight) > fallDamageHeight):
