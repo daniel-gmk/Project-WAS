@@ -84,6 +84,7 @@ onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 func _ready():
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
+	add_collision_exception_with($PlayerCollision)
 	# Set health
 	health = maxHealth
 	chargeProgress = reticule_anchor.find_node("chargeReticule")
@@ -184,10 +185,10 @@ func movePlayer():
 		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
 		
 		if falling:
-			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0))
+			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0), false)
 		else:
 			# Applies Godot's native collision detection
-			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
+			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0), false)
 	else:
 		_velocity = Vector2.ZERO
 	# Broadcasts resulting location/position to RPC (players, server)
