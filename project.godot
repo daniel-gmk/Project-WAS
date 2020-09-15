@@ -105,6 +105,13 @@ test={
  ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Environment"
+2d_physics/layer_2="Player"
+2d_physics/layer_3="Projectile"
+2d_physics/layer_4="ReceiveDamage"
+
 [rendering]
 
 quality/intended_usage/framebuffer_allocation=0
