@@ -184,6 +184,7 @@ remote func start_game_server():
 # Have the client tell other clients to instantiate their player/playerPhysicsBody nodes
 # And then instantiate their player/playerPhysicsBody node locally
 remote func startPlayerGameCharacterRPC(peer_id):
+	get_node("/root/").get_node("environment").get_node("Camera").queue_free()
 	rpc("startPlayerGameCharacterRPC2", peer_id)
 	startPlayerGameCharacter(peer_id)
 

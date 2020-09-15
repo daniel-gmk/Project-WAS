@@ -1,22 +1,24 @@
 extends KinematicBody2D
 
 ### Main node for handling player function, controls/input, values for UI, etc
-
 ### Multiplayer sync
 # Tracking player id
 var player_id
 # Track allowing actions for only local player
 var control = false
 
+var allowActions = true
+
 ### Physics
+var allowMovement = true
 # Initial position/spawn in map TO BE REPLACED
 var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 32)
 # Vector tracking player movement speed
 export (Vector2) var _speed = Vector2(250, 360)
-# Vector tracking gravity on player
-export (Vector2) var gravity = Vector2(0, 2400)
+# Vector tracking current gravity on player
+var gravity = Vector2(0, 2400)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 # Track when falling NOT from jumping
@@ -26,6 +28,7 @@ var falling = true
 var minHealth = 0
 var maxHealth = 10000
 var health
+var immortal = false
 
 ###Jump
 # Tracking if Jumping
@@ -37,7 +40,7 @@ var jump_direction = Vector2.ZERO
 
 ### Fall Damage
 # Tracks the peak height position so it can decide if there is fall damage
-var peakHeight
+var peakHeight = position.y
 # Tracks when to stop recording peak height and also when character is rising
 var rising
 # Variable that determines the cutoff in height before damage starts being dealt
@@ -79,12 +82,11 @@ onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 
 # Execute when this node loads
 func _ready():
-	# Set spawn position
-	self.position = pos
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
 	# Set health
 	health = maxHealth
+	chargeProgress = reticule_anchor.find_node("chargeReticule")
 
 func initiate_ui():
 	# Set Main player's Health Bar
@@ -93,23 +95,26 @@ func initiate_ui():
 	health_bar_root.value = health
 	health_bar_text.text = String(health)
 
-
 # Execute every tick
 func _process(delta):
 	if !is_on_floor() and !jumping:
-		falling = true
+		if falling == false:
+			falling = true
+			peakHeight = position.y
 	else:
 		falling = false
 	if control:
+		# Check if out of map, and if so force teleport
+		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight + 100 and !get_parent().teleporting:
+			position = Vector2(0,0)
+			get_parent().teleport()
 		# Locally render the reticule every tick, optimize this to only be needed when attacking
 		_render_reticule()
 
 # Execute upon input (so far jump and shoot)
 func _input(event):
-	
 	# Only execute locally so input wouldnt change other player characters
-	if control:
-		
+	if control and allowActions and get_parent().currentActivePawn == self:
 		# Handle jump input when pressed
 		if event.is_action_pressed("jump") and is_on_floor():
 			snap = Vector2()
@@ -127,7 +132,6 @@ func _input(event):
 		if event.is_action_pressed("shoot"):
 				_attack_clicked = true
 				# Shows reticule when attacking
-				chargeProgress = reticule_anchor.find_node("chargeReticule")
 				chargeProgress.max_value = reticule_max
 				chargeProgress.visible = true
 
@@ -141,7 +145,7 @@ func _input(event):
 func _physics_process(_delta : float):
 	
 	# Execute only for local player
-	if control:
+	if control and allowActions:
 		
 		# Charge attack if holding charge button for shooting projectile
 		if _attack_clicked:
@@ -172,23 +176,29 @@ func _physics_process(_delta : float):
 
 # Handles movement of player
 func movePlayer():
-	# Grab which direction (left, right) from the player
-	var input_direction = _get_input_direction()
-	
-	# Applies physics (speed, gravity) to the direction
-	_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
-	
-	if falling:
-		_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0))
+	if allowMovement:
+		# Grab which direction (left, right) from the player
+		var input_direction = _get_input_direction()
+		
+		# Applies physics (speed, gravity) to the direction
+		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
+		
+		if falling:
+			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0))
+		else:
+			# Applies Godot's native collision detection
+			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
 	else:
-		# Applies Godot's native collision detection
-		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0))
+		_velocity = Vector2.ZERO
 	# Broadcasts resulting location/position to RPC (players, server)
 	rpc("updateRPCposition", position, player_id)
 
 	# Stop jumping when landing on floor
-	if jumping and is_on_floor():
-		jumping = false
+	if (jumping or falling) and is_on_floor():
+		if jumping:
+			jumping = false
+		if falling:
+			falling = false
 		if ((position.y - peakHeight) > fallDamageHeight):
 			# Check fall height and send data to server node to determine damage dealt
 			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
@@ -214,14 +224,15 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 
 # Handles when damage is taken
 func takeDamage(damage):
-	health -= damage
-	# Update health bar HUD
-	if get_tree().get_network_unique_id() == player_id:
-		health_bar_root.value = health
-		health_bar_text.text = String(round(health))
-	# Dead if health falls below min value
-	if health <= minHealth:
-		death()
+	if !immortal:
+		health -= damage
+		# Update health bar HUD
+		if get_tree().get_network_unique_id() == player_id:
+			health_bar_root.value = health
+			health_bar_text.text = String(round(health))
+		# Dead if health falls below min value
+		if health <= minHealth:
+			death()
 
 # Handles when dead, not implemented yet since gamemode should be created first
 func death():

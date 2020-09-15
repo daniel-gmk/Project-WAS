@@ -17,7 +17,6 @@ func _ready():
 		camera.root = self
 		camera.playerOwner = self
 		camera.make_current()
-		#camera.changeToPlayerOwner()
 
 # Has the server calculate fall damage and distribute that information to clients
 remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
