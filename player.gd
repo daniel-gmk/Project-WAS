@@ -6,24 +6,31 @@ var control   = false
 var player_id = 0
 var root      = false
 var console   = false
-
+# Track current active pawn, for example teleport node, playerPhysicsBody node, or down the road minions
+var currentActivePawn
+# Tracks camera node
 var camera
 
-var teleportCooldownTimer = Timer.new()
-var maxTeleports = 1
-var teleportCount = 0
-var teleportCooldown = 30
-var currentActivePawn
+### Variables for teleporting
+# Keeps track of whether player is teleporting
 var teleporting = false
+# Tracks the node used for teleporting, which the player assumes when teleporting
 var teleport_node = preload("res://TeleportScene.tscn")
+# Tracks the instantiation of above teleport node
 var teleport_instance
+# The actual Timer node used for Teleport Cooldowns
+var teleportCooldownTimer = Timer.new()
+# Max number of teleports allowed for player
+var maxTeleports = 1
+# Current count of teleports
+var teleportCount = 0
+# Cooldown value for teleporting before dealing penalty damage
+var teleportCooldown = 30
 # Teleport penalty damage does at LEAST 20% of original health, but if current health is larger it will take that
 # Mincheck1 checks if 10% of TOTAL health is the larger value
 var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
-
-var test = false
 
 func _ready():
 	# Don't show any GUI elements to the server
@@ -66,24 +73,30 @@ func _ready():
 			# remove UI for other players
 			$PlayerCamera.get_node("GUI").queue_free()
 
+# Calls teleporting from other nodes
 func teleport():
 	rpc_id(1, "initiateTeleportServer", player_id)
 
+# Calls teleport to the server with location so server can return calls to client
 func requestTeleportToServer(pos):
 	rpc_id(1, "serverTeleportPlayer", pos)
 	rpc_id(1, "concludeTeleportServer", player_id)
 
+# Server tells ALL clients via RPC of the new location, then calls locally
 remote func serverTeleportPlayer(pos):
 	if get_tree().is_network_server():
 		rpc("teleportPlayerRPC", pos)
 		teleportPlayer(pos)
 
+# Clients get new location from server and call new location
 remote func teleportPlayerRPC(pos):
 	teleportPlayer(pos)
 
+# Function that changes position of player to new position
 func teleportPlayer(pos):
 	$playerPhysicsBody.position = pos
 
+# Server knows to freeze and hide player for ALL clients
 remote func initiateTeleportServer(id):
 	if get_tree().is_network_server():
 		rpc("setInitiateTeleportVariablesRPC")
@@ -91,9 +104,11 @@ remote func initiateTeleportServer(id):
 		
 		rpc_id(id, "approveInitiateTeleportRequestRPC")
 
+# Freezes and hides player for clients
 remote func setInitiateTeleportVariablesRPC():
 	setInitiateTeleportVariables()
 
+# Freezes and hides player, called by server and clients
 func setInitiateTeleportVariables():
 	# RPC TO ALL the player sprite being invisible and invincible
 	$playerPhysicsBody.immortal = true
@@ -103,11 +118,12 @@ func setInitiateTeleportVariables():
 	$playerPhysicsBody.get_node("CollisionShape2D").disabled = true
 	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
 
+# Server now sends the client that called to teleport the instructions to choose new location
 remote func approveInitiateTeleportRequestRPC():
 	# RPC to JUST THE PLAYER the initiate teleport and the test var
 	initiateTeleport()
-	test = true
 
+# After teleport is complete, we proceed with having the server unhide the player and unfreeze, and etc
 remote func concludeTeleportServer(id):
 	if get_tree().is_network_server():
 		rpc("setConcludeTeleportVariablesRPC")
@@ -115,9 +131,11 @@ remote func concludeTeleportServer(id):
 		
 		rpc_id(id, "approveConcludeTeleportRequestRPC")
 
+# All clients receive new information from server on unhiding and allowing resuming of actions
 remote func setConcludeTeleportVariablesRPC():
 	setConcludeTeleportVariables()
 
+# Unhide and allow resuming of actions
 func setConcludeTeleportVariables():
 	# RPC the player sprite being visible and able to take damage again
 	$playerPhysicsBody.immortal = false
@@ -127,11 +145,12 @@ func setConcludeTeleportVariables():
 	$playerPhysicsBody.get_node("CollisionShape2D").disabled = false
 	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
 
+# Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
 remote func approveConcludeTeleportRequestRPC():
 	# RPC to JUST THE PLAYER the conclude teleport and the test var
 	concludeTeleport()
-	test = false
 
+# Instructions for freezing player and setting variables/views to choose teleport location
 func initiateTeleport():
 	freezePlayer()
 	
@@ -162,6 +181,7 @@ func initiateTeleport():
 	# Set current pawn
 	currentActivePawn = teleport_instance
 
+# Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
 	resetPlayer()
 	teleporting = false
@@ -191,6 +211,7 @@ func concludeTeleport():
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
 
+# Instructions for freezing player character
 func freezePlayer():
 	$playerPhysicsBody.allowActions = false
 	$playerPhysicsBody.allowMovement = false
@@ -203,6 +224,7 @@ func freezePlayer():
 	# Disable HUD
 	camera.get_node("GUI").visible = false
 
+# Instructions for unfreezing AND resetting player character values (jumping, attacking, etc)
 func resetPlayer():
 	$playerPhysicsBody.allowActions = true
 	$playerPhysicsBody.allowMovement = true
@@ -214,10 +236,12 @@ func resetPlayer():
 	# Enable HUD
 	camera.get_node("GUI").visible = true
 
+# Function handling when teleport cooldown is over and teleport is replenished
 func teleportCooldownReset():
 	if teleportCount < maxTeleports:
 		teleportCount += 1
 
+# Function for consuming a teleport value and starting the cooldown for replenishing
 func useteleportCooldown():
 	teleportCount -= 1
 	teleportCooldownTimer.start()
