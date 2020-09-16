@@ -184,11 +184,7 @@ func movePlayer():
 		# Applies physics (speed, gravity) to the direction
 		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
 		
-		if falling:
-			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0), false)
-		else:
-			# Applies Godot's native collision detection
-			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0), false)
+		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0), false)
 	else:
 		_velocity = Vector2.ZERO
 	# Broadcasts resulting location/position to RPC (players, server)

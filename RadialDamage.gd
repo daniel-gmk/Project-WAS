@@ -33,7 +33,7 @@ func setExplosion():
 		# Only affect players since only players have this child node, filter out terrain
 		if area.get_name() == "DamageCollisionArea":
 			# Get radius of entity's collisionshape2D. Only works with Circle Collision Shapes
-			var entitySize = area.get_node("DamageCollision").shape.radius
+			var entitySize = (area.get_node("DamageCollision").shape.extents.x/2) + (area.get_node("DamageCollision").shape.extents.y/2) / 2
 			# Consider the edge of the player's collision shape (circle) instead of the center, because
 			# it shouldn't matter whether the explosion is overlapping your center or your edge.
 			var totalDistance = area.global_position.distance_to(global_position) - (entitySize)
