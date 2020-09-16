@@ -114,8 +114,8 @@ func setInitiateTeleportVariables():
 	$playerPhysicsBody.immortal = true
 	$playerPhysicsBody.get_node("Sprite").visible = false
 	# Disable Collisions
-	$playerPhysicsBody.get_node("playrPhysicsShape").disabled = true
 	$playerPhysicsBody.get_node("CollisionShape2D").disabled = true
+	$playerPhysicsBody.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = true
 	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
 
 # Server now sends the client that called to teleport the instructions to choose new location
@@ -141,8 +141,8 @@ func setConcludeTeleportVariables():
 	$playerPhysicsBody.immortal = false
 	$playerPhysicsBody.get_node("Sprite").visible = true
 	# Re-Enable collisions
-	$playerPhysicsBody.get_node("playrPhysicsShape").disabled = false
 	$playerPhysicsBody.get_node("CollisionShape2D").disabled = false
+	$playerPhysicsBody.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = false
 	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
 
 # Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc

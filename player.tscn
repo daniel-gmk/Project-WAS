@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -10,17 +10,14 @@
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
 [ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
 
-[sub_resource type="RayShape2D" id=1]
-length = 18.0
-
 [sub_resource type="CircleShape2D" id=2]
-radius = 4.0
+radius = 15.0
 
 [sub_resource type="CircleShape2D" id=3]
 radius = 15.0
 
 [sub_resource type="CircleShape2D" id=4]
-radius = 16.0
+radius = 15.0
 
 [node name="player" type="Node2D"]
 script = ExtResource( 1 )
@@ -33,9 +30,6 @@ script = ExtResource( 3 )
 weapon_projectile = ExtResource( 5 )
 _reticule_anchor_node_path = NodePath("ReticuleAnchor")
 GUI_node_path = NodePath("../PlayerCamera/GUI")
-
-[node name="playrPhysicsShape" type="CollisionShape2D" parent="playerPhysicsBody"]
-shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="playerPhysicsBody"]
 scale = Vector2( 0.5, 0.5 )
