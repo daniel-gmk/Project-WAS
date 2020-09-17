@@ -14,12 +14,15 @@ var camera
 ### Variables for teleporting
 # Keeps track of whether player is teleporting
 var teleporting = false
+var teleport_check = false
 # Tracks the node used for teleporting, which the player assumes when teleporting
 var teleport_node = preload("res://TeleportScene.tscn")
 # Tracks the instantiation of above teleport node
 var teleport_instance
 # The actual Timer node used for Teleport Cooldowns
 var teleportCooldownTimer = Timer.new()
+# This timer makes sure teleporting is not skipped by the server
+var teleportCheckTimer = Timer.new()
 # Max number of teleports allowed for player
 var maxTeleports = 1
 # Current count of teleports
@@ -67,6 +70,12 @@ func _ready():
 			# Instantiate and start the timer
 			add_child(teleportCooldownTimer)
 			
+			# Instantiate RPC check timer
+			teleportCheckTimer.set_wait_time(3)
+			teleportCheckTimer.set_one_shot(false)
+			teleportCheckTimer.connect("timeout", self, "checkTeleportReachedRPC")
+			add_child(teleportCheckTimer)
+			
 			rpc_id(1, "initiateTeleportServer", player_id)
 			
 		else:
@@ -75,6 +84,9 @@ func _ready():
 
 # Calls teleporting from other nodes
 func teleport():
+	# Set teleporting
+	teleporting = true
+	teleportCheckTimer.start()
 	rpc_id(1, "initiateTeleportServer", player_id)
 
 # Calls teleport to the server with location so server can return calls to client
@@ -158,8 +170,7 @@ func initiateTeleport():
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(true)
 	
-	# Set teleporting
-	teleporting = true
+	teleport_check = true
 	
 	# Change to teleporting mode
 	teleport_instance = teleport_node.instance()
@@ -184,7 +195,6 @@ func initiateTeleport():
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
 	resetPlayer()
-	teleporting = false
 
 	# Exit teleporting mode
 	# Clear Camera
@@ -210,6 +220,8 @@ func concludeTeleport():
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
+	
+	teleporting = false
 
 # Instructions for freezing player character
 func freezePlayer():
@@ -244,3 +256,11 @@ func teleportCooldownReset():
 func useteleportCooldown():
 	teleportCount -= 1
 	teleportCooldownTimer.start()
+
+# Function for making sure teleport was called
+func checkTeleportReachedRPC():
+	if teleport_check:
+		teleport_check = false
+		teleportCheckTimer.stop()
+	else:
+		rpc_id(1, "initiateTeleportServer", player_id)
