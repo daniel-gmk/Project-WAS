@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://assets/character.png" type="Texture" id=2]
 [ext_resource path="res://playerPhysicsBody.gd" type="Script" id=3]
 [ext_resource path="res://PlayerCamera.gd" type="Script" id=4]
 [ext_resource path="res://Projectile.tscn" type="PackedScene" id=5]
@@ -10,14 +10,14 @@
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
 [ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
 
-[sub_resource type="CircleShape2D" id=1]
-radius = 12.0
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 12, 12 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 12, 22 )
 
-[sub_resource type="CircleShape2D" id=3]
-radius = 12.0
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 12, 12 )
 
 [sub_resource type="RayShape2D" id=4]
 length = 28.0
@@ -36,7 +36,7 @@ GUI_node_path = NodePath("../PlayerCamera/GUI")
 
 [node name="Sprite" type="Sprite" parent="playerPhysicsBody"]
 position = Vector2( 0, 10 )
-scale = Vector2( 0.4, 0.7 )
+scale = Vector2( 0.8, 0.8 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="playerPhysicsBody"]
@@ -71,7 +71,7 @@ collision_mask = 8
 
 [node name="DamageCollision" type="CollisionShape2D" parent="playerPhysicsBody/DamageCollisionArea"]
 position = Vector2( 0, 10 )
-shape = SubResource( 5 )
+shape = SubResource( 2 )
 
 [node name="PlayerCollision" type="StaticBody2D" parent="playerPhysicsBody"]
 collision_layer = 16

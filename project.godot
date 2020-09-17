@@ -113,6 +113,10 @@ test={
 2d_physics/layer_4="ReceiveDamage"
 2d_physics/layer_5="PlayerSpecificCollision"
 
+[physics]
+
+common/physics_fps=120
+
 [rendering]
 
 quality/intended_usage/framebuffer_allocation=0
