@@ -1,4 +1,5 @@
 shader_type canvas_item;
+render_mode unshaded;
 uniform float outline_width = 2.0;
 uniform vec4 outline_color: hint_color;
 

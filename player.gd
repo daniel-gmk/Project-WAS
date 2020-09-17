@@ -230,7 +230,6 @@ func resetPlayer():
 	$playerPhysicsBody.allowMovement = true
 	# Reset physics
 	$playerPhysicsBody.jumping = false
-	$playerPhysicsBody.jump_direction = Vector2.ZERO
 	$playerPhysicsBody.peakHeight = $playerPhysicsBody.position.y
 	$playerPhysicsBody._velocity = Vector2.ZERO
 	# Enable HUD

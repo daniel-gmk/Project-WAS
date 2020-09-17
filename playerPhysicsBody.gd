@@ -16,9 +16,9 @@ var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 32)
 # Vector tracking player movement speed
-export (Vector2) var _speed = Vector2(250, 360)
+export (Vector2) var _speed = Vector2(300, 450)
 # Vector tracking current gravity on player
-var gravity = Vector2(0, 2400)
+var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 # Track when falling NOT from jumping
@@ -34,9 +34,7 @@ var immortal = false
 # Tracking if Jumping
 var jumping = false
 # Jumping power
-var JUMP_FORCE = 1000
-# Tracking jump direction (left or right)
-var jump_direction = Vector2.ZERO
+var JUMP_FORCE = 850
 
 ### Fall Damage
 # Tracks the peak height position so it can decide if there is fall damage
@@ -119,8 +117,7 @@ func _input(event):
 		# Handle jump input when pressed
 		if event.is_action_pressed("jump") and is_on_floor():
 			snap = Vector2()
-			jump_direction = Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
-			_velocity.y += -JUMP_FORCE
+			_velocity.y = -JUMP_FORCE
 			peakHeight = position.y
 			jumping = true
 			rising = true
@@ -144,7 +141,7 @@ func _input(event):
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
-	
+	print(is_on_floor())
 	# Execute only for local player
 	if control and allowActions:
 		
@@ -184,7 +181,7 @@ func movePlayer():
 		# Applies physics (speed, gravity) to the direction
 		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
 		
-		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(90.0), false)
+		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(150.0), false)
 	else:
 		_velocity = Vector2.ZERO
 	# Broadcasts resulting location/position to RPC (players, server)
@@ -257,12 +254,7 @@ remote func updateRPCposition(pos, pid):
 
 # Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
 func _get_input_direction() -> Vector2:
-	if is_on_floor():
-		return Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
-	elif jumping:
-		return jump_direction
-	else:
-		return Vector2(0,0)
+	return Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
 
 # Applies physics (speed, gravity) to the direction
 func _calculate_move_velocity(
@@ -275,10 +267,6 @@ func _calculate_move_velocity(
 		
 		# Apply gravity
 		new_velocity += gravity * get_physics_process_delta_time()
-		
-		# If player is jumping
-		if direction.y == -1:
-			new_velocity.y = speed.y * direction.y
 		
 		return new_velocity
 
