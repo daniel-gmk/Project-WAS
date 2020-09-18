@@ -14,10 +14,11 @@ var allowMovement = true
 # Initial position/spawn in map TO BE REPLACED
 var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
-var snap = Vector2(0, 32)
+var snap = Vector2(0, 64)
 # Vector tracking player movement speed
 export (Vector2) var _speed = Vector2(300, 450)
 # Vector tracking current gravity on player
+var gravitydefault = Vector2(0, 3600)
 var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
@@ -38,6 +39,7 @@ var JUMP_FORCE = 850
 
 ### Fall Damage
 # Tracks the peak height position so it can decide if there is fall damage
+var originalHeight = position.y
 var peakHeight = position.y
 # Tracks when to stop recording peak height and also when character is rising
 var rising
@@ -96,12 +98,6 @@ func initiate_ui():
 
 # Execute every tick
 func _process(delta):
-	if !is_on_floor() and !jumping:
-		if falling == false:
-			falling = true
-			peakHeight = position.y
-	else:
-		falling = false
 	if control:
 		# Check if out of map, and if so force teleport
 		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight + 100 and !get_parent().teleporting:
@@ -117,6 +113,7 @@ func _input(event):
 		# Handle jump input when pressed
 		if event.is_action_pressed("jump") and is_on_floor():
 			snap = Vector2()
+			gravity = Vector2(0, 1800)
 			_velocity.y = -JUMP_FORCE
 			peakHeight = position.y
 			jumping = true
@@ -141,7 +138,12 @@ func _input(event):
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
-	print(is_on_floor())
+	if !is_on_floor() and !jumping:
+		if falling == false:
+			falling = true
+			peakHeight = position.y
+	else:
+		falling = false
 	# Execute only for local player
 	if control and allowActions:
 		
@@ -156,7 +158,6 @@ func _physics_process(_delta : float):
 		
 		# If starting to fall, make sure ground snap physics is re-enabled for good sliding/snap physics in movement
 		if _velocity.y >= 0 and !is_on_floor():
-			snap = Vector2(0, 32)
 			# At peak height, detect as variable for calculating fall damage
 			if rising == true:
 				peakHeight = position.y
@@ -181,7 +182,7 @@ func movePlayer():
 		# Applies physics (speed, gravity) to the direction
 		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
 		
-		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(150.0), false)
+		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 	else:
 		_velocity = Vector2.ZERO
 	# Broadcasts resulting location/position to RPC (players, server)
@@ -193,6 +194,9 @@ func movePlayer():
 			jumping = false
 		if falling:
 			falling = false
+		snap = Vector2(0, 64)
+		gravity = gravitydefault
+		_velocity.y = 0 + (gravity.y * get_physics_process_delta_time())
 		if ((position.y - peakHeight) > fallDamageHeight):
 			# Check fall height and send data to server node to determine damage dealt
 			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)

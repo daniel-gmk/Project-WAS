@@ -10,19 +10,18 @@
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
 [ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
 
-[sub_resource type="RectangleShape2D" id=1]
-custom_solver_bias = 1.0
-extents = Vector2( 12, 12 )
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 6.0
+height = 14.0
 
-[sub_resource type="CapsuleShape2D" id=5]
+[sub_resource type="RayShape2D" id=2]
 custom_solver_bias = 1.0
-radius = 12.0
-
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 12, 22 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 12, 12 )
+extents = Vector2( 12, 22 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 12, 22 )
 
 [node name="player" type="Node2D"]
 script = ExtResource( 1 )
@@ -44,9 +43,9 @@ texture = ExtResource( 2 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="playerPhysicsBody"]
 shape = SubResource( 1 )
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="playerPhysicsBody"]
-position = Vector2( 0, 10 )
-shape = SubResource( 5 )
+[node name="Ray" type="CollisionShape2D" parent="playerPhysicsBody"]
+position = Vector2( 0, 8 )
+shape = SubResource( 2 )
 
 [node name="ReticuleAnchor" type="Node2D" parent="playerPhysicsBody"]
 
@@ -78,14 +77,17 @@ collision_mask = 8
 
 [node name="DamageCollision" type="CollisionShape2D" parent="playerPhysicsBody/DamageCollisionArea"]
 position = Vector2( 0, 10 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="PlayerCollision" type="StaticBody2D" parent="playerPhysicsBody"]
+visible = false
 collision_layer = 16
 collision_mask = 16
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="playerPhysicsBody/PlayerCollision"]
-shape = SubResource( 3 )
+position = Vector2( 0, 10 )
+shape = SubResource( 4 )
+disabled = true
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1

@@ -162,7 +162,7 @@ func build_collisions_from_image():
 	# Create bitmap from the Viewport (which projects into our sprite)
 	var bitmap := BitMap.new()
 	bitmap.create_from_image_alpha($Sprite.texture.get_data())
-	
+	bitmap.grow_mask(2, Rect2(Vector2(), bitmap.get_size()))
 	# DEBUG:
 	#$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
 	#print("Saved")
