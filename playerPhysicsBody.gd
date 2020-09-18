@@ -16,7 +16,7 @@ var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
 var snap = Vector2(0, 64)
 # Vector tracking player movement speed
-export (Vector2) var _speed = Vector2(300, 450)
+var _speed = 250
 # Vector tracking current gravity on player
 var gravitydefault = Vector2(0, 3600)
 var gravity = Vector2(0, 1800)
@@ -35,7 +35,7 @@ var immortal = false
 # Tracking if Jumping
 var jumping = false
 # Jumping power
-var JUMP_FORCE = 850
+var JUMP_FORCE = 800
 
 ### Fall Damage
 # Tracks the peak height position so it can decide if there is fall damage
@@ -264,10 +264,10 @@ func _get_input_direction() -> Vector2:
 func _calculate_move_velocity(
 		linear_velocity: Vector2,
 		direction: Vector2,
-		speed: Vector2
+		speed
 	):
 		var new_velocity := linear_velocity
-		new_velocity.x = speed.x * direction.x
+		new_velocity.x = speed * direction.x
 		
 		# Apply gravity
 		new_velocity += gravity * get_physics_process_delta_time()
