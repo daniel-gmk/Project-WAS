@@ -3,15 +3,13 @@
 [ext_resource path="res://TestMap.gd" type="Script" id=1]
 [ext_resource path="res://Control.gd" type="Script" id=2]
 [ext_resource path="res://parent_material.shader" type="Shader" id=3]
-[ext_resource path="res://assets/test-terrain-base-7.png" type="Texture" id=4]
+[ext_resource path="res://assets/test-terrain-base-9.png" type="Texture" id=4]
 [ext_resource path="res://assets/test-background.png" type="Texture" id=5]
 [ext_resource path="res://Camera.gd" type="Script" id=6]
 
 [sub_resource type="ShaderMaterial" id=1]
 render_priority = 1
 shader = ExtResource( 3 )
-shader_param/outline_width = 2.0
-shader_param/outline_color = null
 shader_param/ScaleMultiplier = 4
 shader_param/screen_space = null
 shader_param/mask_texture = ExtResource( 5 )

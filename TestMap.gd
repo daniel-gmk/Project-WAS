@@ -20,11 +20,17 @@ func loadTerrain(terrainSeed, ip):
 	var noise = OpenSimplexNoise.new()
 	noise.seed = terrainSeed
 	noise.octaves = 1
-	noise.period = 120.0
-	noise.persistence = .7
+	noise.period = 60.0
+	noise.persistence = .8
 
-	# Threshold is at what level of perlin value will be used for the terrain. Higher means more will be allowed.
-	var threshold = 40
+	var noise2 = OpenSimplexNoise.new()
+	noise2.seed = terrainSeed
+	noise2.octaves = 1
+	noise2.period = 30.0
+	noise2.persistence = .8
+
+	# Threshold is at what level of perlin value will be used for the terrain. Less means more will be allowed.
+	var threshold = 20
 	
 	# Save data into main dictionary.
 	# Array fg is foreground, has all pixels touching the base that are blue
@@ -40,6 +46,13 @@ func loadTerrain(terrainSeed, ip):
 			# Grab perlin noises based on threshold for blue contour
 			var value = abs(noise.get_noise_2d(w, h))
 			value = max(0, (threshold - value * 256) * 8)
+			
+			var value2
+			if image.get_pixel(w, h) == Color(0,0,0,1): # Black
+				value2 = abs(noise2.get_noise_2d(w, h))
+				value2 = max(0, (25 - value2 * 256) * 8)
+				value = (value + value2) / 2.0
+
 			
 			# Do not apply changes to base (white)
 			if image.get_pixel(w, h) != Color(1,1,1,1): # White
@@ -127,7 +140,6 @@ func loadTerrain(terrainSeed, ip):
 	image.unlock()
 
 	image.resize(6000,4500,0)
-
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
@@ -154,8 +166,6 @@ func loadTerrain(terrainSeed, ip):
 			childSprite.material = ShaderMaterial.new()
 			childSprite.material.shader = load("res://parent_material.shader")
 			childSprite.material.set_shader_param("mask_texture", load("res://assets/test-background.png"))
-			childSprite.material.set_shader_param("outline_color", Color(0,.7,0,1))
-			childSprite.material.set_shader_param("outline_width", 1)
 			# Set position and remove center so it is placed in the right location
 			childSprite.centered = false
 			childSprite.position = Vector2(placingWidth, placingHeight)
@@ -173,14 +183,22 @@ func loadTerrain(terrainSeed, ip):
 			image2.lock()
 			# Track whether the sub-image is fully transparent or not
 			var transparent = true
+			var bitmap := BitMap.new()
+			bitmap.create_from_image_alpha(image2)
+			bitmap.grow_mask(5, Rect2(Vector2(), bitmap.get_size()))
+			
+			var bitmapsize = bitmap.get_size()
 			# Checks if transparent so it can save time and not have to add destructible nodes if fully transparent
 			for w in image2.get_width():
-				if !transparent:
-					break
 				for h in image2.get_height():
-					if image2.get_pixel(w,h) != Color(0,0,0,0): # Might change this later
-						transparent = false
-						break
+					# Grab pixels that are the contour
+					if bitmap.get_bit(Vector2(w,h)):
+						image2.set_pixel(w, h, Color(1,1,1,1))
+						if transparent:
+							transparent = false
+					else:
+						image2.set_pixel(w, h, Color(0,0,0,0))
+						
 			image2.unlock()
 			# Remove mipmaps so there arent weird aliasing/filter/mipmap lines between sub-images, especially when zooming
 			image2.clear_mipmaps()
