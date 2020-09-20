@@ -122,6 +122,7 @@ remote func setInitiateTeleportVariablesRPC():
 
 # Freezes and hides player, called by server and clients
 func setInitiateTeleportVariables():
+	freezePlayer()
 	# RPC TO ALL the player sprite being invisible and invincible
 	$playerPhysicsBody.immortal = true
 	$playerPhysicsBody.get_node("Sprite").visible = false
@@ -149,6 +150,7 @@ remote func setConcludeTeleportVariablesRPC():
 
 # Unhide and allow resuming of actions
 func setConcludeTeleportVariables():
+	resetPlayer()
 	# RPC the player sprite being visible and able to take damage again
 	$playerPhysicsBody.immortal = false
 	$playerPhysicsBody.get_node("Sprite").visible = true
@@ -164,7 +166,6 @@ remote func approveConcludeTeleportRequestRPC():
 
 # Instructions for freezing player and setting variables/views to choose teleport location
 func initiateTeleport():
-	freezePlayer()
 	
 	# Pause existing teleport cooldown if active
 	if teleportCooldownTimer.get_time_left() > 0:
@@ -194,7 +195,6 @@ func initiateTeleport():
 
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
-	resetPlayer()
 
 	# Exit teleporting mode
 	# Clear Camera
@@ -234,7 +234,8 @@ func freezePlayer():
 	$playerPhysicsBody.chargeProgress.visible = false
 	$playerPhysicsBody.chargeProgress.value = 0
 	# Disable HUD
-	camera.get_node("GUI").visible = false
+	if control:
+		camera.get_node("GUI").visible = false
 
 # Instructions for unfreezing AND resetting player character values (jumping, attacking, etc)
 func resetPlayer():
@@ -245,7 +246,8 @@ func resetPlayer():
 	$playerPhysicsBody.peakHeight = $playerPhysicsBody.position.y
 	$playerPhysicsBody._velocity = Vector2.ZERO
 	# Enable HUD
-	camera.get_node("GUI").visible = true
+	if control:
+		camera.get_node("GUI").visible = true
 
 # Function handling when teleport cooldown is over and teleport is replenished
 func teleportCooldownReset():

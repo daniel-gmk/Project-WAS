@@ -124,17 +124,17 @@ func _input(event):
 	# Only execute locally so input wouldnt change other player characters
 	if control and allowActions and get_parent().currentActivePawn == self:
 		# Handle jump input when pressed
-		if event.is_action_pressed("jump") and is_on_floor():
-			snap = Vector2()
-			gravity = Vector2(0, 1800)
-			_velocity.y = -JUMP_FORCE
-			peakHeight = position.y
-			jumping = true
-			rising = true
-
-		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-		if event.is_action_released("jump") and jumping and _velocity.y <= -50:
-			_velocity.y = -50
+#		if event.is_action_pressed("jump") and is_on_floor():
+#			snap = Vector2()
+#			gravity = Vector2(0, 1800)
+#			_velocity.y = -JUMP_FORCE
+#			peakHeight = position.y
+#			jumping = true
+#			rising = true
+#
+#		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
+#		if event.is_action_released("jump") and jumping and _velocity.y <= -50:
+#			_velocity.y = -50
 
 		# Handle charging projectile strength when shoot input is pressed and held
 		if event.is_action_pressed("shoot"):
@@ -199,21 +199,19 @@ func movePlayer(delta):
 		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 	else:
 		_velocity = Vector2.ZERO
-	# Broadcasts resulting location/position to RPC (players, server)
-	rpc("updateRPCposition", position, player_id)
 
 	# Stop jumping when landing on floor
-	if (jumping or falling) and is_on_floor():
-		if jumping:
-			jumping = false
-		if falling:
-			falling = false
-		snap = Vector2(0, 64)
-		gravity = gravitydefault
-		_velocity.y = 0 + (gravity.y * delta)
-		if ((position.y - peakHeight) > fallDamageHeight):
-			# Check fall height and send data to server node to determine damage dealt
-			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
+#	if (jumping or falling) and is_on_floor():
+#		if jumping:
+#			jumping = false
+#		if falling:
+#			falling = false
+#		snap = Vector2(0, 64)
+#		gravity = gravitydefault
+#		_velocity.y = 0 + (gravity.y * delta)
+#		if ((position.y - peakHeight) > fallDamageHeight):
+#			# Check fall height and send data to server node to determine damage dealt
+#			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
@@ -260,13 +258,6 @@ func serverBroadcastDamageRPC(damage):
 # calls down the road and not quite sure if I need to yet.
 remote func takeDamageRPC(damage):
 	takeDamage(damage)
-
-# Send update of position to server/players
-remote func updateRPCposition(pos, pid):
-	var root  = get_node("/root/")
-	var pnode = root.get_node(str(pid)).get_node("player").get_node("playerPhysicsBody")
-	
-	pnode.position = pos
 
 
 
