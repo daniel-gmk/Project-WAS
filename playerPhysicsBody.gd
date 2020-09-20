@@ -175,10 +175,6 @@ func _physics_process(_delta : float):
 			if rising == true:
 				peakHeight = position.y
 				rising = false
-			
-		# Handle player movement
-		# Note: Probably can do this not every tick but poll for correction of location every x time
-		movePlayer(_delta)
 
 		# Handles flipping the sprite based on direction
 		if _velocity.x >= 1:
@@ -186,17 +182,26 @@ func _physics_process(_delta : float):
 		elif _velocity.x <= -1:
 			$Sprite.flip_h = true
 
+	# Handle player movement
+	# Note: Probably can do this not every tick but poll for correction of location every x time
+	movePlayer(_delta)
+
 # Handles movement of player
 func movePlayer(delta):
 	if allowMovement:
-		
-		# Applies physics (speed, gravity) to the direction
-		_velocity.x = _speed * (Input.get_action_strength("right") - Input.get_action_strength("left"))
-		
-		# Apply gravity
-		_velocity += gravity * delta
-		
-		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
+		if is_network_master():
+			# Applies physics (speed, gravity) to the direction
+			_velocity.x = _speed * $InputManager.movement.x
+			
+			# Apply gravity
+			_velocity += gravity * delta
+			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
+			
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter)
+		else:
+			# Client code
+			time += delta
+			move_with_reconciliation(delta)
 	else:
 		_velocity = Vector2.ZERO
 
@@ -270,7 +275,7 @@ func move_with_reconciliation(delta):
 	if movement_list.size() > 0:
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
-			vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta) # Remember to change this later
+			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, Vector2(0, 64), Vector2.UP, true, 4, deg2rad(60.0), false) # watch snap, especially for jump issues
 	
 	interpolate(old_transform)
 
