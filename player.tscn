@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://assets/character.png" type="Texture" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://assets/charge-empty.png" type="Texture" id=7]
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
 [ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
+[ext_resource path="res://InputManager.gd" type="Script" id=10]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 6.0
@@ -34,6 +35,9 @@ script = ExtResource( 3 )
 weapon_projectile = ExtResource( 5 )
 _reticule_anchor_node_path = NodePath("ReticuleAnchor")
 GUI_node_path = NodePath("../PlayerCamera/GUI")
+
+[node name="InputManager" type="Node" parent="playerPhysicsBody"]
+script = ExtResource( 10 )
 
 [node name="Sprite" type="Sprite" parent="playerPhysicsBody"]
 position = Vector2( 0, 10 )

@@ -25,6 +25,18 @@ var _velocity : Vector2 = Vector2.ZERO
 # Track when falling NOT from jumping
 var falling = true
 
+
+var movement = Vector2()
+master var remote_movement = Vector2()
+puppet var remote_transform = Transform2D()
+puppet var remote_vel = Vector2()
+# Client server reconciliation vars
+puppet var ack = 0 # Last movement acknowledged
+var old_movement = Vector2()
+var time = 0
+
+
+
 ### Health
 var minHealth = 0
 var maxHealth = 10000
@@ -88,6 +100,7 @@ func _ready():
 	# Set health
 	health = maxHealth
 	chargeProgress = reticule_anchor.find_node("chargeReticule")
+	set_network_master(1)
 
 func initiate_ui():
 	# Set Main player's Health Bar
@@ -165,7 +178,7 @@ func _physics_process(_delta : float):
 			
 		# Handle player movement
 		# Note: Probably can do this not every tick but poll for correction of location every x time
-		movePlayer()
+		movePlayer(_delta)
 
 		# Handles flipping the sprite based on direction
 		if _velocity.x >= 1:
@@ -174,13 +187,14 @@ func _physics_process(_delta : float):
 			$Sprite.flip_h = true
 
 # Handles movement of player
-func movePlayer():
+func movePlayer(delta):
 	if allowMovement:
-		# Grab which direction (left, right) from the player
-		var input_direction = _get_input_direction()
 		
 		# Applies physics (speed, gravity) to the direction
-		_velocity = _calculate_move_velocity(_velocity, input_direction, _speed)
+		_velocity.x = _speed * (Input.get_action_strength("right") - Input.get_action_strength("left"))
+		
+		# Apply gravity
+		_velocity += gravity * delta
 		
 		_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 	else:
@@ -196,7 +210,7 @@ func movePlayer():
 			falling = false
 		snap = Vector2(0, 64)
 		gravity = gravitydefault
-		_velocity.y = 0 + (gravity.y * get_physics_process_delta_time())
+		_velocity.y = 0 + (gravity.y * delta)
 		if ((position.y - peakHeight) > fallDamageHeight):
 			# Check fall height and send data to server node to determine damage dealt
 			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
@@ -254,25 +268,36 @@ remote func updateRPCposition(pos, pid):
 	
 	pnode.position = pos
 
+
+
+
+func move_with_reconciliation(delta):
+	var old_transform = transform
+	transform = remote_transform
+	var vel = remote_vel
+	var movement_list = $InputManager.movement_list
+	if movement_list.size() > 0:
+		for i in range(movement_list.size()):
+			var mov = movement_list[i]
+			vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta) # Remember to change this later
+	
+	interpolate(old_transform)
+
+func interpolate(old_transform):
+	var scale_factor = 0.1
+	var dist = transform.origin.distance_to(old_transform.origin)
+	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
+	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
+
+puppet func update_state(t, velocity, ack):
+	self.remote_transform = t
+	self.remote_vel = velocity
+	self.ack = ack
+
+
+
+
 #################################HELPER FUNCTIONS
-
-# Grabs direction (left, right) from the player, or if jumping, the original direction when pressed
-func _get_input_direction() -> Vector2:
-	return Vector2(Input.get_action_strength("right") - Input.get_action_strength("left"), 0)
-
-# Applies physics (speed, gravity) to the direction
-func _calculate_move_velocity(
-		linear_velocity: Vector2,
-		direction: Vector2,
-		speed
-	):
-		var new_velocity := linear_velocity
-		new_velocity.x = speed * direction.x
-		
-		# Apply gravity
-		new_velocity += gravity * get_physics_process_delta_time()
-		
-		return new_velocity
 
 # Render the reticle so it shows projectile charge
 func _render_reticule():

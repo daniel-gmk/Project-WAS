@@ -140,7 +140,6 @@ func spawn_player(id, loadedTerrain):
 		# Set variables locally for the actual client's player
 		if id == get_tree().get_network_unique_id():
 			player.set_network_master(id)
-			
 			player.player_id = id
 			player.control   = true
 			
@@ -196,3 +195,5 @@ remote func startPlayerGameCharacterRPC2(peer_id):
 # Called by all clients to have their client node instantiate the player/playerPhysicsBody node
 func startPlayerGameCharacter(peer_id):
 	get_node("/root/").get_node(str(peer_id)).startGameCharacter()
+	# Gives the authority of the input manager to the player
+	get_node("/root/").get_node(str(peer_id)).get_node("player").get_node("playerPhysicsBody").get_node("InputManager").set_network_master(peer_id)
