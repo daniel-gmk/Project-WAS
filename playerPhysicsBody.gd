@@ -7,10 +7,10 @@ var player_id
 # Track allowing actions for only local player
 var control = false
 
-var allowActions = true
+var allowActions = false
 
 ### Physics
-var allowMovement = true
+var allowMovement = false
 # Initial position/spawn in map TO BE REPLACED
 var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
