@@ -19,7 +19,7 @@ func _ready():
 		camera.make_current()
 
 # Has the server calculate fall damage and distribute that information to clients
-remote func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
+func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
 	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")

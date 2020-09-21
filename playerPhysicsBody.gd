@@ -124,17 +124,18 @@ func _input(event):
 	# Only execute locally so input wouldnt change other player characters
 	if control and allowActions and get_parent().currentActivePawn == self:
 		# Handle jump input when pressed
-#		if event.is_action_pressed("jump") and is_on_floor():
-#			snap = Vector2()
-#			gravity = Vector2(0, 1800)
-#			_velocity.y = -JUMP_FORCE
-#			peakHeight = position.y
-#			jumping = true
-#			rising = true
-#
-#		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-#		if event.is_action_released("jump") and jumping and _velocity.y <= -50:
-#			_velocity.y = -50
+		if event.is_action_pressed("jump") and is_on_floor():
+			#call locally jumpPressedPlayer
+			jumpPressedPlayer()
+			#RPC to server jumpPressedPlayer
+			rpc_id(1, "jumpPressedPlayerRPC")
+
+		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
+		if event.is_action_released("jump") and jumping and _velocity.y <= -50:
+			#call locally jumpReleasedPlayer
+			jumpReleasedPlayer()
+			#RPC to server jumpReleasedPlayer
+			rpc_id(1, "jumpReleasedPlayerRPC")
 
 		# Handle charging projectile strength when shoot input is pressed and held
 		if event.is_action_pressed("shoot"):
@@ -151,12 +152,6 @@ func _input(event):
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
-	if !is_on_floor() and !jumping:
-		if falling == false:
-			falling = true
-			peakHeight = position.y
-	else:
-		falling = false
 	# Execute only for local player
 	if control and allowActions:
 		
@@ -176,47 +171,65 @@ func _physics_process(_delta : float):
 				peakHeight = position.y
 				rising = false
 
-		# Handles flipping the sprite based on direction
-		if _velocity.x >= 1:
-			$Sprite.flip_h = false
-		elif _velocity.x <= -1:
-			$Sprite.flip_h = true
-
 	# Handle player movement
 	# Note: Probably can do this not every tick but poll for correction of location every x time
 	movePlayer(_delta)
+
+remote func jumpPressedPlayerRPC():
+	jumpPressedPlayer()
+
+func jumpPressedPlayer():
+	snap = Vector2()
+	gravity = Vector2(0, 1800)
+	_velocity.y = -JUMP_FORCE
+	peakHeight = position.y
+	jumping = true
+	rising = true
+
+remote func jumpReleasedPlayerRPC():
+	jumpReleasedPlayer()
+
+func jumpReleasedPlayer():
+	# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
+	_velocity.y = -50
+	jumping = false
 
 # Handles movement of player
 func movePlayer(delta):
 	if allowMovement:
 		if is_network_master():
+			if !is_on_floor() and !jumping:
+				if falling == false:
+					falling = true
+					peakHeight = position.y
+			else:
+				falling = false
 			# Applies physics (speed, gravity) to the direction
 			_velocity.x = _speed * $InputManager.movement.x
-			
 			# Apply gravity
 			_velocity += gravity * delta
 			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 			
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter)
+			# Stop jumping when landing on floor
+			if (jumping or falling) and is_on_floor():
+				if jumping:
+					jumping = false
+				if falling:
+					falling = false
+				snap = Vector2(0, 64)
+				gravity = gravitydefault
+				if ((position.y - peakHeight) > fallDamageHeight):
+					# Check fall height and send data to server node to determine damage dealt
+					get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
+
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, falling, snap, gravity)
+
 		else:
 			# Client code
 			time += delta
 			move_with_reconciliation(delta)
 	else:
 		_velocity = Vector2.ZERO
-
-	# Stop jumping when landing on floor
-#	if (jumping or falling) and is_on_floor():
-#		if jumping:
-#			jumping = false
-#		if falling:
-#			falling = false
-#		snap = Vector2(0, 64)
-#		gravity = gravitydefault
-#		_velocity.y = 0 + (gravity.y * delta)
-#		if ((position.y - peakHeight) > fallDamageHeight):
-#			# Check fall height and send data to server node to determine damage dealt
-#			get_node("/root/").get_node("1").rpc_id(1, "calculateFallDamageServer", position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
@@ -275,7 +288,8 @@ func move_with_reconciliation(delta):
 	if movement_list.size() > 0:
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
-			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, Vector2(0, 64), Vector2.UP, true, 4, deg2rad(60.0), false) # watch snap, especially for jump issues
+	
+			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, snap, Vector2.UP, true, 4, deg2rad(60.0), false) # watch snap, especially for jump issues
 	
 	interpolate(old_transform)
 
@@ -285,12 +299,19 @@ func interpolate(old_transform):
 	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
-puppet func update_state(t, velocity, ack):
+puppet func update_state(t, velocity, ack, jumpingRPC, fallingRPC, snapRPC, gravityRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
-
-
+	# Handles flipping the sprite based on direction
+	if velocity.x >= 1:
+		$Sprite.flip_h = false
+	elif velocity.x <= -1:
+		$Sprite.flip_h = true
+	jumping = jumpingRPC
+	falling = fallingRPC
+	snap = snapRPC
+	gravity = gravityRPC
 
 
 #################################HELPER FUNCTIONS
