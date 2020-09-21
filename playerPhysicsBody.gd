@@ -22,8 +22,6 @@ var gravitydefault = Vector2(0, 3600)
 var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
-# Track when falling NOT from jumping
-var falling = true
 
 
 var movement = Vector2()
@@ -46,6 +44,7 @@ var immortal = false
 ###Jump
 # Tracking if Jumping
 var jumping = false
+var jumpReleased = false
 # Jumping power
 var JUMP_FORCE = 800
 
@@ -124,14 +123,14 @@ func _input(event):
 	# Only execute locally so input wouldnt change other player characters
 	if control and allowActions and get_parent().currentActivePawn == self:
 		# Handle jump input when pressed
-		if event.is_action_pressed("jump") and is_on_floor():
+		if event.is_action_pressed("jump") and !jumping:
 			#call locally jumpPressedPlayer
 			jumpPressedPlayer()
 			#RPC to server jumpPressedPlayer
 			rpc_id(1, "jumpPressedPlayerRPC")
 
 		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-		if event.is_action_released("jump") and jumping and _velocity.y <= -50:
+		if event.is_action_released("jump") and jumping and !jumpReleased and _velocity.y <= -50:
 			#call locally jumpReleasedPlayer
 			jumpReleasedPlayer()
 			#RPC to server jumpReleasedPlayer
@@ -185,6 +184,7 @@ func jumpPressedPlayer():
 	peakHeight = position.y
 	jumping = true
 	rising = true
+	jumpReleased = false
 
 remote func jumpReleasedPlayerRPC():
 	jumpReleasedPlayer()
@@ -192,37 +192,32 @@ remote func jumpReleasedPlayerRPC():
 func jumpReleasedPlayer():
 	# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
 	_velocity.y = -50
-	jumping = false
+	jumpReleased = true
 
 # Handles movement of player
 func movePlayer(delta):
 	if allowMovement:
 		if is_network_master():
-			if !is_on_floor() and !jumping:
-				if falling == false:
-					falling = true
-					peakHeight = position.y
-			else:
-				falling = false
 			# Applies physics (speed, gravity) to the direction
 			_velocity.x = _speed * $InputManager.movement.x
 			# Apply gravity
 			_velocity += gravity * delta
 			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 			
+			if _velocity.y >= -50 and !jumpReleased:
+				jumpReleased = true
+			
 			# Stop jumping when landing on floor
-			if (jumping or falling) and is_on_floor():
+			if jumping and is_on_floor():
 				if jumping:
 					jumping = false
-				if falling:
-					falling = false
 				snap = Vector2(0, 64)
 				gravity = gravitydefault
 				if ((position.y - peakHeight) > fallDamageHeight):
 					# Check fall height and send data to server node to determine damage dealt
-					get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, player_id)
+					get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
 
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, falling, snap, gravity)
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, gravity, jumpReleased)
 
 		else:
 			# Client code
@@ -289,7 +284,7 @@ func move_with_reconciliation(delta):
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
 	
-			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, snap, Vector2.UP, true, 4, deg2rad(60.0), false) # watch snap, especially for jump issues
+			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
 	
 	interpolate(old_transform)
 
@@ -299,7 +294,7 @@ func interpolate(old_transform):
 	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
-puppet func update_state(t, velocity, ack, jumpingRPC, fallingRPC, snapRPC, gravityRPC):
+puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, gravityRPC, jumpReleasedRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
@@ -309,9 +304,9 @@ puppet func update_state(t, velocity, ack, jumpingRPC, fallingRPC, snapRPC, grav
 	elif velocity.x <= -1:
 		$Sprite.flip_h = true
 	jumping = jumpingRPC
-	falling = fallingRPC
 	snap = snapRPC
 	gravity = gravityRPC
+	jumpReleased = jumpReleasedRPC
 
 
 #################################HELPER FUNCTIONS
