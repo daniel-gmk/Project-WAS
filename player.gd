@@ -53,10 +53,11 @@ func _ready():
 			# Set camera focus to player
 			$PlayerCamera.control = control
 			camera = $PlayerCamera
+			camera.target = $playerPhysicsBody
 			camera.root = self
 			camera.playerOwner = $playerPhysicsBody
+			camera.lastPlayerOwnerPosition = false
 			camera.make_current()
-			camera.changeToPlayerOwner()
 			
 			# Set Teleport Cooldown and timers
 			
@@ -178,7 +179,6 @@ func initiateTeleport():
 	# Get map center location:
 	var map_center_location = Vector2((get_node("/root/").get_node("environment").get_node("TestMap").maxLength)/2, (get_node("/root/").get_node("environment").get_node("TestMap").maxHeight)/2)
 	# Reset current camera
-	camera.changeToPlayerOwner()
 	camera.lastPlayerOwnerPosition = false
 	camera.position = Vector2.ZERO
 	# Remove current camera
@@ -204,7 +204,6 @@ func concludeTeleport():
 	# Set new pawn camera
 	camera.make_current()
 	# Reset camera position
-	camera.changeToPlayerOwner()
 	camera.lastPlayerOwnerPosition = false
 	camera.position = Vector2.ZERO
 	

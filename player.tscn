@@ -97,7 +97,6 @@ disabled = true
 z_index = 1
 zoom = Vector2( 0.6, 0.6 )
 process_mode = 0
-smoothing_enabled = true
 script = ExtResource( 4 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="PlayerCamera"]
