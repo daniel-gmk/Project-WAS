@@ -80,7 +80,7 @@ func _ready():
 			
 		else:
 			# remove UI for other players
-			$PlayerCamera.get_node("GUI").queue_free()
+			$PlayerCamera.get_node("CanvasLayer").get_node("GUI").queue_free()
 
 # Calls teleporting from other nodes
 func teleport():
@@ -235,7 +235,7 @@ func freezePlayer():
 	$playerPhysicsBody.chargeProgress.value = 0
 	# Disable HUD
 	if control:
-		camera.get_node("GUI").visible = false
+		camera.get_node("CanvasLayer").get_node("GUI").visible = false
 
 # Instructions for unfreezing AND resetting player character values (jumping, attacking, etc)
 func resetPlayer():
@@ -247,7 +247,7 @@ func resetPlayer():
 	$playerPhysicsBody._velocity = Vector2.ZERO
 	# Enable HUD
 	if control:
-		camera.get_node("GUI").visible = true
+		camera.get_node("CanvasLayer").get_node("GUI").visible = true
 
 # Function handling when teleport cooldown is over and teleport is replenished
 func teleportCooldownReset():

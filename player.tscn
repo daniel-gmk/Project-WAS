@@ -34,7 +34,7 @@ collision/safe_margin = 2.0
 script = ExtResource( 3 )
 weapon_projectile = ExtResource( 5 )
 _reticule_anchor_node_path = NodePath("ReticuleAnchor")
-GUI_node_path = NodePath("../PlayerCamera/GUI")
+GUI_node_path = NodePath("../PlayerCamera/CanvasLayer/GUI")
 
 [node name="InputManager" type="Node" parent="playerPhysicsBody"]
 script = ExtResource( 10 )
@@ -96,12 +96,11 @@ disabled = true
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1
 zoom = Vector2( 0.6, 0.6 )
-smoothing_speed = 10.0
+smoothing_enabled = true
 script = ExtResource( 4 )
 
-[node name="GUI" parent="PlayerCamera" instance=ExtResource( 9 )]
-margin_left = -256.375
-margin_top = -150.375
-margin_right = 767.625
-margin_bottom = 449.625
-rect_scale = Vector2( 0.5, 0.5 )
+[node name="CanvasLayer" type="CanvasLayer" parent="PlayerCamera"]
+
+[node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 9 )]
+margin_right = 512.0
+margin_bottom = 0.0
