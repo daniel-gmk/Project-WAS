@@ -3,7 +3,7 @@
 [ext_resource path="res://Server.gd" type="Script" id=1]
 [ext_resource path="res://Projectile.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Explosion.tscn" type="PackedScene" id=3]
-[ext_resource path="res://PlayerCamera.gd" type="Script" id=4]
+[ext_resource path="res://ServerCamera.gd" type="Script" id=4]
 
 [node name="Server" type="Node2D"]
 script = ExtResource( 1 )
@@ -12,4 +12,5 @@ weapon_projectile = ExtResource( 2 )
 
 [node name="ServerCamera" type="Camera2D" parent="."]
 z_index = 1
+process_mode = 0
 script = ExtResource( 4 )

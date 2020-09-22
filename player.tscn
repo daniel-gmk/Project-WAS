@@ -96,11 +96,13 @@ disabled = true
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1
 zoom = Vector2( 0.6, 0.6 )
+process_mode = 0
 smoothing_enabled = true
 script = ExtResource( 4 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="PlayerCamera"]
 
 [node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 9 )]
+margin_top = -600.841
 margin_right = 512.0
-margin_bottom = 0.0
+margin_bottom = -0.840942

@@ -14,7 +14,7 @@ var allowMovement = false
 # Initial position/spawn in map TO BE REPLACED
 var pos = Vector2(1000, 100)
 # Track whether to utilize snap physics on ground for move_and_slide_with_snap
-var snap = Vector2(0, 64)
+var snap = Vector2(0, 16)
 # Vector tracking player movement speed
 var _speed = 250
 # Vector tracking current gravity on player
@@ -215,7 +215,7 @@ func movePlayer(delta):
 			else:
 				if jumping:
 					jumping = false
-					snap = Vector2(0, 64)
+					snap = Vector2(0, 16)
 					gravity = gravitydefault
 				if airTime:
 					airTime = false
