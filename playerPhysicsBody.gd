@@ -23,6 +23,7 @@ var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 
+var airTime = false
 
 var movement = Vector2()
 master var remote_movement = Vector2()
@@ -52,8 +53,6 @@ var JUMP_FORCE = 800
 # Tracks the peak height position so it can decide if there is fall damage
 var originalHeight = position.y
 var peakHeight = position.y
-# Tracks when to stop recording peak height and also when character is rising
-var rising
 # Variable that determines the cutoff in height before damage starts being dealt
 var fallDamageHeight = 400
 # Variable that determines damage increase rate based on falloff
@@ -114,9 +113,14 @@ func _process(delta):
 		# Check if out of map, and if so force teleport
 		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight + 100 and !get_parent().teleporting:
 			position = Vector2(0,0)
+			rpc_id(1, "resetPositionRPC")
 			get_parent().teleport()
 		# Locally render the reticule every tick, optimize this to only be needed when attacking
 		_render_reticule()
+
+remote func resetPositionRPC():
+	position = Vector2(0,0)
+	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, gravity, jumpReleased)
 
 # Execute upon input (so far jump and shoot)
 func _input(event):
@@ -162,13 +166,6 @@ func _physics_process(_delta : float):
 		if _attack_power >= _auto_attack_power:
 			# Same standard typeless attack as line 120
 			shoot(500, 42, true, false)
-		
-		# If starting to fall, make sure ground snap physics is re-enabled for good sliding/snap physics in movement
-		if _velocity.y >= 0 and !is_on_floor():
-			# At peak height, detect as variable for calculating fall damage
-			if rising == true:
-				peakHeight = position.y
-				rising = false
 
 	# Handle player movement
 	# Note: Probably can do this not every tick but poll for correction of location every x time
@@ -183,7 +180,6 @@ func jumpPressedPlayer():
 	_velocity.y = -JUMP_FORCE
 	peakHeight = position.y
 	jumping = true
-	rising = true
 	jumpReleased = false
 
 remote func jumpReleasedPlayerRPC():
@@ -207,15 +203,25 @@ func movePlayer(delta):
 			if _velocity.y >= -50 and !jumpReleased:
 				jumpReleased = true
 			
+
+			if !is_on_floor():
+				if !airTime:
+					airTime = true
+					peakHeight = position.y
+				# check if position is higher than before
+				elif airTime and position.y < peakHeight:
+					peakHeight = position.y
 			# Stop jumping when landing on floor
-			if jumping and is_on_floor():
+			else:
 				if jumping:
 					jumping = false
-				snap = Vector2(0, 64)
-				gravity = gravitydefault
-				if ((position.y - peakHeight) > fallDamageHeight):
-					# Check fall height and send data to server node to determine damage dealt
-					get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
+					snap = Vector2(0, 64)
+					gravity = gravitydefault
+				if airTime:
+					airTime = false
+					if ((position.y - peakHeight) > fallDamageHeight):
+						# Check fall height and send data to server node to determine damage dealt
+						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
 
 			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, gravity, jumpReleased)
 
