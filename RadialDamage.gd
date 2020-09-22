@@ -26,6 +26,7 @@ func setExplosion():
 	# Since only the server will buffer 2 frames every explosion and not the client
 	yield(get_parent().get_tree(), "physics_frame")
 	yield(get_parent().get_tree(), "physics_frame")
+	
 	# Retrieve an array of all overlapping entities
 	var overlap_areas = get_overlapping_areas()
 	# Apply for all entities overlapped

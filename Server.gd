@@ -62,18 +62,16 @@ func summonProjectile(startpos, position2, speed, attack_power, attack_scale, is
 
 # Remote function called by server to also execute terrain destruction but from server's perspective instead
 # of client's perspective as an authoritative approach.
-func broadcastExplosionServer(pos, rad):
-	rpc("broadcastExplosionRPC", pos, rad)
-	broadcastExplosion(pos, rad)
+func broadcastExplosionServer(pos):
+	rpc("broadcastExplosionRPC", pos)
+	broadcastExplosion(pos)
 
 # Server calls explosion to all clients
-remote func broadcastExplosionRPC(pos, rad):
-	broadcastExplosion(pos, rad)
+remote func broadcastExplosionRPC(pos):
+	broadcastExplosion(pos)
 	
 # Clients execute explosion locally
-func broadcastExplosion(pos, rad):
-	# Damage the terrain from the client side
-	get_tree().call_group("destructibles", "destroy", pos, rad)
+func broadcastExplosion(pos):
 	# Display explosion animation
 	var explosion = explosion_scene.instance()
 	explosion.global_position = pos
@@ -82,3 +80,9 @@ func broadcastExplosion(pos, rad):
 	# If we attached the explosion to ourself it'd get free'd as well,
 	# which would make them immediately vanish.
 	get_parent().add_child(explosion)
+
+func destroyTerrainServerRPC(terrainChunks, pos, rad):
+	for terrain_chunk in terrainChunks:
+		if terrain_chunk.get_parent().has_method("destroy"):
+			terrain_chunk.get_parent().destroyRPCServer(pos, rad)
+			terrain_chunk.get_parent().destroy(pos, rad)

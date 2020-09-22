@@ -68,6 +68,11 @@ func _unhandled_input(event):
 		bitmap.create_from_image_alpha($Sprite.texture.get_data())
 		$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
 
+func destroyRPCServer(pos, rad):
+	rpc("destroyRPC", pos, rad)
+
+remote func destroyRPC(pos, rad):
+	destroy(pos, rad)
 
 func destroy(position : Vector2, radius : float):
 	# Collision rebuild thread!

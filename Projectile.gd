@@ -8,6 +8,7 @@ var explosion_radius
 export var explosion_scene : PackedScene
 # Track radial damage scene to create aoe effect and have it handle/apply damage
 var radialDamage = load("res://RadialDamage.tscn")
+var terrainDamage = load("res://TerrainDamage.tscn")
 # Track damage dealt, this is passed from the caster/player
 var damage
 # Track if there is flat damage dealt as long as within range of explosion, or if there is falloff from the center.
@@ -58,8 +59,13 @@ func _on_Projectile_body_entered(_body):
 		if damage_falloff == true:
 			newRadius = 0.7 * explosion_radius
 		
-		# Damage the terrain from the server side
-		get_tree().call_group("destructibles", "destroy", global_position, newRadius)
+		var td = terrainDamage.instance()
+		td.position = position
+		# Add the child with a deferred call approach to avoid collision/propogation errors
+		get_parent().call_deferred("add_child", td)
+		td.monitoring = true
+		td.setSize(newRadius)
+		td.call_deferred("setExplosion")
 		
 		# Summon a radial damage node, which will issue the damage.
 		var rd = radialDamage.instance()
@@ -78,9 +84,8 @@ func _on_Projectile_body_entered(_body):
 		# Calls in deferred fashion to avoid collision/propogation errors, initiates the scan to detect overlapping nodes and issue damage
 		rd.call_deferred("setExplosion")
 		
-		
 		# Show purely visual explosion to clients
-		get_node("/root/").get_node("1").broadcastExplosionServer(position, newRadius)
+		get_node("/root/").get_node("1").broadcastExplosionServer(position)
 		
 		# Self terminate after all this is over. Again, this is only for the server's projectile.
 		# There is also a "fake" projectile sent for clients for user experience
