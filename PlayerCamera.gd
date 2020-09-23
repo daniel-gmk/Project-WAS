@@ -57,6 +57,7 @@ func _unhandled_input(event):
 	if event.is_action_pressed("reset_camera") and control:
 		lastPlayerOwnerPosition = false
 		position = Vector2.ZERO
+		current_position = playerOwner.position
 
 	# Handle panning when dragging the camera
 	elif event is InputEventMouseMotion and _move_camera and control:
