@@ -126,5 +126,6 @@ common/physics_fps=120
 
 quality/intended_usage/framebuffer_allocation=0
 quality/intended_usage/framebuffer_allocation.mobile=0
+quality/2d/use_pixel_snap=true
 environment/default_clear_color=Color( 0.0862745, 0.529412, 0.611765, 1 )
 environment/default_environment="res://default_env.tres"

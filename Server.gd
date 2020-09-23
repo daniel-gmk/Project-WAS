@@ -11,7 +11,6 @@ func _ready():
 	# Don't show any GUI elements to the server
 	if get_tree().is_network_server():
 		# Set camera focus to player
-		print("server-camera")
 		$ServerCamera.control = true
 		var camera = $ServerCamera
 		camera.root = self

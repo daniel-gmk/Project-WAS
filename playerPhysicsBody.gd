@@ -18,7 +18,6 @@ var snap = Vector2(0, 16)
 # Vector tracking player movement speed
 var _speed = 250
 # Vector tracking current gravity on player
-var gravitydefault = Vector2(0, 3600)
 var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
@@ -120,7 +119,7 @@ func _process(delta):
 
 remote func resetPositionRPC():
 	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, gravity, jumpReleased)
+	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, jumpReleased)
 
 # Execute upon input (so far jump and shoot)
 func _input(event):
@@ -176,7 +175,6 @@ remote func jumpPressedPlayerRPC():
 
 func jumpPressedPlayer():
 	snap = Vector2()
-	gravity = Vector2(0, 1800)
 	_velocity.y = -JUMP_FORCE
 	peakHeight = position.y
 	jumping = true
@@ -216,14 +214,13 @@ func movePlayer(delta):
 				if jumping:
 					jumping = false
 					snap = Vector2(0, 16)
-					gravity = gravitydefault
 				if airTime:
 					airTime = false
 					if ((position.y - peakHeight) > fallDamageHeight):
 						# Check fall height and send data to server node to determine damage dealt
 						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
 
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, gravity, jumpReleased)
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, jumpReleased)
 
 		else:
 			# Client code
@@ -300,7 +297,7 @@ func interpolate(old_transform):
 	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
-puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, gravityRPC, jumpReleasedRPC):
+puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, jumpReleasedRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
@@ -311,7 +308,6 @@ puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, gravityRPC, jump
 		$Sprite.flip_h = true
 	jumping = jumpingRPC
 	snap = snapRPC
-	gravity = gravityRPC
 	jumpReleased = jumpReleasedRPC
 
 
