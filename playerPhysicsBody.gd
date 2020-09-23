@@ -13,8 +13,6 @@ var allowActions = false
 var allowMovement = false
 # Initial position/spawn in map TO BE REPLACED
 var pos = Vector2(1000, 100)
-# Track whether to utilize snap physics on ground for move_and_slide_with_snap
-var snap = Vector2(0, 16)
 # Vector tracking player movement speed
 var _speed = 250
 # Vector tracking current gravity on player
@@ -119,7 +117,7 @@ func _process(delta):
 
 remote func resetPositionRPC():
 	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, jumpReleased)
+	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
 
 # Execute upon input (so far jump and shoot)
 func _input(event):
@@ -174,7 +172,6 @@ remote func jumpPressedPlayerRPC():
 	jumpPressedPlayer()
 
 func jumpPressedPlayer():
-	snap = Vector2()
 	_velocity.y = -JUMP_FORCE
 	peakHeight = position.y
 	jumping = true
@@ -196,7 +193,7 @@ func movePlayer(delta):
 			_velocity.x = _speed * $InputManager.movement.x
 			# Apply gravity
 			_velocity += gravity * delta
-			_velocity = move_and_slide_with_snap(_velocity, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
+			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
 			
 			if _velocity.y >= -50 and !jumpReleased:
 				jumpReleased = true
@@ -213,14 +210,13 @@ func movePlayer(delta):
 			else:
 				if jumping:
 					jumping = false
-					snap = Vector2(0, 16)
 				if airTime:
 					airTime = false
 					if ((position.y - peakHeight) > fallDamageHeight):
 						# Check fall height and send data to server node to determine damage dealt
 						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
 
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, snap, jumpReleased)
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
 
 		else:
 			# Client code
@@ -287,7 +283,7 @@ func move_with_reconciliation(delta):
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
 	
-			vel = move_and_slide_with_snap(mov[2].normalized()*_speed*mov[1]/delta, snap, Vector2.UP, true, 4, deg2rad(60.0), false)
+			vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta, Vector2.UP, true, 4, deg2rad(60.0), false)
 	
 	interpolate(old_transform)
 
@@ -297,7 +293,7 @@ func interpolate(old_transform):
 	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
-puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, jumpReleasedRPC):
+puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
@@ -307,7 +303,6 @@ puppet func update_state(t, velocity, ack, jumpingRPC, snapRPC, jumpReleasedRPC)
 	elif velocity.x <= -1:
 		$Sprite.flip_h = true
 	jumping = jumpingRPC
-	snap = snapRPC
 	jumpReleased = jumpReleasedRPC
 
 
