@@ -1,15 +1,15 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://player.gd" type="Script" id=1]
-[ext_resource path="res://assets/character.png" type="Texture" id=2]
-[ext_resource path="res://playerPhysicsBody.gd" type="Script" id=3]
-[ext_resource path="res://PlayerCamera.gd" type="Script" id=4]
-[ext_resource path="res://Projectile.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/charge-filled.png" type="Texture" id=6]
-[ext_resource path="res://assets/charge-empty.png" type="Texture" id=7]
-[ext_resource path="res://assets/Projectile-base.png" type="Texture" id=8]
-[ext_resource path="res://GUI.tscn" type="PackedScene" id=9]
-[ext_resource path="res://InputManager.gd" type="Script" id=10]
+[ext_resource path="res://Projectile.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/Projectile-base.png" type="Texture" id=2]
+[ext_resource path="res://Player.gd" type="Script" id=3]
+[ext_resource path="res://MainPawn.gd" type="Script" id=4]
+[ext_resource path="res://assets/character.png" type="Texture" id=5]
+[ext_resource path="res://PlayerCamera.gd" type="Script" id=6]
+[ext_resource path="res://InputManager.gd" type="Script" id=7]
+[ext_resource path="res://assets/charge-filled.png" type="Texture" id=8]
+[ext_resource path="res://assets/charge-empty.png" type="Texture" id=9]
+[ext_resource path="res://GUI.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 6.0
@@ -24,36 +24,29 @@ extents = Vector2( 12, 22 )
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 12, 22 )
 
-[node name="player" type="Node2D"]
-script = ExtResource( 1 )
+[node name="Player" type="Node2D"]
+script = ExtResource( 3 )
 
-[node name="playerPhysicsBody" type="KinematicBody2D" parent="."]
+[node name="MainPawn" type="KinematicBody2D" parent="."]
 collision_layer = 18
 collision_mask = 5
 collision/safe_margin = 2.0
-script = ExtResource( 3 )
-weapon_projectile = ExtResource( 5 )
-_reticule_anchor_node_path = NodePath("ReticuleAnchor")
-GUI_node_path = NodePath("../PlayerCamera/CanvasLayer/GUI")
+script = ExtResource( 4 )
+weapon_projectile = ExtResource( 1 )
+_reticule_anchor_node_path = NodePath("../MainPawn/ReticuleAnchor")
+GUI_node_path = NodePath("../../Player/PlayerCamera/CanvasLayer/GUI")
 
-[node name="InputManager" type="Node" parent="playerPhysicsBody"]
-script = ExtResource( 10 )
-
-[node name="Sprite" type="Sprite" parent="playerPhysicsBody"]
+[node name="Sprite" type="Sprite" parent="MainPawn"]
 position = Vector2( 0, 10 )
 scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 2 )
+texture = ExtResource( 5 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="playerPhysicsBody"]
-shape = SubResource( 1 )
+[node name="InputManager" type="Node" parent="MainPawn"]
+script = ExtResource( 7 )
 
-[node name="Ray" type="CollisionShape2D" parent="playerPhysicsBody"]
-position = Vector2( 0, 8 )
-shape = SubResource( 2 )
+[node name="ReticuleAnchor" type="Node2D" parent="MainPawn"]
 
-[node name="ReticuleAnchor" type="Node2D" parent="playerPhysicsBody"]
-
-[node name="chargeReticule" type="TextureProgress" parent="playerPhysicsBody/ReticuleAnchor"]
+[node name="ChargeReticule" type="TextureProgress" parent="MainPawn/ReticuleAnchor"]
 visible = false
 margin_left = -25.0
 margin_top = -25.0
@@ -62,46 +55,50 @@ margin_bottom = 75.0
 rect_scale = Vector2( 0.5, 0.5 )
 max_value = 0.667
 step = 0.001
-texture_under = ExtResource( 7 )
-texture_progress = ExtResource( 6 )
+texture_under = ExtResource( 9 )
+texture_progress = ExtResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Reticule" type="Sprite" parent="playerPhysicsBody/ReticuleAnchor"]
+[node name="Reticule" type="Sprite" parent="MainPawn/ReticuleAnchor"]
 visible = false
 position = Vector2( 16, 0 )
 scale = Vector2( 0.01, 0.01 )
-texture = ExtResource( 8 )
+texture = ExtResource( 2 )
 
-[node name="DamageCollisionArea" type="Area2D" parent="playerPhysicsBody"]
-visible = false
+[node name="BodyCollision" type="CollisionShape2D" parent="MainPawn"]
+shape = SubResource( 1 )
+
+[node name="RayCollision" type="CollisionShape2D" parent="MainPawn"]
+position = Vector2( 0, 8 )
+shape = SubResource( 2 )
+
+[node name="DamageCollisionArea" type="Area2D" parent="MainPawn"]
 collision_layer = 8
 collision_mask = 8
 
-[node name="DamageCollision" type="CollisionShape2D" parent="playerPhysicsBody/DamageCollisionArea"]
+[node name="DamageCollision" type="CollisionShape2D" parent="MainPawn/DamageCollisionArea"]
 position = Vector2( 0, 10 )
 shape = SubResource( 3 )
 
-[node name="PlayerCollision" type="StaticBody2D" parent="playerPhysicsBody"]
-visible = false
+[node name="PlayerCollision" type="StaticBody2D" parent="MainPawn"]
 collision_layer = 16
 collision_mask = 16
 
-[node name="PlayerCollisionShape" type="CollisionShape2D" parent="playerPhysicsBody/PlayerCollision"]
+[node name="PlayerCollisionShape" type="CollisionShape2D" parent="MainPawn/PlayerCollision"]
 position = Vector2( 0, 10 )
 shape = SubResource( 4 )
-disabled = true
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1
 zoom = Vector2( 0.6, 0.6 )
 process_mode = 0
-script = ExtResource( 4 )
+script = ExtResource( 6 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="PlayerCamera"]
 
-[node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 9 )]
+[node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 10 )]
 margin_top = -600.841
 margin_right = 512.0
 margin_bottom = -0.840942

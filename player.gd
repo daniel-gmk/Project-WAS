@@ -1,12 +1,12 @@
 extends Node2D
 
-### Root Player component. Most functions, movement, controls, etc are handled in playerPhysicsBody, but this node controls camera when not focused on player and set values for children
+### Root Player component. Most functions, movement, controls, etc are handled in MainPawn, but this node controls camera when not focused on player and set values for children
 
 var control   = false
 var player_id = 0
 var root      = false
 var console   = false
-# Track current active pawn, for example teleport node, playerPhysicsBody node, or down the road minions
+# Track current active pawn, for example teleport node, MainPawn node, or down the road minions
 var currentActivePawn
 # Tracks camera node
 var camera
@@ -40,22 +40,22 @@ func _ready():
 	if get_tree().is_network_server():
 		$PlayerCamera.queue_free()
 		if control:
-			$playerPhysicsBody.control = control
-			$playerPhysicsBody.player_id = player_id
+			$MainPawn.control = control
+			$MainPawn.player_id = player_id
 	else:
 		# Pass variables to children only if local player
 		if control:
-			currentActivePawn = $playerPhysicsBody
-			$playerPhysicsBody.control = control
-			$playerPhysicsBody.player_id = player_id
-			$playerPhysicsBody.initiate_ui()
+			currentActivePawn = $MainPawn
+			$MainPawn.control = control
+			$MainPawn.player_id = player_id
+			$MainPawn.initiate_ui()
 	
 			# Set camera focus to player
 			$PlayerCamera.control = control
 			camera = $PlayerCamera
-			camera.target = $playerPhysicsBody
+			camera.target = $MainPawn
 			camera.root = self
-			camera.playerOwner = $playerPhysicsBody
+			camera.playerOwner = $MainPawn
 			camera.lastPlayerOwnerPosition = false
 			camera.make_current()
 			
@@ -107,7 +107,7 @@ remote func teleportPlayerRPC(pos):
 
 # Function that changes position of player to new position
 func teleportPlayer(pos):
-	$playerPhysicsBody.position = pos
+	$MainPawn.position = pos
 
 # Server knows to freeze and hide player for ALL clients
 remote func initiateTeleportServer(id):
@@ -125,12 +125,12 @@ remote func setInitiateTeleportVariablesRPC():
 func setInitiateTeleportVariables():
 	freezePlayer()
 	# RPC TO ALL the player sprite being invisible and invincible
-	$playerPhysicsBody.immortal = true
-	$playerPhysicsBody.get_node("Sprite").visible = false
+	$MainPawn.immortal = true
+	$MainPawn.get_node("Sprite").visible = false
 	# Disable Collisions
-	$playerPhysicsBody.get_node("CollisionShape2D").disabled = true
-	$playerPhysicsBody.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = true
-	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
+	$MainPawn.get_node("BodyCollision").disabled = true
+	$MainPawn.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = true
+	$MainPawn.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
 
 # Server now sends the client that called to teleport the instructions to choose new location
 remote func approveInitiateTeleportRequestRPC():
@@ -153,12 +153,12 @@ remote func setConcludeTeleportVariablesRPC():
 func setConcludeTeleportVariables():
 	resetPlayer()
 	# RPC the player sprite being visible and able to take damage again
-	$playerPhysicsBody.immortal = false
-	$playerPhysicsBody.get_node("Sprite").visible = true
+	$MainPawn.immortal = false
+	$MainPawn.get_node("Sprite").visible = true
 	# Re-Enable collisions
-	$playerPhysicsBody.get_node("CollisionShape2D").disabled = false
-	$playerPhysicsBody.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = false
-	$playerPhysicsBody.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
+	$MainPawn.get_node("BodyCollision").disabled = false
+	$MainPawn.get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = false
+	$MainPawn.get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
 
 # Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
 remote func approveConcludeTeleportRequestRPC():
@@ -208,14 +208,14 @@ func concludeTeleport():
 	camera.position = Vector2.ZERO
 	
 	# Set current pawn
-	currentActivePawn = $playerPhysicsBody
+	currentActivePawn = $MainPawn
 	# Remove old node
 	teleport_instance.queue_free()
 	
 	# If cooldown is active (>0), resume the cooldown and deal cooldown penalty
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(false)
-		$playerPhysicsBody.serverBroadcastDamageRPC(max($playerPhysicsBody.maxHealth * teleport_penalty_damage_mincheck1, $playerPhysicsBody.health * teleport_penalty_damage_mincheck2))
+		$MainPawn.serverBroadcastDamageRPC(max($MainPawn.maxHealth * teleport_penalty_damage_mincheck1, $MainPawn.health * teleport_penalty_damage_mincheck2))
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
@@ -224,26 +224,26 @@ func concludeTeleport():
 
 # Instructions for freezing player character
 func freezePlayer():
-	$playerPhysicsBody.allowActions = false
-	$playerPhysicsBody.allowMovement = false
+	$MainPawn.allowActions = false
+	$MainPawn.allowMovement = false
 	# Reset attack charge
-	$playerPhysicsBody._attack_power = 0
-	$playerPhysicsBody._attack_clicked = false
+	$MainPawn._attack_power = 0
+	$MainPawn._attack_clicked = false
 	# Hide the reticule now that firing is done
-	$playerPhysicsBody.chargeProgress.visible = false
-	$playerPhysicsBody.chargeProgress.value = 0
+	$MainPawn.chargeProgress.visible = false
+	$MainPawn.chargeProgress.value = 0
 	# Disable HUD
 	if control:
 		camera.get_node("CanvasLayer").get_node("GUI").visible = false
 
 # Instructions for unfreezing AND resetting player character values (jumping, attacking, etc)
 func resetPlayer():
-	$playerPhysicsBody.allowActions = true
-	$playerPhysicsBody.allowMovement = true
+	$MainPawn.allowActions = true
+	$MainPawn.allowMovement = true
 	# Reset physics
-	$playerPhysicsBody.jumping = false
-	$playerPhysicsBody.peakHeight = $playerPhysicsBody.position.y
-	$playerPhysicsBody._velocity = Vector2.ZERO
+	$MainPawn.jumping = false
+	$MainPawn.peakHeight = $MainPawn.position.y
+	$MainPawn._velocity = Vector2.ZERO
 	# Enable HUD
 	if control:
 		camera.get_node("CanvasLayer").get_node("GUI").visible = true

@@ -6,32 +6,29 @@ extends KinematicBody2D
 var player_id
 # Track allowing actions for only local player
 var control = false
-
+# Track if actions are allowed at all
 var allowActions = false
 
 ### Physics
+# Track if player is allowed to move
 var allowMovement = false
-# Initial position/spawn in map TO BE REPLACED
-var pos = Vector2(1000, 100)
 # Vector tracking player movement speed
 var _speed = 250
 # Vector tracking current gravity on player
 var gravity = Vector2(0, 1800)
 # Vector tracking player movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
-
+# Track if in the air or not
 var airTime = false
 
+### Client side prediction / Server reconciliation vars
 var movement = Vector2()
 master var remote_movement = Vector2()
 puppet var remote_transform = Transform2D()
 puppet var remote_vel = Vector2()
-# Client server reconciliation vars
 puppet var ack = 0 # Last movement acknowledged
 var old_movement = Vector2()
 var time = 0
-
-
 
 ### Health
 var minHealth = 0
@@ -42,13 +39,13 @@ var immortal = false
 ###Jump
 # Tracking if Jumping
 var jumping = false
+# Tracking if Jump can be released and ended early
 var jumpReleased = false
 # Jumping power
 var JUMP_FORCE = 800
 
 ### Fall Damage
 # Tracks the peak height position so it can decide if there is fall damage
-var originalHeight = position.y
 var peakHeight = position.y
 # Variable that determines the cutoff in height before damage starts being dealt
 var fallDamageHeight = 400
@@ -94,15 +91,8 @@ func _ready():
 	add_collision_exception_with($PlayerCollision)
 	# Set health
 	health = maxHealth
-	chargeProgress = reticule_anchor.find_node("chargeReticule")
+	chargeProgress = reticule_anchor.find_node("ChargeReticule")
 	set_network_master(1)
-
-func initiate_ui():
-	# Set Main player's Health Bar
-	health_bar_root.max_value = maxHealth
-	health_bar_root.min_value = minHealth
-	health_bar_root.value = health
-	health_bar_text.text = String(health)
 
 # Execute every tick
 func _process(delta):
@@ -115,9 +105,62 @@ func _process(delta):
 		# Locally render the reticule every tick, optimize this to only be needed when attacking
 		_render_reticule()
 
-remote func resetPositionRPC():
-	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
+# Execute every physics tick, look at documentation for difference between _process and _physics_process tick
+func _physics_process(_delta : float):
+	# Execute only for local player
+	if control and allowActions:
+		
+		# Charge attack if holding charge button for shooting projectile
+		if _attack_clicked:
+			_attack_power += _delta
+		
+		# If the player has been holding the attack button long enough it auto fires
+		if _attack_power >= _auto_attack_power:
+			# Same standard typeless attack as line 120
+			shoot(500, 42, true, false)
+
+	# Handle player movement
+	# Note: Probably can do this not every tick but poll for correction of location every x time
+	movePlayer(_delta)
+
+# Handles movement of player
+func movePlayer(delta):
+	if allowMovement:
+		if is_network_master():
+			# Applies physics (speed, gravity) to the direction
+			_velocity.x = _speed * $InputManager.movement.x
+			# Apply gravity
+			_velocity += gravity * delta
+			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
+			
+			if _velocity.y >= -50 and !jumpReleased:
+				jumpReleased = true
+
+			if !is_on_floor():
+				if !airTime:
+					airTime = true
+					peakHeight = position.y
+				# check if position is higher than before
+				elif airTime and position.y < peakHeight:
+					peakHeight = position.y
+			# Stop jumping when landing on floor
+			else:
+				if jumping:
+					jumping = false
+				if airTime:
+					airTime = false
+					if ((position.y - peakHeight) > fallDamageHeight):
+						# Check fall height and send data to server node to determine damage dealt
+						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
+
+			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
+
+		else:
+			# Client code
+			time += delta
+			move_with_reconciliation(delta)
+	else:
+		_velocity = Vector2.ZERO
 
 # Execute upon input (so far jump and shoot)
 func _input(event):
@@ -150,80 +193,18 @@ func _input(event):
 				# Standard typeless attack
 				shoot(500, 42, true, false)
 
-# Execute every physics tick, look at documentation for difference between _process and _physics_process tick
-func _physics_process(_delta : float):
-	# Execute only for local player
-	if control and allowActions:
-		
-		# Charge attack if holding charge button for shooting projectile
-		if _attack_clicked:
-			_attack_power += _delta
-		
-		# If the player has been holding the attack button long enough it auto fires
-		if _attack_power >= _auto_attack_power:
-			# Same standard typeless attack as line 120
-			shoot(500, 42, true, false)
-
-	# Handle player movement
-	# Note: Probably can do this not every tick but poll for correction of location every x time
-	movePlayer(_delta)
-
-remote func jumpPressedPlayerRPC():
-	jumpPressedPlayer()
-
+# Local jump event called from RPC
 func jumpPressedPlayer():
 	_velocity.y = -JUMP_FORCE
 	peakHeight = position.y
 	jumping = true
 	jumpReleased = false
 
-remote func jumpReleasedPlayerRPC():
-	jumpReleasedPlayer()
-
+# Local jump release event called from RPC
 func jumpReleasedPlayer():
 	# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
 	_velocity.y = -50
 	jumpReleased = true
-
-# Handles movement of player
-func movePlayer(delta):
-	if allowMovement:
-		if is_network_master():
-			# Applies physics (speed, gravity) to the direction
-			_velocity.x = _speed * $InputManager.movement.x
-			# Apply gravity
-			_velocity += gravity * delta
-			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
-			
-			if _velocity.y >= -50 and !jumpReleased:
-				jumpReleased = true
-			
-
-			if !is_on_floor():
-				if !airTime:
-					airTime = true
-					peakHeight = position.y
-				# check if position is higher than before
-				elif airTime and position.y < peakHeight:
-					peakHeight = position.y
-			# Stop jumping when landing on floor
-			else:
-				if jumping:
-					jumping = false
-				if airTime:
-					airTime = false
-					if ((position.y - peakHeight) > fallDamageHeight):
-						# Check fall height and send data to server node to determine damage dealt
-						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
-
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
-
-		else:
-			# Client code
-			time += delta
-			move_with_reconciliation(delta)
-	else:
-		_velocity = Vector2.ZERO
 
 # Handles attacking, for now using a base projectile
 func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
@@ -261,19 +242,8 @@ func death():
 	print("I died")
 
 #################################SERVER FUNCTIONS
-# Server receives call to locally execute damage and also replicate damage to clients
-func serverBroadcastDamageRPC(damage):
-	takeDamage(damage)
-	rpc("takeDamageRPC", damage)
 
-# I abstracted takeDamage as a local call instead of just making it a remote function in case I want to make local
-# calls down the road and not quite sure if I need to yet.
-remote func takeDamageRPC(damage):
-	takeDamage(damage)
-
-
-
-
+# Client side prediction with server reconcilliation
 func move_with_reconciliation(delta):
 	var old_transform = transform
 	transform = remote_transform
@@ -287,12 +257,14 @@ func move_with_reconciliation(delta):
 	
 	interpolate(old_transform)
 
+# Interpolation from server reconcilliation to ease client position to server's
 func interpolate(old_transform):
 	var scale_factor = 0.1
 	var dist = transform.origin.distance_to(old_transform.origin)
 	var weight = clamp(pow(2,dist/4)*scale_factor,0.0,1.0)
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
+# Server sending client updated physics data and state
 puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
@@ -305,8 +277,38 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 	jumping = jumpingRPC
 	jumpReleased = jumpReleasedRPC
 
+# Server calling position reset from teleporting onto clients
+remote func resetPositionRPC():
+	position = Vector2(0,0)
+	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
 
-#################################HELPER FUNCTIONS
+# RPC for jump event
+remote func jumpPressedPlayerRPC():
+	jumpPressedPlayer()
+	
+# RPC for jump release event
+remote func jumpReleasedPlayerRPC():
+	jumpReleasedPlayer()
+
+# Server receives call to locally execute damage and also replicate damage to clients
+func serverBroadcastDamageRPC(damage):
+	takeDamage(damage)
+	rpc("takeDamageRPC", damage)
+
+# I abstracted takeDamage as a local call instead of just making it a remote function in case I want to make local
+# calls down the road and not quite sure if I need to yet.
+remote func takeDamageRPC(damage):
+	takeDamage(damage)
+
+#################################UI FUNCTIONS
+
+# Set UI for the player
+func initiate_ui():
+	# Set Main player's Health Bar
+	health_bar_root.max_value = maxHealth
+	health_bar_root.min_value = minHealth
+	health_bar_root.value = health
+	health_bar_text.text = String(health)
 
 # Render the reticle so it shows projectile charge
 func _render_reticule():

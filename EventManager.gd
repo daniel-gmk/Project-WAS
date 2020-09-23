@@ -23,8 +23,8 @@ func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sen
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")
 	else:
-		get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody").takeDamage(resultingDamage)
-		get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody").rpc("takeDamageRPC", resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").takeDamage(resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").rpc("takeDamageRPC", resultingDamage)
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
@@ -35,7 +35,7 @@ remote func summonProjectileServer(startpos, position2, speed, attack_power, att
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
-	var physicsbody = get_parent().get_node(str(sender)).get_node("player").get_node("playerPhysicsBody")
+	var physicsbody = get_parent().get_node(str(sender)).get_node("Player").get_node("MainPawn")
 	if physicsbody.player_id != sender:
 		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender)
 
@@ -49,7 +49,7 @@ func summonProjectile(startpos, position2, speed, attack_power, attack_scale, is
 	new_projectile.damage_falloff = damage_falloff
 	new_projectile.ignoreCaster = ignoreSelf
 	new_projectile.casterID = get_node("/root/").get_node(str(sender))
-	new_projectile.add_collision_exception_with(get_node("/root/").get_node(str(sender)).get_node("player").get_node("playerPhysicsBody"))
+	new_projectile.add_collision_exception_with(get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn"))
 	# Apply reticule position as projectile's starting position
 	new_projectile.global_position = startpos
 	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
@@ -80,6 +80,7 @@ func broadcastExplosion(pos):
 	# which would make them immediately vanish.
 	get_parent().add_child(explosion)
 
+# Calls destruction to clients on only the nodes with destructible attached
 func destroyTerrainServerRPC(terrainChunks, pos, rad):
 	for terrain_chunk in terrainChunks:
 		if terrain_chunk.get_parent().has_method("destroy"):

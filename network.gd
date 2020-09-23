@@ -7,9 +7,9 @@ const DEFAULT_PORT = 31416
 # Max player connections
 const MAX_PEERS    = 10
 # List of all players
-var   players      = {}
+var players = {}
 # Keep track of local player network ID, this will be the name of the player node
-var   player_name
+var player_name
 # Track the seed for terrain generated to the server so the same terrain is used for clients
 var terrainSeed
 # Check if terrain is loaded and it is time to load in the player or not
@@ -19,10 +19,10 @@ var serverIp
 # Keep track of the old ID when loading terrain so it can be deleted locally when reconnecting
 var oldPlayerID
 # Preload the scenes for placeholder player, server, and post terrain render player
-var placeholderPlayerScene = preload("res://temporaryPlayer.tscn")
-var server_scene = preload("res://Server.tscn")
+var placeholderPlayerScene = preload("res://TemporaryPlayer.tscn")
+var event_manager_scene = preload("res://EventManager.tscn")
 var player_scene = preload("res://Client.tscn")
-
+# Track host
 var host
 
 # Link Godot networking functions to the local functions here
@@ -128,9 +128,9 @@ remote func register_new_player(id, name, loadedTerrain):
 func spawn_player(id, loadedTerrain):
 	# If server, create a server node
 	if id == 1:
-		var server = server_scene.instance()
-		server.set_name(str(id))
-		get_node("/root/").call_deferred("add_child", server)
+		var event_manager = event_manager_scene.instance()
+		event_manager.set_name(str(id))
+		get_node("/root/").call_deferred("add_child", event_manager)
 	else:
 		# If player and terrain is now loaded
 		# Load the normal character node
@@ -168,7 +168,7 @@ func rejoin_server_after_terrain(ip):
 # Called when the server clicks "start" game in base control node
 func start_game():
 	if get_tree().is_network_server():
-		# For all clients, instantiate their player and playerPhysicsBody nodes
+		# For all clients, instantiate their player and MainPawn nodes
 		for peer_id in players:
 			if peer_id != 1:
 				rpc_id(peer_id, "startPlayerGameCharacterRPC", peer_id)
@@ -180,20 +180,20 @@ remote func start_game_server():
 	if get_tree().is_network_server():
 		start_game()
 
-# Have the client tell other clients to instantiate their player/playerPhysicsBody nodes
-# And then instantiate their player/playerPhysicsBody node locally
+# Have the client tell other clients to instantiate their player/MainPawn nodes
+# And then instantiate their player/MainPawn node locally
 remote func startPlayerGameCharacterRPC(peer_id):
 	get_node("/root/").get_node("environment").get_node("Camera").queue_free()
 	rpc("startPlayerGameCharacterRPC2", peer_id)
 	startPlayerGameCharacter(peer_id)
 
-# This is for other clients when a different client tells it to instantiate their player/playerPhysicsBody nodes
+# This is for other clients when a different client tells it to instantiate their player/MainPawn nodes
 remote func startPlayerGameCharacterRPC2(peer_id):
 	if !get_tree().is_network_server():
 		startPlayerGameCharacter(peer_id)
 
-# Called by all clients to have their client node instantiate the player/playerPhysicsBody node
+# Called by all clients to have their client node instantiate the player/MainPawn node
 func startPlayerGameCharacter(peer_id):
 	get_node("/root/").get_node(str(peer_id)).startGameCharacter()
 	# Gives the authority of the input manager to the player
-	get_node("/root/").get_node(str(peer_id)).get_node("player").get_node("playerPhysicsBody").get_node("InputManager").set_network_master(peer_id)
+	get_node("/root/").get_node(str(peer_id)).get_node("Player").get_node("MainPawn").get_node("InputManager").set_network_master(peer_id)

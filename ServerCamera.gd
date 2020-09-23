@@ -13,7 +13,7 @@ var lastPlayerOwnerPosition = false
 ### Variables passed from root
 # Stores the player's root node for when the player is not being focused.
 var root
-# Stores the player's playerPhysicsBody child for when the player is being focused.
+# Stores the player's MainPawn child for when the player is being focused.
 var playerOwner
 # Decides if this is the local player so this only happens to the local player character.
 var control = false
@@ -51,7 +51,7 @@ func _unhandled_input(event):
 			get_tree().set_input_as_handled()
 			zoom = new_zoom
 
-# Handles changing focus to the player (or specifically, the playerPhysicsBody)
+# Handles changing focus to the player (or specifically, the MainPawn)
 func changeToPlayerOwner():
 	print("yes")
 	#get_parent().remove_child(self)

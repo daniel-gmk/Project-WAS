@@ -73,7 +73,7 @@ func _on_Projectile_body_entered(_body):
 		rd.position = position
 		rd.damage = damage
 		rd.damage_falloff = damage_falloff
-		rd.casterID = casterID.get_node("player").get_node("playerPhysicsBody")
+		rd.casterID = casterID.get_node("Player").get_node("MainPawn")
 		rd.ignoreCaster = ignoreCaster
 		# Add the child with a deferred call approach to avoid collision/propogation errors
 		get_parent().call_deferred("add_child", rd)

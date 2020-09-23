@@ -1,5 +1,7 @@
 extends Node
 
+# Integrated from a client side prediction / server reconcilliation demo
+
 onready var parent = get_node("../")
 master var movement = Vector2()
 var old_movement = Vector2()
