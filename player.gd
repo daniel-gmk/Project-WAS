@@ -39,6 +39,7 @@ func _ready():
 	# Don't show any GUI elements to the server
 	if get_tree().is_network_server():
 		$PlayerCamera.queue_free()
+		$"MainPawn/DepthVisionHandler".queue_free()
 		if control:
 			$MainPawn.control = control
 			$MainPawn.player_id = player_id
@@ -81,6 +82,7 @@ func _ready():
 			
 		else:
 			# remove UI for other players
+			$"MainPawn/DepthVisionHandler".queue_free()
 			$PlayerCamera.get_node("CanvasLayer").get_node("GUI").queue_free()
 
 # Calls teleporting from other nodes
@@ -124,6 +126,7 @@ remote func setInitiateTeleportVariablesRPC():
 # Freezes and hides player, called by server and clients
 func setInitiateTeleportVariables():
 	freezePlayer()
+	teleporting = true
 	# RPC TO ALL the player sprite being invisible and invincible
 	$MainPawn.immortal = true
 	$MainPawn.get_node("Sprite").visible = false
@@ -152,6 +155,7 @@ remote func setConcludeTeleportVariablesRPC():
 # Unhide and allow resuming of actions
 func setConcludeTeleportVariables():
 	resetPlayer()
+	teleporting = false
 	# RPC the player sprite being visible and able to take damage again
 	$MainPawn.immortal = false
 	$MainPawn.get_node("Sprite").visible = true

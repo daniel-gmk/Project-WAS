@@ -98,7 +98,6 @@ func destroy(position : Vector2, radius : float):
 			print("Error creating destruction thread: ", error2)
 		_destruction_threads.push_back(thread2)
 
-
 func _cull_foreground_duplicates():
 	for dup in _to_cull:
 		dup.queue_free()
@@ -111,6 +110,7 @@ func rebuild_texture():
 
 # Improved collision rebuilding!
 func rebuild_collisions_from_geometry(arguments : Array):
+	
 	var position : Vector2 = arguments[0]
 	var radius : float = arguments[1]
 

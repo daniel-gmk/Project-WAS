@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Projectile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=2]
@@ -10,6 +10,8 @@
 [ext_resource path="res://assets/charge-filled.png" type="Texture" id=8]
 [ext_resource path="res://assets/charge-empty.png" type="Texture" id=9]
 [ext_resource path="res://GUI.tscn" type="PackedScene" id=10]
+[ext_resource path="res://assets/light.png" type="Texture" id=11]
+[ext_resource path="res://DepthVisionHandler.gd" type="Script" id=12]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 6.0
@@ -90,6 +92,22 @@ collision_mask = 16
 position = Vector2( 0, 10 )
 shape = SubResource( 4 )
 
+[node name="DepthVisionHandler" type="Node2D" parent="MainPawn"]
+script = ExtResource( 12 )
+
+[node name="SkyRaycastCheck" type="RayCast2D" parent="MainPawn/DepthVisionHandler"]
+rotation = -3.14159
+enabled = true
+exclude_parent = false
+
+[node name="LightSource" type="Light2D" parent="MainPawn/DepthVisionHandler"]
+visible = false
+texture = ExtResource( 11 )
+
+[node name="CanvasModulate" type="CanvasModulate" parent="MainPawn/DepthVisionHandler"]
+visible = false
+color = Color( 0, 0, 0, 1 )
+
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1
 zoom = Vector2( 0.6, 0.6 )
@@ -99,6 +117,7 @@ script = ExtResource( 6 )
 [node name="CanvasLayer" type="CanvasLayer" parent="PlayerCamera"]
 
 [node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 10 )]
+light_mask = 0
 margin_top = -600.841
 margin_right = 512.0
 margin_bottom = -0.840942

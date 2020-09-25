@@ -92,13 +92,14 @@ func _ready():
 	# Set health
 	health = maxHealth
 	chargeProgress = reticule_anchor.find_node("ChargeReticule")
+	add_to_group("PlayerMainPawns")
 	set_network_master(1)
 
 # Execute every tick
 func _process(delta):
 	if control:
 		# Check if out of map, and if so force teleport
-		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight + 100 and !get_parent().teleporting:
+		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight and !get_parent().teleporting:
 			position = Vector2(0,0)
 			rpc_id(1, "resetPositionRPC")
 			get_parent().teleport()

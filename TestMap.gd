@@ -140,6 +140,8 @@ func loadTerrain(terrainSeed, ip):
 	image.unlock()
 
 	image.resize(6000,4500,0)
+	var sky = get_parent().get_node("Sky")
+	sky.scale = Vector2(image.get_width() / sky.texture.get_data().get_width(), image.get_height() / sky.texture.get_data().get_height())
 	maxLength = position.x + image.get_width()
 	maxHeight = position.y + image.get_height()
 
