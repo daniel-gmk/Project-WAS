@@ -16,7 +16,7 @@ var camera
 var teleporting = false
 var teleport_check = false
 # Tracks the node used for teleporting, which the player assumes when teleporting
-var teleport_node = preload("res://TeleportScene.tscn")
+var teleport_node = preload("res://CoreMechanics/TeleportScene.tscn")
 # Tracks the instantiation of above teleport node
 var teleport_instance
 # The actual Timer node used for Teleport Cooldowns

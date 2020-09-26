@@ -166,7 +166,7 @@ func loadTerrain(terrainSeed, ip):
 			childSprite.name = name + "-" + str(count)
 			# Set the material so destruction works
 			childSprite.material = ShaderMaterial.new()
-			childSprite.material.shader = load("res://parent_material.shader")
+			childSprite.material.shader = load("res://VisualEffects/parent_material.shader")
 			childSprite.material.set_shader_param("mask_texture", load("res://assets/test-background.png"))
 			# Set position and remove center so it is placed in the right location
 			childSprite.centered = false
@@ -219,7 +219,7 @@ func loadTerrain(terrainSeed, ip):
 			# Add destructible nodes to non-transparent sub-images
 			# Generate destructible node so terrain collision and destruction can be applied
 			if !transparent:
-				var destructible_scene = load("res://Destructible.tscn")
+				var destructible_scene = load("res://Environment/Destructible.tscn")
 				var destructible       = destructible_scene.instance()
 				childSprite.call_deferred("add_child", destructible)
 

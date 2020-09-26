@@ -7,8 +7,8 @@ var explosion_radius
 # Track scene type of explosion effect
 export var explosion_scene : PackedScene
 # Track radial damage scene to create aoe effect and have it handle/apply damage
-var radialDamage = load("res://RadialDamage.tscn")
-var terrainDamage = load("res://TerrainDamage.tscn")
+var radialDamage = load("res://Skills/Statuses/RadialDamage.tscn")
+var terrainDamage = load("res://Environment/TerrainDamage.tscn")
 # Track damage dealt, this is passed from the caster/player
 var damage
 # Track if there is flat damage dealt as long as within range of explosion, or if there is falloff from the center.

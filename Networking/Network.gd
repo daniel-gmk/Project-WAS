@@ -19,9 +19,9 @@ var serverIp
 # Keep track of the old ID when loading terrain so it can be deleted locally when reconnecting
 var oldPlayerID
 # Preload the scenes for placeholder player, server, and post terrain render player
-var placeholderPlayerScene = preload("res://TemporaryPlayer.tscn")
-var event_manager_scene = preload("res://EventManager.tscn")
-var player_scene = preload("res://Client.tscn")
+var placeholderPlayerScene = preload("res://Networking/TemporaryPlayer.tscn")
+var event_manager_scene = preload("res://Networking/EventManager.tscn")
+var player_scene = preload("res://Networking/Client.tscn")
 # Track host
 var host
 

@@ -5,7 +5,7 @@ var player_id
 var control
 
 # Load player node
-var player_scene = preload("res://Player.tscn")
+var player_scene = preload("res://Pawn/Player.tscn")
 
 # On call, instantiate and create a player node for the client.
 func startGameCharacter():
