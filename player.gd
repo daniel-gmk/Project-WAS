@@ -35,6 +35,10 @@ var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
 
+
+var mainPawnAttackList = ["DefaultProjectile","DefaultProjectile","DefaultProjectile","DefaultProjectile","DefaultProjectile"]
+
+
 func _ready():
 	# Don't show any GUI elements to the server
 	if get_tree().is_network_server():

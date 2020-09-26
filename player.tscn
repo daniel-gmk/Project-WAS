@@ -1,6 +1,5 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=17 format=2]
 
-[ext_resource path="res://Projectile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=2]
 [ext_resource path="res://Player.gd" type="Script" id=3]
 [ext_resource path="res://MainPawn.gd" type="Script" id=4]
@@ -63,7 +62,6 @@ script = ExtResource( 7 )
 
 [node name="AttackManager" type="Node" parent="MainPawn"]
 script = ExtResource( 13 )
-weapon_projectile = ExtResource( 1 )
 _reticule_anchor_node_path = NodePath("../ReticuleAnchor")
 
 [node name="ReticuleAnchor" type="Node2D" parent="MainPawn"]

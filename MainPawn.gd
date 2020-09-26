@@ -52,6 +52,11 @@ var fallDamageHeight = 400
 # Variable that determines damage increase rate based on falloff
 var fallDamageRate = 2
 
+
+var attackList = []
+var currentSelectedAttack
+
+
 ### HUD
 # Track the HUD component path
 export var GUI_node_path : NodePath
@@ -69,6 +74,8 @@ func _ready():
 	health = maxHealth
 	add_to_group("PlayerMainPawns")
 	set_network_master(1)
+	# Set attacks
+	attackList = get_parent().mainPawnAttackList
 
 # Execute every tick
 func _process(delta):

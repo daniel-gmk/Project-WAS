@@ -2,8 +2,6 @@ extends Node
 
 ### Attack
 # Allow setting attack projectile 
-# Plan to replace this twice, once with basic attack, other with dynamic spellbook selection
-export var weapon_projectile : PackedScene
 # Plan to consolidate remaining data below so server sends this data to client for various attacks
 # How long the player charged the attack
 var _attack_power : float = 0
@@ -43,7 +41,7 @@ func _physics_process(_delta : float):
 		# If the player has been holding the attack button long enough it auto fires
 		if _attack_power >= _auto_attack_power:
 			# Same standard typeless attack as line 120
-			shoot(500, 42, true, false)
+			shoot(500, 42, true, false, "Projectile")
 
 func _input(event):
 	if get_parent().control and get_parent().allowActions:
@@ -58,10 +56,10 @@ func _input(event):
 		elif event.is_action_released("shoot"):
 			if _attack_clicked:
 				# Standard typeless attack
-				shoot(500, 42, true, false)
+				shoot(500, 42, true, false, "Projectile")
 
 # Handles attacking, for now using a base projectile
-func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
+func shoot(damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
 	## This is local execution of projectile
 	# Get reticule to find position of reticule
 	var reticule := reticule_anchor.find_node("Reticule")
@@ -69,9 +67,9 @@ func shoot(damage, explosion_radius, damage_falloff, ignoreSelf):
 	var reticule_position = reticule.global_position
 
 	# Summon projectile locally but have it just disappear on impact
-	get_node("/root/").get_node("1").summonProjectile(reticule_position, get_parent().global_position, 30, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, get_parent().player_id)
+	get_node("/root/").get_node("1").summonProjectile(reticule_position, get_parent().global_position, 30, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, get_parent().player_id, skill_type)
 	# Broadcast RPC so projectile can be shown to other players/server
-	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().player_id)
+	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, 30, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().player_id, skill_type)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false

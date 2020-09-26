@@ -3,8 +3,6 @@ extends Node2D
 # Allow setting attack projectile 
 # Track scene type of explosion effect
 export var explosion_scene : PackedScene
-# Plan to replace this twice, once with basic attack, other with dynamic spellbook selection
-export var weapon_projectile : PackedScene
 # Called when the node enters the scene tree for the first time.
 
 func _ready():
@@ -27,22 +25,24 @@ func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sen
 		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").rpc("takeDamageRPC", resultingDamage)
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
+remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type):
 	# If server
-	summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, sender)
+	summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type)
 	# Loop through clients and launch projectile to each
-	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender)
+	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender, skill_type)
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
+remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type):
 	var physicsbody = get_parent().get_node(str(sender)).get_node("Player").get_node("MainPawn")
 	if physicsbody.player_id != sender:
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender)
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender, skill_type)
 
 # Launches projectile/attack
-func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender):
+func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type):
 	# Spawn instance of projectile node
-	var new_projectile := weapon_projectile.instance() as RigidBody2D
+	var scene_dir = "res://Skills/" + skill_type + ".tscn"
+	var projectile_scene = load(scene_dir)
+	var new_projectile := projectile_scene.instance() as RigidBody2D
 	# Initialize other variables for Projectile, details on the variables are on Projectile.gd
 	new_projectile.damage = damage
 	new_projectile.explosion_radius = explosion_radius
