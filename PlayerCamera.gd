@@ -29,8 +29,17 @@ var playerOwner
 # Decides if this is the local player so this only happens to the local player character.
 var control = false
 
+var shiftHolding = false
+
 func _ready() -> void:
 	current_position = position
+
+func _input(event):
+	if event.is_action_pressed("shift"):
+		shiftHolding = true
+
+	if event.is_action_released("shift"):
+		shiftHolding = false
 
 func _physics_process(delta: float) -> void:
 	if !lastPlayerOwnerPosition:
@@ -66,7 +75,7 @@ func _unhandled_input(event):
 		_previous_position = event.position
 
 	# Zoom, this will be turned off for non-spectators eventually
-	elif event is InputEventMouseButton and control:
+	elif event is InputEventMouseButton and control and shiftHolding:
 		var new_zoom := Vector2.ZERO
 		if event.button_index == BUTTON_WHEEL_UP:
 			new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)

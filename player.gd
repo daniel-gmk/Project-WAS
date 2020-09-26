@@ -39,7 +39,7 @@ func _ready():
 	# Don't show any GUI elements to the server
 	if get_tree().is_network_server():
 		$PlayerCamera.queue_free()
-		$"MainPawn/DepthVisionHandler".queue_free()
+		$"MainPawn/VisionManager".queue_free()
 		if control:
 			$MainPawn.control = control
 			$MainPawn.player_id = player_id
@@ -82,7 +82,7 @@ func _ready():
 			
 		else:
 			# remove UI for other players
-			$"MainPawn/DepthVisionHandler".queue_free()
+			$"MainPawn/VisionManager".queue_free()
 			$PlayerCamera.get_node("CanvasLayer").get_node("GUI").queue_free()
 
 # Calls teleporting from other nodes
@@ -230,12 +230,9 @@ func concludeTeleport():
 func freezePlayer():
 	$MainPawn.allowActions = false
 	$MainPawn.allowMovement = false
-	# Reset attack charge
-	$MainPawn._attack_power = 0
-	$MainPawn._attack_clicked = false
-	# Hide the reticule now that firing is done
-	$MainPawn.chargeProgress.visible = false
-	$MainPawn.chargeProgress.value = 0
+	if $MainPawn.has_node("AttackManager"):
+		# Reset attack charge
+		$MainPawn.get_node("AttackManager").resetAttack()
 	# Disable HUD
 	if control:
 		camera.get_node("CanvasLayer").get_node("GUI").visible = false

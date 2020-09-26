@@ -27,7 +27,6 @@ func _ready():
 	# Perform inAction_loop function each execution
 	skyRaycastTimer.connect("timeout", self, "updateLightSize")
 	add_child(skyRaycastTimer)
-	add_to_group("DepthVisionHandlers")
 	
 	# Remove this later, testing max size of the light2D
 	originalLightSize = mapWidth / ($LightSource.texture.get_data().get_width()-lightTextureOffset)
