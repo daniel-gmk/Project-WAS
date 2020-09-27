@@ -38,7 +38,7 @@ func updateLightSize():
 	var nearestDistanceFromPlayer = mapDiag
 	while node_group.size() > 0:
 		var node = node_group.pop_back()
-		if !node.get_parent().teleporting and node != get_parent():
+		if !node.get_parent().get_node("TeleportManager").teleporting and node != get_parent():
 			var newPos = node.position.distance_to(get_parent().position)
 			if newPos < nearestDistanceFromPlayer:
 				nearestDistanceFromPlayer = newPos
@@ -50,7 +50,7 @@ func updateLightSize():
 
 func _physics_process(_delta : float):
 	$SkyRaycastCheck.force_raycast_update()
-	if $SkyRaycastCheck.is_colliding() and !get_parent().get_parent().teleporting:
+	if $SkyRaycastCheck.is_colliding() and !get_parent().get_parent().get_node("TeleportManager").teleporting:
 		if !casting:
 			if skyRaycastTimer.get_time_left() == 0:
 				skyRaycastTimer.start()

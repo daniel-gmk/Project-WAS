@@ -78,14 +78,48 @@ func _ready():
 	attackList = get_parent().mainPawnAttackList
 	currentSelectedAttack = attackList[0]
 
+# Instructions for freezing player character
+func freeze():
+	allowActions = false
+	allowMovement = false
+	if has_node("AttackManager"):
+		# Reset attack charge
+		get_node("AttackManager").resetAttack()
+
+# Instructions for unfreezing AND resetting player character values (jumping, attacking, etc)
+func reset():
+	allowActions = true
+	allowMovement = true
+	# Reset physics
+	jumping = false
+	peakHeight = position.y
+	_velocity = Vector2.ZERO
+
+func hide():
+	immortal = true
+	get_node("Sprite").visible = false
+	# Disable Collisions
+	get_node("BodyCollision").disabled = true
+	get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = true
+	get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
+
+func show():
+	immortal = false
+	get_node("Sprite").visible = true
+	# Re-Enable collisions
+	get_node("BodyCollision").disabled = false
+	get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = false
+	get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
+
 # Execute every tick
 func _process(delta):
 	if control:
 		# Check if out of map, and if so force teleport
-		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight and !get_parent().teleporting:
+		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight and !get_parent().get_node("TeleportManager").teleporting:
 			position = Vector2(0,0)
+			get_parent().teleportingPawn = self
 			rpc_id(1, "resetPositionRPC")
-			get_parent().teleport()
+			get_parent().get_node("TeleportManager").teleport()
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
