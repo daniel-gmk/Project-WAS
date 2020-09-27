@@ -75,7 +75,7 @@ func _unhandled_input(event):
 		_previous_position = event.position
 
 	# Zoom, this will be turned off for non-spectators eventually
-	elif event is InputEventMouseButton and control and shiftHolding:
+	elif event is InputEventMouseButton and event.pressed and control and shiftHolding:
 		var new_zoom := Vector2.ZERO
 		if event.button_index == BUTTON_WHEEL_UP:
 			new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)

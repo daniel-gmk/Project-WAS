@@ -1,0 +1,9 @@
+{
+    "Projectile": {
+        "Damage": 500,
+        "Explosion_Radius": 42,
+        "Damage_Falloff": true,
+        "Ignore_Self": false,
+        "Projectile_Speed": 30
+    }
+}

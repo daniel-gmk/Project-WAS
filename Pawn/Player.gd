@@ -36,7 +36,7 @@ var teleport_penalty_damage_mincheck1 = 0.1
 var teleport_penalty_damage_mincheck2 = 0.25
 
 
-var mainPawnAttackList = ["DefaultProjectile","DefaultProjectile","DefaultProjectile","DefaultProjectile","DefaultProjectile"]
+var mainPawnAttackList = ["Projectile"]
 
 
 func _ready():
@@ -44,6 +44,7 @@ func _ready():
 	if get_tree().is_network_server():
 		$PlayerCamera.queue_free()
 		$"MainPawn/VisionManager".queue_free()
+		$"MainPawn/AttackManager".queue_free()
 		if control:
 			$MainPawn.control = control
 			$MainPawn.player_id = player_id
@@ -87,6 +88,7 @@ func _ready():
 		else:
 			# remove UI for other players
 			$"MainPawn/VisionManager".queue_free()
+			$"MainPawn/AttackManager".queue_free()
 			$PlayerCamera.get_node("CanvasLayer").get_node("GUI").queue_free()
 
 # Calls teleporting from other nodes

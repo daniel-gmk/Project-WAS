@@ -76,6 +76,7 @@ func _ready():
 	set_network_master(1)
 	# Set attacks
 	attackList = get_parent().mainPawnAttackList
+	currentSelectedAttack = attackList[0]
 
 # Execute every tick
 func _process(delta):
@@ -97,7 +98,7 @@ func movePlayer(delta):
 	if allowMovement:
 		if is_network_master():
 			# Applies physics (speed, gravity) to the direction
-			_velocity.x = _speed * $InputManager.movement.x
+			_velocity.x = _speed * $MovementManager.movement.x
 			# Apply gravity
 			_velocity += gravity * delta
 			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
@@ -122,7 +123,7 @@ func movePlayer(delta):
 						# Check fall height and send data to server node to determine damage dealt
 						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
 
-			rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
+			rpc_unreliable("update_state",transform, _velocity, $MovementManager.movement_counter, jumping, jumpReleased)
 
 		else:
 			# Client code
@@ -185,7 +186,7 @@ func move_with_reconciliation(delta):
 	var old_transform = transform
 	transform = remote_transform
 	var vel = remote_vel
-	var movement_list = $InputManager.movement_list
+	var movement_list = $MovementManager.movement_list
 	if movement_list.size() > 0:
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
@@ -217,7 +218,7 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 # Server calling position reset from teleporting onto clients
 remote func resetPositionRPC():
 	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $InputManager.movement_counter, jumping, jumpReleased)
+	rpc_unreliable("update_state",transform, _velocity, $MovementManager.movement_counter, jumping, jumpReleased)
 
 # RPC for jump event
 remote func jumpPressedPlayerRPC():

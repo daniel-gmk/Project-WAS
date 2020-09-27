@@ -5,7 +5,7 @@
 [ext_resource path="res://Pawn/MainPawn.gd" type="Script" id=3]
 [ext_resource path="res://assets/Projectile-base.png" type="Texture" id=4]
 [ext_resource path="res://Pawn/PawnMechanics/AttackManager.gd" type="Script" id=5]
-[ext_resource path="res://Pawn/PawnMechanics/InputManager.gd" type="Script" id=6]
+[ext_resource path="res://Pawn/PawnMechanics/MovementManager.gd" type="Script" id=6]
 [ext_resource path="res://Camera/PlayerCamera.gd" type="Script" id=7]
 [ext_resource path="res://Pawn/PawnMechanics/VisionManager.gd" type="Script" id=8]
 [ext_resource path="res://assets/character.png" type="Texture" id=9]
@@ -57,7 +57,7 @@ texture = ExtResource( 12 )
 visible = false
 color = Color( 0, 0, 0, 1 )
 
-[node name="InputManager" type="Node" parent="MainPawn"]
+[node name="MovementManager" type="Node" parent="MainPawn"]
 script = ExtResource( 6 )
 
 [node name="AttackManager" type="Node" parent="MainPawn"]
