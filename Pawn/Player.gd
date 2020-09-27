@@ -61,10 +61,10 @@ func showCamera():
 
 func switchFromPlayerCamera():
 	# Reset current camera
-	camera.lastPlayerOwnerPosition = false
-	camera.position = Vector2.ZERO
+	$PlayerCamera.lastPlayerOwnerPosition = false
+	$PlayerCamera.position = Vector2.ZERO
 	# Remove current camera
-	camera.clear_current()
+	$PlayerCamera.clear_current()
 	# Set mouse location and view
 	get_viewport().warp_mouse(get_viewport_rect().size / 2)
 
@@ -72,7 +72,7 @@ func switchToPlayerCamera():
 	# Set mouse location and view
 	get_viewport().warp_mouse(get_viewport_rect().size / 2)
 	# Set new pawn camera
-	camera.make_current()
+	$PlayerCamera.make_current()
 	# Reset camera position
-	camera.lastPlayerOwnerPosition = false
-	camera.position = Vector2.ZERO
+	$PlayerCamera.lastPlayerOwnerPosition = false
+	$PlayerCamera.position = Vector2.ZERO

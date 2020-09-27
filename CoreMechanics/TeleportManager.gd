@@ -24,9 +24,10 @@ var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
 
+var initialTeleport = true
+
 func initialize():
 	# Set Teleport Cooldown and timers
-	
 	teleportCount = maxTeleports
 	
 	teleportCooldownTimer.set_wait_time(teleportCooldown)
@@ -88,6 +89,8 @@ remote func setInitiateTeleportVariablesRPC():
 
 # Freezes and hides player, called by server and clients
 func setInitiateTeleportVariables():
+	if initialTeleport:
+		add_to_group("TeleportManagers")
 	get_parent().teleportingPawn.freeze()
 	get_parent().hideCamera()
 	teleporting = true
@@ -102,10 +105,21 @@ remote func approveInitiateTeleportRequestRPC():
 # After teleport is complete, we proceed with having the server unhide the player and unfreeze, and etc
 remote func concludeTeleportServer(id):
 	if get_tree().is_network_server():
-		rpc("setConcludeTeleportVariablesRPC")
-		setConcludeTeleportVariables()
 		
 		rpc_id(id, "approveConcludeTeleportRequestRPC")
+
+		if initialTeleport:
+			rpc_id(id, "showPawnRPC")
+			showPawn()
+		else:
+			rpc("setConcludeTeleportVariablesRPC")
+			setConcludeTeleportVariables()
+
+		initialTeleport = false
+
+func concludeTeleportAsServer():
+	rpc("setConcludeTeleportVariablesRPC")
+	setConcludeTeleportVariables()
 
 # All clients receive new information from server on unhiding and allowing resuming of actions
 remote func setConcludeTeleportVariablesRPC():
@@ -118,6 +132,12 @@ func setConcludeTeleportVariables():
 	teleporting = false
 	# RPC the player sprite being visible and able to take damage again
 	get_parent().teleportingPawn.show()
+
+remote func showPawnRPC():
+	showPawn()
+
+func showPawn():
+	get_parent().teleportingPawn.showSpriteOnly()
 
 # Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
 remote func approveConcludeTeleportRequestRPC():
@@ -139,7 +159,7 @@ func initiateTeleport():
 	var map_center_location = Vector2((get_node("/root/").get_node("environment").get_node("TestMap").maxLength)/2, (get_node("/root/").get_node("environment").get_node("TestMap").maxHeight)/2)
 	get_parent().switchFromPlayerCamera()
 	# Instantiate the teleport node
-	add_child(teleport_instance)
+	get_parent().add_child(teleport_instance)
 	# Set teleport's camera and location
 	teleport_instance.setCamera()
 	teleport_instance.setCameraLocation(map_center_location)

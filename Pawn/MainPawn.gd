@@ -111,6 +111,9 @@ func show():
 	get_node("PlayerCollision").get_node("PlayerCollisionShape").disabled = false
 	get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
 
+func showSpriteOnly():
+	get_node("Sprite").visible = true
+
 # Execute every tick
 func _process(delta):
 	if control:

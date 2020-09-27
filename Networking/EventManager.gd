@@ -15,6 +15,20 @@ func _ready():
 		camera.playerOwner = self
 		camera.make_current()
 
+func _process(delta):
+	if get_tree().is_network_server():
+		var triggerInitialTeleport = true
+		var node_group = get_tree().get_nodes_in_group("TeleportManagers")
+		if node_group.size() > 0:
+			for node in node_group:
+				if node != self and node.initialTeleport:
+					triggerInitialTeleport = false
+			if triggerInitialTeleport:
+				for node in node_group:
+					node.concludeTeleportAsServer()
+					node.initialTeleport = false
+					node.remove_from_group("TeleportManagers")
+
 # Has the server calculate fall damage and distribute that information to clients
 func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sender):
 	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate

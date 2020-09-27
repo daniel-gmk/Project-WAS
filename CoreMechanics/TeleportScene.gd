@@ -21,4 +21,4 @@ func _process(delta):
 func _input(event):
 	if event.is_action_pressed("shoot"):
 		if $Sprite.get_node("Area2D").get_overlapping_bodies().size() == 0:
-			get_parent().requestTeleportToServer($Sprite.position)
+			get_parent().get_node("TeleportManager").requestTeleportToServer($Sprite.position)
