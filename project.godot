@@ -53,6 +53,22 @@ ui_focus_prev={
 "deadzone": 0.5,
 "events": [  ]
 }
+ui_left={
+"deadzone": 0.5,
+"events": [  ]
+}
+ui_right={
+"deadzone": 0.5,
+"events": [  ]
+}
+ui_up={
+"deadzone": 0.5,
+"events": [  ]
+}
+ui_down={
+"deadzone": 0.5,
+"events": [  ]
+}
 ui_page_up={
 "deadzone": 0.5,
 "events": [  ]

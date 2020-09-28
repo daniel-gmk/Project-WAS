@@ -105,8 +105,6 @@ remote func approveInitiateTeleportRequestRPC():
 # After teleport is complete, we proceed with having the server unhide the player and unfreeze, and etc
 remote func concludeTeleportServer(id):
 	if get_tree().is_network_server():
-		
-		rpc_id(id, "approveConcludeTeleportRequestRPC")
 
 		if initialTeleport:
 			rpc_id(id, "showPawnRPC")
@@ -114,6 +112,8 @@ remote func concludeTeleportServer(id):
 		else:
 			rpc("setConcludeTeleportVariablesRPC")
 			setConcludeTeleportVariables()
+		
+		rpc_id(id, "approveConcludeTeleportRequestRPC")
 
 		initialTeleport = false
 
@@ -183,7 +183,7 @@ func concludeTeleport():
 	# If cooldown is active (>0), resume the cooldown and deal cooldown penalty
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(false)
-		get_parent().teleportingPawn.serverBroadcastDamageRPC(max(get_parent().teleportingPawn.maxHealth * teleport_penalty_damage_mincheck1, get_parent().teleportingPawn.health * teleport_penalty_damage_mincheck2))
+		get_parent().currentActivePawn.serverBroadcastDamageRPC(max(get_parent().currentActivePawn.maxHealth * teleport_penalty_damage_mincheck1, get_parent().currentActivePawn.health * teleport_penalty_damage_mincheck2))
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
