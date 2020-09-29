@@ -183,7 +183,8 @@ func concludeTeleport():
 	# If cooldown is active (>0), resume the cooldown and deal cooldown penalty
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(false)
-		get_parent().currentActivePawn.serverBroadcastDamageRPC(max(get_parent().currentActivePawn.maxHealth * teleport_penalty_damage_mincheck1, get_parent().currentActivePawn.health * teleport_penalty_damage_mincheck2))
+		var pawnHealthManager = get_parent().currentActivePawn.get_node("HealthManager")
+		pawnHealthManager.serverBroadcastDamageRPC(max(pawnHealthManager.maxHealth * teleport_penalty_damage_mincheck1, pawnHealthManager.health * teleport_penalty_damage_mincheck2))
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()

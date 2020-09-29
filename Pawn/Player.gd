@@ -22,16 +22,11 @@ func _ready():
 		$PlayerCamera.queue_free()
 		$"MainPawn/VisionManager".queue_free()
 		$"MainPawn/AttackManager".queue_free()
-		if control:
-			$MainPawn.control = control
-			$MainPawn.player_id = player_id
 	else:
 		# Pass variables to children only if local player
 		if control:
 			currentActivePawn = $MainPawn
-			$MainPawn.control = control
-			$MainPawn.player_id = player_id
-			$MainPawn.initiate_ui()
+			$MainPawn.get_node("HealthManager").initiate_ui()
 	
 			# Set camera focus to player
 			$PlayerCamera.control = control

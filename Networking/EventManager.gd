@@ -35,8 +35,8 @@ func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate, sen
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")
 	else:
-		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").takeDamage(resultingDamage)
-		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").rpc("takeDamageRPC", resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").get_node("HealthManager").takeDamage(resultingDamage)
+		get_node("/root/").get_node(str(sender)).get_node("Player").get_node("MainPawn").get_node("HealthManager").rpc("takeDamageRPC", resultingDamage)
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type):
@@ -48,7 +48,7 @@ remote func summonProjectileServer(startpos, position2, speed, attack_power, att
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, sender, skill_type):
 	var physicsbody = get_parent().get_node(str(sender)).get_node("Player").get_node("MainPawn")
-	if physicsbody.player_id != sender:
+	if physicsbody.get_parent().player_id != sender:
 		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, sender, skill_type)
 
 # Launches projectile/attack

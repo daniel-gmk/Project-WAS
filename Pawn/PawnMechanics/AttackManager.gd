@@ -24,6 +24,9 @@ var reticule_max = 2
 
 var skill_data
 
+export var attackList = []
+var currentSelectedAttack
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	chargeProgress = reticule_anchor.find_node("ChargeReticule")
@@ -39,6 +42,10 @@ func _ready():
 		print("error parsing file")
 		return
 	skill_data = file_parse.result
+	if get_parent().MainPawn:
+		# Set attacks
+		attackList = get_parent().get_parent().mainPawnAttackList # Replace with logic to pull from spell selection
+	currentSelectedAttack = attackList[0]
 
 func _process(delta):
 	# Locally render the reticule every tick, optimize this to only be needed when attacking
@@ -46,7 +53,7 @@ func _process(delta):
 
 func _physics_process(_delta : float):
 	# Execute only for local player
-	if get_parent().control and get_parent().allowActions:
+	if get_parent().get_parent().control and get_parent().allowActions:
 		
 		# Charge attack if holding charge button for shooting projectile
 		if _attack_clicked:
@@ -55,10 +62,10 @@ func _physics_process(_delta : float):
 		# If the player has been holding the attack button long enough it auto fires
 		if _attack_power >= _auto_attack_power:
 			# Same standard typeless attack as line 120
-			shoot("Projectile")
+			shoot(currentSelectedAttack)
 
 func _input(event):
-	if get_parent().control and get_parent().allowActions:
+	if get_parent().get_parent().control and get_parent().allowActions:
 		# Handle charging projectile strength when shoot input is pressed and held
 		if event.is_action_pressed("shoot"):
 				_attack_clicked = true
@@ -70,26 +77,26 @@ func _input(event):
 		elif event.is_action_released("shoot"):
 			if _attack_clicked:
 				# Standard typeless attack
-				shoot("Projectile")
+				shoot(currentSelectedAttack)
 
 		# Zoom, this will be turned off for non-spectators eventually
-		elif event is InputEventMouseButton and event.pressed and get_parent().control:
+		elif event is InputEventMouseButton and event.pressed and get_parent().get_parent().control:
 			if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
-				var currentSelectedAttack = get_parent().currentSelectedAttack
-				var currentAttackpos = get_parent().attackList.find(currentSelectedAttack)
-				var attackListLastPos = get_parent().attackList.size()-1
+				var currentSelectedAttack = currentSelectedAttack
+				var currentAttackpos = attackList.find(currentSelectedAttack)
+				var attackListLastPos = attackList.size()-1
 				if currentAttackpos == -1:
 					return
 				if event.button_index == BUTTON_WHEEL_UP:
 					if currentAttackpos == attackListLastPos:
-						get_parent().currentSelectedAttack = get_parent().attackList[0]
+						currentSelectedAttack = attackList[0]
 					else:
-						get_parent().currentSelectedAttack = get_parent().attackList[currentAttackpos+1]
+						currentSelectedAttack = attackList[currentAttackpos+1]
 				elif event.button_index == BUTTON_WHEEL_DOWN:
 					if currentAttackpos == 0:
-						get_parent().currentSelectedAttack = get_parent().attackList[attackListLastPos]
+						currentSelectedAttack = attackList[attackListLastPos]
 					else:
-						get_parent().currentSelectedAttack = get_parent().attackList[currentAttackpos-1]
+						currentSelectedAttack = attackList[currentAttackpos-1]
 
 # Handles attacking, for now using a base projectile
 func shoot(skill_type):
@@ -106,9 +113,9 @@ func shoot(skill_type):
 	var reticule_position = reticule.global_position
 
 	# Summon projectile locally but have it just disappear on impact
-	get_node("/root/").get_node("1").summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, get_parent().player_id, skill_type)
+	get_node("/root/").get_node("1").summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, get_parent().get_parent().player_id, skill_type)
 	# Broadcast RPC so projectile can be shown to other players/server
-	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().player_id, skill_type)
+	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().get_parent().player_id, skill_type)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
