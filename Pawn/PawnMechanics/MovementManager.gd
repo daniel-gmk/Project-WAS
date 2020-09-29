@@ -4,8 +4,6 @@ export var MainPawn = true
 
 ### Main node for handling function, controls/input, values for UI, etc
 ### Multiplayer sync
-# Track if actions are allowed at all
-var allowActions = false
 
 ### Physics
 # Track if is allowed to move
@@ -46,63 +44,32 @@ export var fallDamageRate = 2
 
 # Execute when this node loads
 func _ready():
-	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
-	if has_node("DamageCollisionArea"):
-		# Reset attack charge
-		get_node("DamageCollisionArea").monitorable = true
 	if has_node("EntityCollision"):
 		add_collision_exception_with(get_node("EntityCollision"))
 	if MainPawn:
 		add_to_group("PlayerMainPawns")
 	set_network_master(1)
 
-# Instructions for freezing character
-func freeze():
-	allowActions = false
-	allowMovement = false
-	if has_node("AttackManager"):
-		# Reset attack charge
-		get_node("AttackManager").resetAttack()
+func enableCollision():
+	if has_node("BodyCollision"):
+		get_node("BodyCollision").disabled = false
+	if has_node("EntityCollision"):
+		get_node("EntityCollision/EntityCollisionShape").disabled = false
 
-# Instructions for unfreezing AND resetting character values (jumping, attacking, etc)
-func reset():
-	allowActions = true
-	allowMovement = true
-	# Reset physics
+func disableCollision():
+	if has_node("BodyCollision"):
+		get_node("BodyCollision").disabled = true
+	if has_node("EntityCollision"):
+		get_node("EntityCollision/EntityCollisionShape").disabled = true
+
+func resetPhysics():
 	jumping = false
 	peakHeight = position.y
 	_velocity = Vector2.ZERO
 
-func hide():
-	if has_node("HealthManager"):
-		get_node("HealthManager").immortal = true
-	get_node("Sprite").visible = false
-	# Disable Collisions
-	if has_node("BodyCollision"):
-		get_node("BodyCollision").disabled = true
-	if has_node("EntityCollision") and get_node("EntityCollision").has_node("EntityCollisionShape"):
-		get_node("EntityCollision").get_node("EntityCollisionShape").disabled = true
-	if has_node("DamageCollisionArea") and get_node("DamageCollisionArea").has_node("DamageCollision"):
-		get_node("DamageCollisionArea").get_node("DamageCollision").disabled = true
-
-func show():
-	if has_node("HealthManager"):
-		get_node("HealthManager").immortal = false
-	get_node("Sprite").visible = true
-	# Re-Enable collisions
-	if has_node("BodyCollision"):
-		get_node("BodyCollision").disabled = false
-	if has_node("EntityCollision") and get_node("EntityCollision").has_node("EntityCollisionShape"):
-		get_node("EntityCollision").get_node("EntityCollisionShape").disabled = false
-	if has_node("DamageCollisionArea") and get_node("DamageCollisionArea").has_node("DamageCollision"):
-		get_node("DamageCollisionArea").get_node("DamageCollision").disabled = false
-
-func showSpriteOnly():
-	get_node("Sprite").visible = true
-
 # Execute every tick
 func _process(delta):
-	if get_parent().control:
+	if get_parent().control and MainPawn:
 		# Check if out of map, and if so force teleport
 		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight and !get_parent().get_node("TeleportManager").teleporting:
 			position = Vector2(0,0)
@@ -158,20 +125,21 @@ func move(delta):
 # Execute upon input (so far jump and shoot)
 func _input(event):
 	# Only execute locally so input wouldnt change other characters
-	if get_parent().control and allowActions and get_parent().currentActivePawn == self:
-		# Handle jump input when pressed
-		if event.is_action_pressed("jump") and !jumping:
-			#call locally jumpPressed
-			jumpPressed()
-			#RPC to server jumpPressed
-			rpc_id(1, "jumpPressedRPC")
-
-		# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-		if event.is_action_released("jump") and jumping and !jumpReleased and _velocity.y <= -50:
-			#call locally jumpReleased
-			jumpReleased()
-			#RPC to server jumpReleased
-			rpc_id(1, "jumpReleasedRPC")
+	if get_parent().control and get_parent().currentActivePawn == self:
+		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+			# Handle jump input when pressed
+			if event.is_action_pressed("jump") and !jumping:
+				#call locally jumpPressed
+				jumpPressed()
+				#RPC to server jumpPressed
+				rpc_id(1, "jumpPressedRPC")
+	
+			# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
+			if event.is_action_released("jump") and jumping and !jumpReleased and _velocity.y <= -50:
+				#call locally jumpReleased
+				jumpReleased()
+				#RPC to server jumpReleased
+				rpc_id(1, "jumpReleasedRPC")
 
 # Local jump event called from RPC
 func jumpPressed():
@@ -215,10 +183,8 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 	self.remote_vel = velocity
 	self.ack = ack
 	# Handles flipping the sprite based on direction
-	if velocity.x >= 1:
-		$Sprite.flip_h = false
-	elif velocity.x <= -1:
-		$Sprite.flip_h = true
+	if has_node("StateManager"):
+		get_node("StateManager").flipSprite(velocity.x)
 	jumping = jumpingRPC
 	jumpReleased = jumpReleasedRPC
 

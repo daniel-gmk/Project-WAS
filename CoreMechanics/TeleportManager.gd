@@ -91,11 +91,12 @@ remote func setInitiateTeleportVariablesRPC():
 func setInitiateTeleportVariables():
 	if initialTeleport:
 		add_to_group("TeleportManagers")
-	get_parent().teleportingPawn.freeze()
+	if get_parent().teleportingPawn.has_node("StateManager"):
+		get_parent().teleportingPawn.get_node("StateManager").freeze()
+		get_parent().teleportingPawn.get_node("StateManager").hide()
 	get_parent().hideCamera()
 	teleporting = true
 	# RPC TO ALL the player sprite being invisible and invincible
-	get_parent().teleportingPawn.hide()
 
 # Server now sends the client that called to teleport the instructions to choose new location
 remote func approveInitiateTeleportRequestRPC():
@@ -127,17 +128,19 @@ remote func setConcludeTeleportVariablesRPC():
 
 # Unhide and allow resuming of actions
 func setConcludeTeleportVariables():
-	get_parent().teleportingPawn.reset()
+	# RPC the player sprite being visible and able to take damage again
+	if get_parent().teleportingPawn.has_node("StateManager"):
+		get_parent().teleportingPawn.get_node("StateManager").reset()
+		get_parent().teleportingPawn.get_node("StateManager").show()
 	get_parent().showCamera()
 	teleporting = false
-	# RPC the player sprite being visible and able to take damage again
-	get_parent().teleportingPawn.show()
 
 remote func showPawnRPC():
 	showPawn()
 
 func showPawn():
-	get_parent().teleportingPawn.showSpriteOnly()
+	if get_parent().teleportingPawn.has_node("StateManager"):
+		get_parent().teleportingPawn.get_node("StateManager").showSpriteOnly()
 
 # Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
 remote func approveConcludeTeleportRequestRPC():

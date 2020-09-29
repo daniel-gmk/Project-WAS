@@ -53,31 +53,32 @@ func _process(delta):
 
 func _physics_process(_delta : float):
 	# Execute only for local player
-	if get_parent().get_parent().control and get_parent().allowActions:
-		
-		# Charge attack if holding charge button for shooting projectile
-		if _attack_clicked:
-			_attack_power += _delta
-		
-		# If the player has been holding the attack button long enough it auto fires
-		if _attack_power >= _auto_attack_power:
-			# Same standard typeless attack as line 120
-			shoot(currentSelectedAttack)
+	if get_parent().get_parent().control:
+		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+			# Charge attack if holding charge button for shooting projectile
+			if _attack_clicked:
+				_attack_power += _delta
+			
+			# If the player has been holding the attack button long enough it auto fires
+			if _attack_power >= _auto_attack_power:
+				# Same standard typeless attack as line 120
+				shoot(currentSelectedAttack)
 
 func _input(event):
-	if get_parent().get_parent().control and get_parent().allowActions:
-		# Handle charging projectile strength when shoot input is pressed and held
-		if event.is_action_pressed("shoot"):
-				_attack_clicked = true
-				# Shows reticule when attacking
-				chargeProgress.max_value = reticule_max
-				chargeProgress.visible = true
-	
-		# Handle launching projectile based on charge strength when input is let go
-		elif event.is_action_released("shoot"):
-			if _attack_clicked:
-				# Standard typeless attack
-				shoot(currentSelectedAttack)
+	if get_parent().get_parent().control:
+		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+			# Handle charging projectile strength when shoot input is pressed and held
+			if event.is_action_pressed("shoot"):
+					_attack_clicked = true
+					# Shows reticule when attacking
+					chargeProgress.max_value = reticule_max
+					chargeProgress.visible = true
+		
+			# Handle launching projectile based on charge strength when input is let go
+			elif event.is_action_released("shoot"):
+				if _attack_clicked:
+					# Standard typeless attack
+					shoot(currentSelectedAttack)
 
 		# Zoom, this will be turned off for non-spectators eventually
 		elif event is InputEventMouseButton and event.pressed and get_parent().get_parent().control:

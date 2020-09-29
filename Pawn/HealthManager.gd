@@ -18,7 +18,19 @@ onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 func _ready():
 	# Set health
 	health = maxHealth
-	
+	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
+	if get_parent().has_node("DamageCollisionArea"):
+		# Reset attack charge
+		get_parent().get_node("DamageCollisionArea").monitorable = true
+
+func enableDamageCollision():
+	if get_parent().has_node("DamageCollisionArea"):
+		get_parent().get_node("DamageCollisionArea/DamageCollision").disabled = false
+
+func disableDamageCollision():
+	if get_parent().has_node("DamageCollisionArea"):
+		get_parent().get_node("DamageCollisionArea/DamageCollision").disabled = true
+
 # Handles when damage is taken
 func takeDamage(damage):
 	if damage < 0:
