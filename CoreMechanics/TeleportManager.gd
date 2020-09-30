@@ -26,6 +26,10 @@ var teleport_penalty_damage_mincheck2 = 0.25
 
 var initialTeleport = true
 
+func _ready():
+	if !get_tree().is_network_server() and get_parent().get_parent().control:
+		initialize()
+
 func initialize():
 	# Set Teleport Cooldown and timers
 	teleportCount = maxTeleports
@@ -94,7 +98,8 @@ func setInitiateTeleportVariables():
 	if get_parent().teleportingPawn.has_node("StateManager"):
 		get_parent().teleportingPawn.get_node("StateManager").freeze()
 		get_parent().teleportingPawn.get_node("StateManager").hide()
-	get_parent().hideCamera()
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").hideCamera()
 	teleporting = true
 	# RPC TO ALL the player sprite being invisible and invincible
 
@@ -132,7 +137,8 @@ func setConcludeTeleportVariables():
 	if get_parent().teleportingPawn.has_node("StateManager"):
 		get_parent().teleportingPawn.get_node("StateManager").reset()
 		get_parent().teleportingPawn.get_node("StateManager").show()
-	get_parent().showCamera()
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").showCamera()
 	teleporting = false
 
 remote func showPawnRPC():
@@ -160,7 +166,8 @@ func initiateTeleport():
 	teleport_instance = teleport_node.instance()
 	# Get map center location:
 	var map_center_location = Vector2((get_node("/root/").get_node("environment").get_node("TestMap").maxLength)/2, (get_node("/root/").get_node("environment").get_node("TestMap").maxHeight)/2)
-	get_parent().switchFromPlayerCamera()
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").switchFromPlayerCamera()
 	# Instantiate the teleport node
 	get_parent().add_child(teleport_instance)
 	# Set teleport's camera and location
@@ -176,7 +183,8 @@ func concludeTeleport():
 	# Clear Camera
 	teleport_instance.clearCamera()
 	
-	get_parent().switchToPlayerCamera()
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").switchToPlayerCamera()
 	
 	# Set current pawn
 	get_parent().currentActivePawn = get_parent().teleportingPawn

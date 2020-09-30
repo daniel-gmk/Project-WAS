@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 
 ### Health
 var minHealth = 0
@@ -6,6 +6,9 @@ export var maxHealth = 10000
 export var MainHealthBar = true
 var health
 var immortal = false
+
+export var player_node_path : NodePath
+onready var player_node = get_node(player_node_path)
 
 ### HUD
 # Track the HUD component path
@@ -18,18 +21,16 @@ onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 func _ready():
 	# Set health
 	health = maxHealth
+	if !get_tree().is_network_server() and player_node.control and MainHealthBar:
+		initiate_ui()
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
-	if get_parent().has_node("DamageCollisionArea"):
-		# Reset attack charge
-		get_parent().get_node("DamageCollisionArea").monitorable = true
+	$DamageCollisionArea.monitorable = true
 
 func enableDamageCollision():
-	if get_parent().has_node("DamageCollisionArea"):
-		get_parent().get_node("DamageCollisionArea/DamageCollision").disabled = false
+	get_node("DamageCollisionArea/DamageCollision").disabled = false
 
 func disableDamageCollision():
-	if get_parent().has_node("DamageCollisionArea"):
-		get_parent().get_node("DamageCollisionArea/DamageCollision").disabled = true
+	get_node("DamageCollisionArea/DamageCollision").disabled = true
 
 # Handles when damage is taken
 func takeDamage(damage):
@@ -38,7 +39,7 @@ func takeDamage(damage):
 	if !immortal:
 		health -= damage
 		# Update health bar HUD
-		if get_tree().get_network_unique_id() == get_parent().get_parent().player_id:
+		if get_tree().get_network_unique_id() == player_node.player_id:
 			health_bar_root.value = health
 			health_bar_text.text = String(round(health))
 		# Dead if health falls below min value

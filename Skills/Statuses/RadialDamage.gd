@@ -42,7 +42,7 @@ func setExplosion():
 			var calculatedDamage
 
 			# If ignoreCaster is enabled and you're the caster, don't deal damage
-			if ignoreCaster and area.get_parent().get_parent().get_parent() == casterID:
+			if ignoreCaster and area.get_parent().get_parent().get_parent().get_parent() == casterID:
 				calculatedDamage = 0
 			else:
 				# Calculate falloff if damage falloff is enabled
@@ -58,8 +58,7 @@ func setExplosion():
 					calculatedDamage = damage
 
 			# Now that damage is calculated, pass this information to the server and have it pass damage to all clients
-			if area.get_parent().has_node("HealthManager") and area.get_parent().get_node("HealthManager").has_method("serverBroadcastDamageRPC"):
-				area.get_parent().get_node("HealthManager").serverBroadcastDamageRPC(calculatedDamage)
+			area.get_parent().serverBroadcastDamageRPC(calculatedDamage)
 
 	# After everything is set and done, remove the radial damage node. Explosion is over.
 	queue_free()

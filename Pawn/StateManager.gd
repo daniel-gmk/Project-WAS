@@ -1,29 +1,24 @@
 extends Node2D
 
-
 # Track if actions are allowed at all
 var allowActions = false
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
 
 func showSpriteOnly():
 	$Sprite.visible = true
 
 func show():
 	$Sprite.visible = true
-	if get_parent().has_node("HealthManager"):
-		get_parent().get_node("HealthManager").immortal = false
-		get_parent().get_node("HealthManager").enableDamageCollision()
+	if has_node("../HealthManager"):
+		get_node("../HealthManager").immortal = false
+		get_node("../HealthManager").enableDamageCollision()
 	# Re-Enable collisions
 	get_parent().enableCollision()
 
 func hide():
 	$Sprite.visible = false
-	if get_parent().has_node("HealthManager"):
-		get_parent().get_node("HealthManager").immortal = true
-		get_parent().get_node("HealthManager").disableDamageCollision()
+	if has_node("../HealthManager"):
+		get_node("../HealthManager").immortal = true
+		get_node("../HealthManager").disableDamageCollision()
 	# Disable Collisions
 	get_parent().disableCollision()
 
@@ -31,9 +26,9 @@ func hide():
 func freeze():
 	allowActions = false
 	get_parent().allowMovement = false
-	if get_parent().has_node("AttackManager"):
+	if has_node("../AttackManager"):
 		# Reset attack charge
-		get_parent().get_node("AttackManager").resetAttack()
+		get_node("../AttackManager").resetAttack()
 
 # Instructions for unfreezing AND resetting character values (jumping, attacking, etc)
 func reset():

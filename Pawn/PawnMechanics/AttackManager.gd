@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 
 ### Attack
 # Allow setting attack projectile 
@@ -13,10 +13,6 @@ onready var _auto_attack_power : float = 1
 var _attack_clicked : bool = false
 
 ### Reticule/charging UI, this specific HUD component is separate from the rest of the GUI/HUD, too lazy to move tbh
-# Expose the actual HUD component's path
-export var _reticule_anchor_node_path : NodePath
-# Use the path to grab the base HUD component (the reticule's parent) as a var
-onready var reticule_anchor : Node2D = get_node(_reticule_anchor_node_path)
 # Track the actual Reticule component within the reticule parent as a var
 var chargeProgress
 # Static value for tracking the charge value before it fills the reticule
@@ -27,12 +23,18 @@ var skill_data
 export var attackList = []
 var currentSelectedAttack
 
+export var skilldata_file_path = "res://Skills/SkillData.json"
+export var player_node_path : NodePath
+onready var player_node = get_node(player_node_path)
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	chargeProgress = reticule_anchor.find_node("ChargeReticule")
+	if get_tree().is_network_server() or !player_node.control:
+		queue_free()
+	chargeProgress = get_node("ReticuleAnchor/ChargeReticule")
 	
 	var file = File.new()
-	if file.open("res://Skills/SkillData.json", file.READ) != OK:
+	if file.open(skilldata_file_path, file.READ) != OK:
 		print("error opening file")
 		return
 	var file_text = file.get_as_text()
@@ -44,7 +46,7 @@ func _ready():
 	skill_data = file_parse.result
 	if get_parent().MainPawn:
 		# Set attacks
-		attackList = get_parent().get_parent().mainPawnAttackList # Replace with logic to pull from spell selection
+		attackList = player_node.mainPawnAttackList # Replace with logic to pull from spell selection
 	currentSelectedAttack = attackList[0]
 
 func _process(delta):
@@ -53,8 +55,8 @@ func _process(delta):
 
 func _physics_process(_delta : float):
 	# Execute only for local player
-	if get_parent().get_parent().control:
-		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+	if player_node.control:
+		if get_node("../StateManager").allowActions:
 			# Charge attack if holding charge button for shooting projectile
 			if _attack_clicked:
 				_attack_power += _delta
@@ -65,8 +67,8 @@ func _physics_process(_delta : float):
 				shoot(currentSelectedAttack)
 
 func _input(event):
-	if get_parent().get_parent().control:
-		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+	if player_node.control:
+		if get_node("../StateManager").allowActions:
 			# Handle charging projectile strength when shoot input is pressed and held
 			if event.is_action_pressed("shoot"):
 					_attack_clicked = true
@@ -81,7 +83,7 @@ func _input(event):
 					shoot(currentSelectedAttack)
 
 		# Zoom, this will be turned off for non-spectators eventually
-		elif event is InputEventMouseButton and event.pressed and get_parent().get_parent().control:
+		elif event is InputEventMouseButton and event.pressed:
 			if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
 				var currentSelectedAttack = currentSelectedAttack
 				var currentAttackpos = attackList.find(currentSelectedAttack)
@@ -109,14 +111,14 @@ func shoot(skill_type):
 	var projectile_speed = skill['Projectile_Speed']
 	## This is local execution of projectile
 	# Get reticule to find position of reticule
-	var reticule := reticule_anchor.find_node("Reticule")
+	var reticule := get_node("ReticuleAnchor/Reticule")
 	# Grab position of reticule as starting position of projectile
 	var reticule_position = reticule.global_position
 
 	# Summon projectile locally but have it just disappear on impact
-	get_node("/root/").get_node("1").summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, get_parent().get_parent().player_id, skill_type)
+	get_node(player_node.eventHandler_path).summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, int(player_node.clientName), skill_type)
 	# Broadcast RPC so projectile can be shown to other players/server
-	get_node("/root/").get_node("1").rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, get_parent().get_parent().player_id, skill_type)
+	get_node(player_node.eventHandler_path).rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, int(player_node.clientName), skill_type)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -134,7 +136,7 @@ func resetAttack():
 # Render the reticle so it shows projectile charge
 func _render_reticule():
 	# Change rotation of reticule to mouse
-	reticule_anchor.look_at(get_parent().get_global_mouse_position())
+	get_node("ReticuleAnchor").look_at(get_global_mouse_position())
 	# Change charge HUD display so it fills up as charging
 	if _attack_clicked:
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)

@@ -8,16 +8,21 @@ var skyRaycastTimer = Timer.new()
 var mapWidth
 var mapHeight
 var mapDiag
-var lightModifier = .2
-var lightMin = .125
-var lightMax = 12
-var lightTextureOffset = 245
+export var lightModifier = .2
+export var lightMin = .125
+export var lightMax = 12
+export var lightTextureOffset = 245
 var casting = false
+
+export var player_node_path : NodePath
+onready var player_node = get_node(player_node_path)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	mapWidth = get_node("/root/").get_node("environment").get_node("TestMap").maxLength
-	mapHeight = get_node("/root/").get_node("environment").get_node("TestMap").maxHeight
+	if get_tree().is_network_server() or !player_node.control:
+		queue_free()
+	mapWidth = get_node(player_node.map_path).maxLength
+	mapHeight = get_node(player_node.map_path).maxHeight
 	mapDiag = sqrt((mapWidth * mapWidth) + (mapHeight * mapHeight))
 	$SkyRaycastCheck.add_exception(get_parent())
 	$SkyRaycastCheck.cast_to = Vector2(0,mapHeight)
@@ -50,7 +55,7 @@ func updateLightSize():
 
 func _physics_process(_delta : float):
 	$SkyRaycastCheck.force_raycast_update()
-	if $SkyRaycastCheck.is_colliding() and !get_parent().get_parent().get_node("TeleportManager").teleporting:
+	if $SkyRaycastCheck.is_colliding() and !player_node.get_node("TeleportManager").teleporting:
 		if !casting:
 			if skyRaycastTimer.get_time_left() == 0:
 				skyRaycastTimer.start()

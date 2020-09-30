@@ -26,12 +26,18 @@ var lastPlayerOwnerPosition = true
 var root
 # Stores the player's MainPawn child for when the player is being focused.
 var playerOwner
-# Decides if this is the local player so this only happens to the local player character.
-var control = false
 
 var shiftHolding = false
 
 func _ready() -> void:
+	if get_tree().is_network_server() or !get_parent().control:
+		queue_free()
+	# Set camera focus to player
+	target = get_parent().get_node("MainPawn")
+	playerOwner = get_parent().get_node("MainPawn")
+	root = get_parent()
+	lastPlayerOwnerPosition = false
+	make_current()
 	current_position = position
 
 func _input(event):
@@ -50,38 +56,65 @@ func _physics_process(delta: float) -> void:
 		force_update_scroll()
 
 func _unhandled_input(event):
-	# Handles the initial and final trigger for dragging the camera
-	if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT and control:
-		get_tree().set_input_as_handled()
-		if event.is_pressed():
-			if lastPlayerOwnerPosition == false:
-				position = playerOwner.position
-				lastPlayerOwnerPosition = true
-			_previous_position = event.position
-			_move_camera = true
-		else:
-			_move_camera = false
-
-	# Reset camera focus back to the player when reset button is pressed
-	if event.is_action_pressed("reset_camera") and control:
-		lastPlayerOwnerPosition = false
-		position = Vector2.ZERO
-		current_position = playerOwner.position
-
-	# Handle panning when dragging the camera
-	elif event is InputEventMouseMotion and _move_camera and control:
-		get_tree().set_input_as_handled()
-		position += (_previous_position - event.position)
-		_previous_position = event.position
-
-	# Zoom, this will be turned off for non-spectators eventually
-	elif event is InputEventMouseButton and event.pressed and control and shiftHolding:
-		var new_zoom := Vector2.ZERO
-		if event.button_index == BUTTON_WHEEL_UP:
-			new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)
-		elif event.button_index == BUTTON_WHEEL_DOWN:
-			new_zoom = zoom.linear_interpolate(Vector2(1,1), 0.2)
-		
-		if (new_zoom != Vector2.ZERO):
+	if get_parent().control:
+		# Handles the initial and final trigger for dragging the camera
+		if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT:
 			get_tree().set_input_as_handled()
-			zoom = new_zoom
+			if event.is_pressed():
+				if lastPlayerOwnerPosition == false:
+					position = playerOwner.position
+					lastPlayerOwnerPosition = true
+				_previous_position = event.position
+				_move_camera = true
+			else:
+				_move_camera = false
+	
+		# Reset camera focus back to the player when reset button is pressed
+		if event.is_action_pressed("reset_camera"):
+			lastPlayerOwnerPosition = false
+			position = Vector2.ZERO
+			current_position = playerOwner.position
+	
+		# Handle panning when dragging the camera
+		elif event is InputEventMouseMotion and _move_camera:
+			get_tree().set_input_as_handled()
+			position += (_previous_position - event.position)
+			_previous_position = event.position
+	
+		# Zoom, this will be turned off for non-spectators eventually
+		elif event is InputEventMouseButton and event.pressed and shiftHolding:
+			var new_zoom := Vector2.ZERO
+			if event.button_index == BUTTON_WHEEL_UP:
+				new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)
+			elif event.button_index == BUTTON_WHEEL_DOWN:
+				new_zoom = zoom.linear_interpolate(Vector2(1,1), 0.2)
+			
+			if (new_zoom != Vector2.ZERO):
+				get_tree().set_input_as_handled()
+				zoom = new_zoom
+
+func switchFromPlayerCamera():
+	# Reset current camera
+	lastPlayerOwnerPosition = false
+	position = Vector2.ZERO
+	# Remove current camera
+	clear_current()
+	# Set mouse location and view
+	get_viewport().warp_mouse(get_viewport_rect().size / 2)
+
+func switchToPlayerCamera():
+	# Set mouse location and view
+	get_viewport().warp_mouse(get_viewport_rect().size / 2)
+	# Set new pawn camera
+	make_current()
+	# Reset camera position
+	lastPlayerOwnerPosition = false
+	position = Vector2.ZERO
+
+func hideCamera():
+	# Disable HUD
+	get_node("CanvasLayer").get_node("GUI").visible = false
+
+func showCamera():
+	# Enable HUD
+	get_node("CanvasLayer").get_node("GUI").visible = true

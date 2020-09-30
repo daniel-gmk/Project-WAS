@@ -14,6 +14,8 @@ func _ready():
 		camera.root = self
 		camera.playerOwner = self
 		camera.make_current()
+	else:
+		$ServerCamera.queue_free()
 
 func _process(delta):
 	if get_tree().is_network_server():

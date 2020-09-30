@@ -11,7 +11,7 @@ var allowMovement = false
 # Vector tracking movement speed
 export var _speed = 250
 # Vector tracking current gravity
-var gravity = Vector2(0, 1800)
+export var gravity = Vector2(0, 1800)
 # Vector tracking movement/velocity
 var _velocity : Vector2 = Vector2.ZERO
 # Track if in the air or not
@@ -44,23 +44,18 @@ export var fallDamageRate = 2
 
 # Execute when this node loads
 func _ready():
-	if has_node("EntityCollision"):
-		add_collision_exception_with(get_node("EntityCollision"))
 	if MainPawn:
 		add_to_group("PlayerMainPawns")
+	add_collision_exception_with($EntityCollision)
 	set_network_master(1)
 
 func enableCollision():
-	if has_node("BodyCollision"):
-		get_node("BodyCollision").disabled = false
-	if has_node("EntityCollision"):
-		get_node("EntityCollision/EntityCollisionShape").disabled = false
+	$BodyCollision.disabled = false
+	get_node("EntityCollision/EntityCollisionShape").disabled = false
 
 func disableCollision():
-	if has_node("BodyCollision"):
-		get_node("BodyCollision").disabled = true
-	if has_node("EntityCollision"):
-		get_node("EntityCollision/EntityCollisionShape").disabled = true
+	$BodyCollision.disabled = true
+	get_node("EntityCollision/EntityCollisionShape").disabled = true
 
 func resetPhysics():
 	jumping = false
@@ -71,11 +66,11 @@ func resetPhysics():
 func _process(delta):
 	if get_parent().control and MainPawn:
 		# Check if out of map, and if so force teleport
-		if position.y > get_node("/root/").get_node("environment").get_node("TestMap").maxHeight and !get_parent().get_node("TeleportManager").teleporting:
+		if position.y > get_node(get_parent().map_path).maxHeight and !get_node("../TeleportManager").teleporting:
 			position = Vector2(0,0)
 			get_parent().teleportingPawn = self
 			rpc_id(1, "resetPositionRPC")
-			get_parent().get_node("TeleportManager").teleport()
+			get_node("../TeleportManager").teleport()
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
@@ -111,7 +106,7 @@ func move(delta):
 					airTime = false
 					if ((position.y - peakHeight) > fallDamageHeight):
 						# Check fall height and send data to server node to determine damage dealt
-						get_node("/root/").get_node("1").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, str(get_parent().get_parent().name))
+						get_node(get_parent().eventHandler_path).calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, get_parent().clientName)
 
 			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased)
 
@@ -125,8 +120,7 @@ func move(delta):
 # Execute upon input (so far jump and shoot)
 func _input(event):
 	# Only execute locally so input wouldnt change other characters
-	if get_parent().control and get_parent().currentActivePawn == self:
-		if !get_parent().has_node("StateManager") or (get_parent().has_node("StateManager") and get_parent().get_node("StateManager").allowActions):
+	if get_parent().control and get_parent().currentActivePawn == self and $StateManager.allowActions:
 			# Handle jump input when pressed
 			if event.is_action_pressed("jump") and !jumping:
 				#call locally jumpPressed
@@ -183,8 +177,7 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC):
 	self.remote_vel = velocity
 	self.ack = ack
 	# Handles flipping the sprite based on direction
-	if has_node("StateManager"):
-		get_node("StateManager").flipSprite(velocity.x)
+	$StateManager.flipSprite(velocity.x)
 	jumping = jumpingRPC
 	jumpReleased = jumpReleasedRPC
 
