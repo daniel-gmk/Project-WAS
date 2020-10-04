@@ -137,11 +137,18 @@ remote func concludeTeleportServer(id):
 
 		rpc_id(id, "approveConcludeTeleportRequestRPC")
 
-		initialTeleport = false
-
 func concludeTeleportAsServer():
 	rpc("setConcludeTeleportVariablesRPC")
 	setConcludeTeleportVariables()
+	rpc("concludeTeleportInitialRPC")
+	concludeTeleportInitial()
+
+remote func concludeTeleportInitialRPC():
+	concludeTeleportInitial()
+	
+func concludeTeleportInitial():
+	teleportingPawn = null
+	teleporting = false
 
 # All clients receive new information from server on unhiding and allowing resuming of actions
 remote func setConcludeTeleportVariablesRPC():
@@ -227,8 +234,11 @@ remote func broadcastTeleportConclusionRPC():
 	broadcastTeleportConclusion()
 	
 func broadcastTeleportConclusion():
-	teleportingPawn = null
-	teleporting = false
+	if !initialTeleport:
+		teleportingPawn = null
+		teleporting = false
+	else:
+		initialTeleport = false
 
 # Function handling when teleport cooldown is over and teleport is replenished
 func teleportCooldownReset():

@@ -37,7 +37,7 @@ func _ready() -> void:
 	playerOwner = get_parent().get_node("MainPawn")
 	root = get_parent()
 	lastPlayerOwnerPosition = false
-	make_current()
+	#make_current()
 	current_position = position
 
 func _input(event):
