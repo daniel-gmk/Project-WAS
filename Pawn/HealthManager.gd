@@ -6,22 +6,26 @@ export var maxHealth = 10000
 export var MainHealthBar = true
 var health
 var immortal = false
+export var fallDamageImmunity = false
 
 var player_node
 
 ### HUD
 # Track the HUD component path
-export var GUI_node_path : NodePath
+var GUI_node
 # Use the path to grab the Main player's Health bar (Child Component of HUD) as a var
-onready var health_bar_root = get_node(GUI_node_path).find_node("MainHealthBar")
+var health_bar_root
 # Use the path to grab the Main player's Health bar value text (Child Component of Health bar) as a var
-onready var health_bar_text = health_bar_root.find_node("HealthValueText")
+var health_bar_text
 
 func _ready():
 	player_node = get_parent().get_parent()
 	# Set health
 	health = maxHealth
-	if !get_tree().is_network_server() and player_node.control and MainHealthBar:
+	if !get_tree().is_network_server() and player_node.control and MainHealthBar and get_parent().MainPawn:
+		GUI_node = player_node.get_node("PlayerCamera/CanvasLayer/GUI")
+		health_bar_root = GUI_node.find_node("MainHealthBar")
+		health_bar_text = health_bar_root.find_node("HealthValueText")
 		initiate_ui()
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
@@ -39,7 +43,7 @@ func takeDamage(damage):
 	if !immortal:
 		health -= damage
 		# Update health bar HUD
-		if get_tree().get_network_unique_id() == player_node.player_id:
+		if get_tree().get_network_unique_id() == player_node.player_id and get_parent().MainPawn:
 			health_bar_root.value = health
 			health_bar_text.text = String(round(health))
 		# Dead if health falls below min value
@@ -55,7 +59,7 @@ func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate):
 	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")
-	else:
+	elif !fallDamageImmunity:
 		takeDamage(resultingDamage)
 		rpc("takeDamageRPC", resultingDamage)
 

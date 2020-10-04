@@ -65,7 +65,6 @@ texture = ExtResource( 9 )
 
 [node name="HealthManager" type="Node2D" parent="MainPawn"]
 script = ExtResource( 15 )
-GUI_node_path = NodePath("../../PlayerCamera/CanvasLayer/GUI")
 
 [node name="DamageCollisionArea" type="Area2D" parent="MainPawn/HealthManager"]
 visible = false
