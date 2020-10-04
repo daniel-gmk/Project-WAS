@@ -24,13 +24,11 @@ export var attackList = []
 var currentSelectedAttack
 
 export var skilldata_file_path = "res://Skills/SkillData.json"
-export var player_node_path : NodePath
-onready var player_node = get_node(player_node_path)
+var player_node
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	if get_tree().is_network_server() or !player_node.control:
-		queue_free()
+	player_node = get_parent().get_parent()
 	chargeProgress = get_node("ReticuleAnchor/ChargeReticule")
 	
 	var file = File.new()
@@ -67,7 +65,7 @@ func _physics_process(_delta : float):
 				shoot(currentSelectedAttack)
 
 func _input(event):
-	if player_node.control:
+	if player_node.control and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
 		if get_node("../StateManager").allowActions:
 			# Handle charging projectile strength when shoot input is pressed and held
 			if event.is_action_pressed("shoot"):
@@ -116,9 +114,9 @@ func shoot(skill_type):
 	var reticule_position = reticule.global_position
 
 	# Summon projectile locally but have it just disappear on impact
-	get_node(player_node.eventHandler_path).summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, int(player_node.clientName), skill_type)
+	summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
 	# Broadcast RPC so projectile can be shown to other players/server
-	get_node(player_node.eventHandler_path).rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, int(player_node.clientName), skill_type)
+	rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type)
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -140,3 +138,36 @@ func _render_reticule():
 	# Change charge HUD display so it fills up as charging
 	if _attack_clicked:
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)
+
+# Send data of a shot projectile and simulate across server to other players
+remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
+	# If server
+	summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type)
+	# Loop through clients and launch projectile to each
+	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+
+# Send data of a shot projectile and simulate across server to other players
+remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
+	summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+
+# Launches projectile/attack
+func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
+	# Spawn instance of projectile node
+	var scene_dir = "res://Skills/" + skill_type + ".tscn"
+	var projectile_scene = load(scene_dir)
+	var new_projectile := projectile_scene.instance() as RigidBody2D
+	# Initialize other variables for Projectile, details on the variables are on Projectile.gd
+	new_projectile.damage = damage
+	new_projectile.explosion_radius = explosion_radius
+	new_projectile.damage_falloff = damage_falloff
+	new_projectile.ignoreCaster = ignoreSelf
+	new_projectile.casterID = player_node.get_parent()
+	new_projectile.add_collision_exception_with(get_parent())
+	# Apply reticule position as projectile's starting position
+	new_projectile.global_position = startpos
+	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
+	new_projectile.linear_velocity = (startpos - position2) * speed * (attack_power * attack_scale)
+	# Projectile is server so set variable
+	new_projectile.server = isServer
+	# Bring the configured projectile into the scene/world
+	get_node("/root/environment").add_child(new_projectile)

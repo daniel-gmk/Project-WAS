@@ -7,8 +7,7 @@ export var MainHealthBar = true
 var health
 var immortal = false
 
-export var player_node_path : NodePath
-onready var player_node = get_node(player_node_path)
+var player_node
 
 ### HUD
 # Track the HUD component path
@@ -19,6 +18,7 @@ onready var health_bar_root = get_node(GUI_node_path).find_node("MainHealthBar")
 onready var health_bar_text = health_bar_root.find_node("HealthValueText")
 
 func _ready():
+	player_node = get_parent().get_parent()
 	# Set health
 	health = maxHealth
 	if !get_tree().is_network_server() and player_node.control and MainHealthBar:
@@ -49,6 +49,15 @@ func takeDamage(damage):
 # Handles when dead, not implemented yet since gamemode should be created first
 func death():
 	print("I died")
+
+# Has the server calculate fall damage and distribute that information to clients
+func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate):
+	var resultingDamage = (fallHeight - fallDamageHeight) * fallDamageRate
+	if resultingDamage < 0:
+		print("Error, damage is negative when they should be taking damage")
+	else:
+		takeDamage(resultingDamage)
+		rpc("takeDamageRPC", resultingDamage)
 
 # Server receives call to locally execute damage and also replicate damage to clients
 func serverBroadcastDamageRPC(damage):

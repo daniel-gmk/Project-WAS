@@ -6,15 +6,19 @@ var old_movement = Vector2()
 var movement_counter = 0
 var movement_list = []
 var time = 0
+var player_node
+
+func _ready():
+	player_node = get_parent().get_parent()
 
 func _physics_process(delta):
-	if is_network_master():
+	if is_network_master() and !get_parent().terminatePending:
 		send_inputs(delta)
 		check_ackowledged_inputs()
 
 func _unhandled_input(event):
 	# Client code
-	if is_network_master():
+	if is_network_master() and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
 		if(event.is_action_pressed("left")):
 			movement.x = -1
 		if(event.is_action_pressed("right")):

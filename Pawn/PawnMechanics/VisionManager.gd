@@ -14,11 +14,11 @@ export var lightMax = 12
 export var lightTextureOffset = 245
 var casting = false
 
-export var player_node_path : NodePath
-onready var player_node = get_node(player_node_path)
+var player_node
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	player_node = get_parent().get_parent()
 	if get_tree().is_network_server() or !player_node.control:
 		queue_free()
 	mapWidth = get_node(player_node.map_path).maxLength

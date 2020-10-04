@@ -1,7 +1,7 @@
 extends Node2D
 
 # Track if actions are allowed at all
-var allowActions = false
+export var allowActions = false
 
 func showSpriteOnly():
 	$Sprite.visible = true

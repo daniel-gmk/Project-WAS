@@ -19,6 +19,7 @@ func _process(delta):
 
 # If the spot is available for teleporting, send instructions to player node to teleport
 func _input(event):
-	if event.is_action_pressed("shoot"):
+	if event.is_action_pressed("shoot") and get_node("../TeleportManager").serverCompletedResponse:
 		if $Sprite.get_node("Area2D").get_overlapping_bodies().size() == 0:
 			get_parent().get_node("TeleportManager").requestTeleportToServer($Sprite.position)
+			get_node("../TeleportManager").serverCompletedResponse = false

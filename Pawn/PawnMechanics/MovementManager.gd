@@ -7,7 +7,7 @@ export var MainPawn = true
 
 ### Physics
 # Track if is allowed to move
-var allowMovement = false
+export var allowMovement = false
 # Vector tracking movement speed
 export var _speed = 250
 # Vector tracking current gravity
@@ -42,6 +42,9 @@ export var fallDamageHeight = 400
 # Variable that determines damage increase rate based on falloff
 export var fallDamageRate = 2
 
+var terminatePending = false
+var terminateTimer = Timer.new()
+
 # Execute when this node loads
 func _ready():
 	if MainPawn:
@@ -64,13 +67,21 @@ func resetPhysics():
 
 # Execute every tick
 func _process(delta):
-	if get_parent().control and MainPawn:
+	if get_parent().control and !terminatePending:
 		# Check if out of map, and if so force teleport
-		if position.y > get_node(get_parent().map_path).maxHeight and !get_node("../TeleportManager").teleporting:
+		if position.y > get_node(get_parent().map_path).maxHeight:
 			position = Vector2(0,0)
-			get_parent().teleportingPawn = self
-			rpc_id(1, "resetPositionRPC")
-			get_node("../TeleportManager").teleport()
+			$MovementInputManager.movement.x = 0
+			if MainPawn:
+				if !get_node("../TeleportManager").teleporting:
+					get_node("../TeleportManager").teleporting = true
+					rpc_id(1, "resetPositionRPC")
+					get_node("../TeleportManager").setTeleportingPawnToServer(name)
+			else:
+				if !get_tree().is_network_server():
+					terminatePending = true
+					rpc_id(1, "terminatePendingServer")
+					get_parent().removePawnCallServer(name)
 
 # Execute every physics tick, look at documentation for difference between _process and _physics_process tick
 func _physics_process(_delta : float):
@@ -106,8 +117,8 @@ func move(delta):
 					airTime = false
 					if ((position.y - peakHeight) > fallDamageHeight):
 						# Check fall height and send data to server node to determine damage dealt
-						get_node(get_parent().eventHandler_path).calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate, get_parent().clientName)
-
+						if has_node("HealthManager"):
+							get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
 			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased)
 
 		else:
@@ -120,7 +131,7 @@ func move(delta):
 # Execute upon input (so far jump and shoot)
 func _input(event):
 	# Only execute locally so input wouldnt change other characters
-	if get_parent().control and get_parent().currentActivePawn == self and $StateManager.allowActions:
+	if get_parent().control and !get_node("../TeleportManager").teleporting and get_parent().currentActivePawn == self and $StateManager.allowActions:
 			# Handle jump input when pressed
 			if event.is_action_pressed("jump") and !jumping:
 				#call locally jumpPressed
@@ -193,3 +204,18 @@ remote func jumpPressedRPC():
 # RPC for jump release event
 remote func jumpReleasedRPC():
 	jumpReleased()
+
+remote func terminatePendingServer():
+	terminatePending = true
+
+func terminate():
+	terminateTimer.set_wait_time(5)
+	# Make sure its not just a one time execution and loops infinitely
+	terminateTimer.set_one_shot(true)
+	# Perform inAction_loop function each execution
+	terminateTimer.connect("timeout", self, "terminateTimerComplete")
+	add_child(terminateTimer)
+	terminateTimer.start()
+	
+func terminateTimerComplete():
+	queue_free()

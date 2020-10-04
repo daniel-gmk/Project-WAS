@@ -50,13 +50,10 @@ position = Vector2( 0, -2 )
 shape = SubResource( 2 )
 
 [node name="EntityCollision" type="StaticBody2D" parent="MainPawn"]
-visible = false
-position = Vector2( 0, -10 )
 collision_layer = 16
 collision_mask = 16
 
 [node name="EntityCollisionShape" type="CollisionShape2D" parent="MainPawn/EntityCollision"]
-position = Vector2( 0, 10 )
 shape = SubResource( 3 )
 
 [node name="StateManager" type="Node2D" parent="MainPawn"]
@@ -68,7 +65,6 @@ texture = ExtResource( 9 )
 
 [node name="HealthManager" type="Node2D" parent="MainPawn"]
 script = ExtResource( 15 )
-player_node_path = NodePath("../..")
 GUI_node_path = NodePath("../../PlayerCamera/CanvasLayer/GUI")
 
 [node name="DamageCollisionArea" type="Area2D" parent="MainPawn/HealthManager"]
@@ -81,7 +77,6 @@ shape = SubResource( 4 )
 
 [node name="AttackManager" type="Node2D" parent="MainPawn"]
 script = ExtResource( 5 )
-player_node_path = NodePath("../..")
 
 [node name="ReticuleAnchor" type="Node2D" parent="MainPawn/AttackManager"]
 
@@ -108,7 +103,6 @@ texture = ExtResource( 4 )
 
 [node name="VisionManager" type="Node2D" parent="MainPawn"]
 script = ExtResource( 8 )
-player_node_path = NodePath("../..")
 
 [node name="LightSource" type="Light2D" parent="MainPawn/VisionManager"]
 visible = false

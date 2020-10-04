@@ -97,6 +97,7 @@ func switchFromPlayerCamera():
 	# Reset current camera
 	lastPlayerOwnerPosition = false
 	position = Vector2.ZERO
+	get_parent().currentActivePawn.get_node("MovementInputManager").movement.x = 0
 	# Remove current camera
 	clear_current()
 	# Set mouse location and view
@@ -105,6 +106,7 @@ func switchFromPlayerCamera():
 func switchToPlayerCamera():
 	# Set mouse location and view
 	get_viewport().warp_mouse(get_viewport_rect().size / 2)
+	get_parent().currentActivePawn.get_node("MovementInputManager").movement.x = 0
 	# Set new pawn camera
 	make_current()
 	# Reset camera position
@@ -118,3 +120,7 @@ func hideCamera():
 func showCamera():
 	# Enable HUD
 	get_node("CanvasLayer").get_node("GUI").visible = true
+
+func changeTarget(node):
+	target = node
+	playerOwner = node

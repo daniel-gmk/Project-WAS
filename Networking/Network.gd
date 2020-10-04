@@ -195,5 +195,3 @@ remote func startPlayerGameCharacterRPC2(peer_id):
 # Called by all clients to have their client node instantiate the player/MainPawn node
 func startPlayerGameCharacter(peer_id):
 	get_node("/root/").get_node(str(peer_id)).startGameCharacter()
-	# Gives the authority of the input manager to the player
-	get_node("/root/").get_node(str(peer_id)).get_node("Player").get_node("MainPawn").get_node("MovementInputManager").set_network_master(peer_id)

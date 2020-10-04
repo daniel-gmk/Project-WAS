@@ -24,9 +24,14 @@ var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
 
+var teleportingPawn
+
 var initialTeleport = true
 
+var serverCompletedResponse = false
+
 func _ready():
+	teleportingPawn = get_node("../MainPawn")
 	if !get_tree().is_network_server() and get_parent().get_parent().control:
 		initialize()
 
@@ -48,15 +53,26 @@ func initialize():
 	teleportCheckTimer.connect("timeout", self, "checkTeleportReachedRPC")
 	add_child(teleportCheckTimer)
 	
-	get_parent().player_id
-	get_parent().teleportingPawn
-	
 	rpc_id(1, "initiateTeleportServer", get_parent().player_id)
 	
+func setTeleportingPawnToServer(pawnName):
+	rpc_id(1, "setTeleportingPawnServer", pawnName)
+
+remote func setTeleportingPawnServer(pawnName):
+	setTeleportingPawn(pawnName)
+	rpc("setTeleportingPawnRPC", pawnName)
+
+remote func setTeleportingPawnRPC(pawnName):
+	setTeleportingPawn(pawnName)
+
+func setTeleportingPawn(pawnName):
+	teleportingPawn = get_parent().get_node(pawnName)
+	if get_parent().control:
+		teleport()
+
 # Calls teleporting from other nodes
 func teleport():
 	# Set teleporting
-	teleporting = true
 	teleportCheckTimer.start()
 	rpc_id(1, "initiateTeleportServer", get_parent().player_id)
 
@@ -77,7 +93,7 @@ remote func teleportPlayerRPC(pos):
 
 # Function that changes position of player to new position
 func teleportPlayer(pos):
-	get_parent().teleportingPawn.position = pos
+	teleportingPawn.position = pos
 
 # Server knows to freeze and hide player for ALL clients
 remote func initiateTeleportServer(id):
@@ -95,9 +111,9 @@ remote func setInitiateTeleportVariablesRPC():
 func setInitiateTeleportVariables():
 	if initialTeleport:
 		add_to_group("TeleportManagers")
-	if get_parent().teleportingPawn.has_node("StateManager"):
-		get_parent().teleportingPawn.get_node("StateManager").freeze()
-		get_parent().teleportingPawn.get_node("StateManager").hide()
+	if teleportingPawn.has_node("StateManager"):
+		teleportingPawn.get_node("StateManager").freeze()
+		teleportingPawn.get_node("StateManager").hide()
 	if get_parent().has_node("PlayerCamera"):
 		get_parent().get_node("PlayerCamera").hideCamera()
 	teleporting = true
@@ -118,7 +134,7 @@ remote func concludeTeleportServer(id):
 		else:
 			rpc("setConcludeTeleportVariablesRPC")
 			setConcludeTeleportVariables()
-		
+
 		rpc_id(id, "approveConcludeTeleportRequestRPC")
 
 		initialTeleport = false
@@ -134,19 +150,18 @@ remote func setConcludeTeleportVariablesRPC():
 # Unhide and allow resuming of actions
 func setConcludeTeleportVariables():
 	# RPC the player sprite being visible and able to take damage again
-	if get_parent().teleportingPawn.has_node("StateManager"):
-		get_parent().teleportingPawn.get_node("StateManager").reset()
-		get_parent().teleportingPawn.get_node("StateManager").show()
+	if teleportingPawn.has_node("StateManager"):
+		teleportingPawn.get_node("StateManager").reset()
+		teleportingPawn.get_node("StateManager").show()
 	if get_parent().has_node("PlayerCamera"):
 		get_parent().get_node("PlayerCamera").showCamera()
-	teleporting = false
 
 remote func showPawnRPC():
 	showPawn()
 
 func showPawn():
-	if get_parent().teleportingPawn.has_node("StateManager"):
-		get_parent().teleportingPawn.get_node("StateManager").showSpriteOnly()
+	if teleportingPawn.has_node("StateManager"):
+		teleportingPawn.get_node("StateManager").showSpriteOnly()
 
 # Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
 remote func approveConcludeTeleportRequestRPC():
@@ -160,8 +175,6 @@ func initiateTeleport():
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(true)
 	
-	teleport_check = true
-	
 	# Change to teleporting mode
 	teleport_instance = teleport_node.instance()
 	# Get map center location:
@@ -173,8 +186,9 @@ func initiateTeleport():
 	# Set teleport's camera and location
 	teleport_instance.setCamera()
 	teleport_instance.setCameraLocation(map_center_location)
-	# Set current pawn
-	get_parent().currentActivePawn = teleport_instance
+	
+	serverCompletedResponse = true
+	teleport_check = true
 
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
@@ -186,20 +200,34 @@ func concludeTeleport():
 	if get_parent().has_node("PlayerCamera"):
 		get_parent().get_node("PlayerCamera").switchToPlayerCamera()
 	
-	# Set current pawn
-	get_parent().currentActivePawn = get_parent().teleportingPawn
 	# Remove old node
 	teleport_instance.queue_free()
+	
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").changeTarget(teleportingPawn)
+	
+	get_parent().switchToPawn(teleportingPawn.name)
 	
 	# If cooldown is active (>0), resume the cooldown and deal cooldown penalty
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(false)
-		var pawnHealthManager = get_parent().currentActivePawn.get_node("HealthManager")
+		var pawnHealthManager = teleportingPawn.get_node("HealthManager")
 		pawnHealthManager.serverBroadcastDamageRPC(max(pawnHealthManager.maxHealth * teleport_penalty_damage_mincheck1, pawnHealthManager.health * teleport_penalty_damage_mincheck2))
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
+
+	rpc_id(1, "broadcastTeleportConclusionServer")
 	
+remote func broadcastTeleportConclusionServer():
+	broadcastTeleportConclusion()
+	rpc("broadcastTeleportConclusionRPC")
+	
+remote func broadcastTeleportConclusionRPC():
+	broadcastTeleportConclusion()
+	
+func broadcastTeleportConclusion():
+	teleportingPawn = null
 	teleporting = false
 
 # Function handling when teleport cooldown is over and teleport is replenished
