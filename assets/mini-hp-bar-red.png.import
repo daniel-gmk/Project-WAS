@@ -1,0 +1,13 @@
+[remap]
+
+importer="image"
+type="Image"
+path="res://.import/mini-hp-bar-red.png-7fee7ada6dcc8b7f63503dfa28c02769.image"
+
+[deps]
+
+source_file="res://assets/mini-hp-bar-red.png"
+dest_files=[ "res://.import/mini-hp-bar-red.png-7fee7ada6dcc8b7f63503dfa28c02769.image" ]
+
+[params]
+

@@ -148,7 +148,7 @@ remote func summonProjectileServer(startpos, position2, speed, attack_power, att
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, senderPlayerID):
-	if senderPlayerID != int(player_node.clientName):
+	if senderPlayerID != get_tree().get_network_unique_id():
 		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
 
 # Launches projectile/attack

@@ -3,7 +3,6 @@ extends Node2D
 ### Health
 var minHealth = 0
 export var maxHealth = 10000
-export var MainHealthBar = true
 var health
 var immortal = false
 export var fallDamageImmunity = false
@@ -14,19 +13,27 @@ var player_node
 # Track the HUD component path
 var GUI_node
 # Use the path to grab the Main player's Health bar (Child Component of HUD) as a var
-var health_bar_root
+var main_health_bar_root
 # Use the path to grab the Main player's Health bar value text (Child Component of Health bar) as a var
-var health_bar_text
+var main_health_bar_text
+
+var mini_health_bar_root
 
 func _ready():
 	player_node = get_parent().get_parent()
 	# Set health
 	health = maxHealth
-	if !get_tree().is_network_server() and player_node.control and MainHealthBar and get_parent().MainPawn:
-		GUI_node = player_node.get_node("PlayerCamera/CanvasLayer/GUI")
-		health_bar_root = GUI_node.find_node("MainHealthBar")
-		health_bar_text = health_bar_root.find_node("HealthValueText")
-		initiate_ui()
+	if !get_tree().is_network_server():
+		if get_parent().MainPawn and player_node.control:
+			if has_node("MiniHPBar"):
+				get_node("MiniHPBar").queue_free()
+			GUI_node = player_node.get_node("PlayerCamera/CanvasLayer/GUI")
+			main_health_bar_root = GUI_node.find_node("MainHealthBar")
+			main_health_bar_text = main_health_bar_root.find_node("HealthValueText")
+			initiate_main_health_ui()
+		elif has_node("MiniHPBar"):
+			mini_health_bar_root = get_node("MiniHPBar")
+			initiate_mini_health_ui()
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
 
@@ -36,6 +43,14 @@ func enableDamageCollision():
 func disableDamageCollision():
 	get_node("DamageCollisionArea/DamageCollision").disabled = true
 
+func hideHPBar():
+	if has_node("MiniHPBar"):
+		get_node("MiniHPBar").visible = false
+
+func showHPBar():
+	if has_node("MiniHPBar"):
+		get_node("MiniHPBar").visible = true
+
 # Handles when damage is taken
 func takeDamage(damage):
 	if damage < 0:
@@ -43,9 +58,12 @@ func takeDamage(damage):
 	if !immortal:
 		health -= damage
 		# Update health bar HUD
-		if get_tree().get_network_unique_id() == player_node.player_id and get_parent().MainPawn:
-			health_bar_root.value = health
-			health_bar_text.text = String(round(health))
+		if get_tree().get_network_unique_id() == player_node.player_id:
+			if get_parent().MainPawn:
+				main_health_bar_root.value = health
+				main_health_bar_text.text = String(round(health))
+		if has_node("MiniHPBar") and !get_tree().is_network_server():
+			mini_health_bar_root.value = health
 		# Dead if health falls below min value
 		if health <= minHealth:
 			death()
@@ -76,9 +94,16 @@ remote func takeDamageRPC(damage):
 #################################UI FUNCTIONS
 
 # Set UI
-func initiate_ui():
+func initiate_main_health_ui():
 	# Set Health Bar
-	health_bar_root.max_value = maxHealth
-	health_bar_root.min_value = minHealth
-	health_bar_root.value = health
-	health_bar_text.text = String(health)
+	main_health_bar_root.max_value = maxHealth
+	main_health_bar_root.min_value = minHealth
+	main_health_bar_root.value = health
+	main_health_bar_text.text = String(health)
+	
+# Set UI
+func initiate_mini_health_ui():
+	# Set Health Bar
+	mini_health_bar_root.max_value = maxHealth
+	mini_health_bar_root.min_value = minHealth
+	mini_health_bar_root.value = health
