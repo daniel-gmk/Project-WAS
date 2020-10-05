@@ -116,7 +116,7 @@ func shoot(skill_type):
 	# Summon projectile locally but have it just disappear on impact
 	summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
 	# Broadcast RPC so projectile can be shown to other players/server
-	rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type)
+	rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, int(player_node.clientName))
 	# Reset the charge
 	_attack_power = 0
 	_attack_clicked = false
@@ -140,15 +140,16 @@ func _render_reticule():
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
+remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, senderPlayerID):
 	# If server
 	summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type)
 	# Loop through clients and launch projectile to each
-	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type, senderPlayerID)
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
-	summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, senderPlayerID):
+	if senderPlayerID != int(player_node.clientName):
+		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
 
 # Launches projectile/attack
 func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
