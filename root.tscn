@@ -11,8 +11,8 @@
 [sub_resource type="ShaderMaterial" id=1]
 render_priority = 1
 shader = ExtResource( 3 )
-shader_param/ScaleMultiplier = 4
-shader_param/screen_space = null
+shader_param/outline_width = 2.0
+shader_param/outline_color = null
 shader_param/mask_texture = ExtResource( 2 )
 
 [node name="environment" type="Node2D"]

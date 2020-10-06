@@ -44,6 +44,8 @@ func removePawn(pawn_id):
 	if erasePawn == currentActivePawn:
 		switchPawn()
 	pawnList.erase(erasePawn)
+	if erasePawn.has_node("HealthManager"):
+		erasePawn.get_node("HealthManager").hideMiniHPBar()
 	erasePawn.get_node("StateManager").freeze()
 	erasePawn.get_node("StateManager").hide()
 	erasePawn.terminate()

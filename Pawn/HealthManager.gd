@@ -43,11 +43,11 @@ func enableDamageCollision():
 func disableDamageCollision():
 	get_node("DamageCollisionArea/DamageCollision").disabled = true
 
-func hideHPBar():
+func hideMiniHPBar():
 	if has_node("MiniHPBar"):
 		get_node("MiniHPBar").visible = false
 
-func showHPBar():
+func showMiniHPBar():
 	if has_node("MiniHPBar"):
 		get_node("MiniHPBar").visible = true
 

@@ -112,7 +112,7 @@ func setInitiateTeleportVariables():
 	if initialTeleport:
 		add_to_group("TeleportManagers")
 	if teleportingPawn.has_node("HealthManager"):
-		teleportingPawn.get_node("HealthManager").hideHPBar()
+		teleportingPawn.get_node("HealthManager").hideMiniHPBar()
 	if teleportingPawn.has_node("StateManager"):
 		teleportingPawn.get_node("StateManager").freeze()
 		teleportingPawn.get_node("StateManager").hide()
@@ -160,7 +160,7 @@ remote func setConcludeTeleportVariablesRPC():
 func setConcludeTeleportVariables():
 	# RPC the player sprite being visible and able to take damage again
 	if teleportingPawn.has_node("HealthManager"):
-		teleportingPawn.get_node("HealthManager").showHPBar()
+		teleportingPawn.get_node("HealthManager").showMiniHPBar()
 	if teleportingPawn.has_node("StateManager"):
 		teleportingPawn.get_node("StateManager").reset()
 		teleportingPawn.get_node("StateManager").show()
