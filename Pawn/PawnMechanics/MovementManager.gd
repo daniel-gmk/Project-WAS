@@ -45,19 +45,24 @@ export var fallDamageRate = 2
 var terminatePending = false
 var terminateTimer = Timer.new()
 
+var entityColliding = false
+
 # Execute when this node loads
 func _ready():
 	if MainPawn:
 		add_to_group("PlayerMainPawns")
-	add_collision_exception_with($EntityCollision)
 	set_network_master(1)
 
 func enableCollision():
 	$BodyCollision.disabled = false
+	$RayCollision.disabled = false
+	$GroundRayCastCheck.enabled = true
 	get_node("EntityCollision/EntityCollisionShape").disabled = false
 
 func disableCollision():
 	$BodyCollision.disabled = true
+	$RayCollision.disabled = true
+	$GroundRayCastCheck.enabled = false
 	get_node("EntityCollision/EntityCollisionShape").disabled = true
 
 func resetPhysics():
@@ -97,7 +102,9 @@ func move(delta):
 			_velocity.x = _speed * $MovementInputManager.movement.x
 			# Apply gravity
 			_velocity += gravity * delta
-			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), true)
+			$GroundRayCastCheck.force_raycast_update()
+			if !entityColliding or $MovementInputManager.movement.x != 0 or !$GroundRayCastCheck.is_colliding() or jumping:
+				_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
 			
 			if _velocity.y >= -50 and !jumpReleased:
 				jumpReleased = true
@@ -170,8 +177,9 @@ func move_with_reconciliation(delta):
 	if movement_list.size() > 0:
 		for i in range(movement_list.size()):
 			var mov = movement_list[i]
-	
-			vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta, Vector2.UP, true, 4, deg2rad(60.0), true)
+			$GroundRayCastCheck.force_raycast_update()
+			if !entityColliding or $MovementInputManager.movement.x != 0 or !$GroundRayCastCheck.is_colliding() or jumping:
+				vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta, Vector2.UP, true, 4, deg2rad(60.0), false)
 	
 	interpolate(old_transform)
 
@@ -219,3 +227,11 @@ func terminate():
 	
 func terminateTimerComplete():
 	queue_free()
+
+func _on_EntityCollision_area_entered(area):
+	if area != self:
+		entityColliding = true
+
+func _on_EntityCollision_area_exited(area):
+	if area != self:
+		entityColliding = false
