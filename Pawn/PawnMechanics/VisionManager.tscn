@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/light.png" type="Texture" id=1]
+[ext_resource path="res://Pawn/PawnMechanics/VisionManager.gd" type="Script" id=2]
+
+[node name="VisionManager" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="LightSource" type="Light2D" parent="."]
+visible = false
+texture = ExtResource( 1 )
+mode = 2
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color( 0, 0, 0, 1 )
+
+[node name="SkyRaycastCheck" type="RayCast2D" parent="."]
+position = Vector2( 0, -20 )
+rotation = -3.14159
+enabled = true
+exclude_parent = false

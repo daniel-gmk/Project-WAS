@@ -104,7 +104,7 @@ func move(delta):
 			_velocity += gravity * delta
 			$GroundRayCastCheck.force_raycast_update()
 			if !entityColliding or $MovementInputManager.movement.x != 0 or !$GroundRayCastCheck.is_colliding() or jumping:
-				_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), false)
+				_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(60.0), true)
 			
 			if _velocity.y >= -50 and !jumpReleased:
 				jumpReleased = true
@@ -179,7 +179,7 @@ func move_with_reconciliation(delta):
 			var mov = movement_list[i]
 			$GroundRayCastCheck.force_raycast_update()
 			if !entityColliding or $MovementInputManager.movement.x != 0 or !$GroundRayCastCheck.is_colliding() or jumping:
-				vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta, Vector2.UP, true, 4, deg2rad(60.0), false)
+				vel = move_and_slide(mov[2].normalized()*_speed*mov[1]/delta, Vector2.UP, true, 4, deg2rad(60.0), true)
 	
 	interpolate(old_transform)
 
