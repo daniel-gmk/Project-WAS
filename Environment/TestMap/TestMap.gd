@@ -153,8 +153,8 @@ func loadTerrain(terrainSeed, ip):
 	var placingWidth = 0
 	var placingHeight = 0
 	# Size of chunks
-	var cropWidth = 500
-	var cropHeight = 375
+	var cropWidth = 300
+	var cropHeight = 225
 	
 	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
 	while placingWidth < image.get_width():

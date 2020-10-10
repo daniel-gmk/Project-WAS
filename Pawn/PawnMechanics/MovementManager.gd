@@ -51,6 +51,7 @@ var entityColliding = false
 func _ready():
 	if MainPawn:
 		add_to_group("PlayerMainPawns")
+	add_collision_exception_with($MainCollision)
 	set_network_master(1)
 
 func enableCollision():
