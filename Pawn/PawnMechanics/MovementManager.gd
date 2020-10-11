@@ -9,7 +9,7 @@ export var MainPawn = true
 # Track if is allowed to move
 export var allowMovement = false
 # Vector tracking movement speed
-export var _speed = 250
+export var _speed = 220
 # Vector tracking current gravity
 export var gravity = Vector2(0, 1800)
 # Vector tracking movement/velocity
