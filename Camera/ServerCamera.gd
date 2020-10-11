@@ -45,7 +45,7 @@ func _unhandled_input(event):
 		if event.button_index == BUTTON_WHEEL_UP:
 			new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)
 		elif event.button_index == BUTTON_WHEEL_DOWN:
-			new_zoom = zoom.linear_interpolate(Vector2(2,2), 0.2)
+			new_zoom = zoom.linear_interpolate(Vector2(6,6), 1)
 		
 		if (new_zoom != Vector2.ZERO):
 			get_tree().set_input_as_handled()

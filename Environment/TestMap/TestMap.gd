@@ -1,8 +1,19 @@
 extends Sprite
 
+var cameraNode
+var controlNode
+var progressBarNode
+var progressBarTextNode
+
 # Track the max length and height of the map for boundary checks
-var maxLength
-var maxHeight
+var maxLength = 6000
+var maxHeight = 4500
+
+var _chunk_threads := Array()
+
+func _exit_tree():
+	for thread in _chunk_threads:
+		thread.wait_to_finish()
 
 # Generates the entire terrain and collision from seed, unique and dynamic shape
 # TODO: Save colors as variables. For now:
@@ -11,20 +22,47 @@ var maxHeight
 # Color 0 0 1 1 is blue
 # Color 0 0 0 1 is black
 func loadTerrain(terrainSeed, ip):
+	cameraNode = get_node("/root/environment/Camera")
+	cameraNode.position = Vector2(maxLength/2, maxHeight/2)
+	cameraNode.zoom = Vector2(6,6)
+	controlNode = cameraNode.get_node("CanvasLayer/Control")
+	controlNode.visible = true
+	progressBarNode = controlNode.get_node("ProgressBar")
+	progressBarTextNode = controlNode.get_node("Label")
+	
+	var thread := Thread.new()
+	var error = thread.start(self, "loadThread", [terrainSeed])
+	if error != OK:
+		print("Error creating destruction thread: ", error)
+	_chunk_threads.push_back(thread)
+
+	# After everything is loaded and done, client can reconnect to server
+	if !get_tree().is_network_server():
+		var network = get_node("/root/Network")
+		network.terrain_loaded()
+
+func loadThread(arguments : Array):
+	progressBarNode.value = 5
+	progressBarTextNode.text = "Loading Image Data"
 	# Loads the image into file
 	var image = texture.get_data()
+	set_texture(null)
+	visible = true
 	# Locks image so pixels can be retrieved and modified
 	image.lock()
 	
+	progressBarNode.value = 10
+	progressBarTextNode.text = "Generating Random Terrain"
+	
 	# First perlin noise is for the blue contour
 	var noise = OpenSimplexNoise.new()
-	noise.seed = terrainSeed
+	noise.seed = arguments[0]
 	noise.octaves = 1
 	noise.period = 60.0
 	noise.persistence = .8
 
 	var noise2 = OpenSimplexNoise.new()
-	noise2.seed = terrainSeed
+	noise2.seed = arguments[0]
 	noise2.octaves = 1
 	noise2.period = 30.0
 	noise2.persistence = .8
@@ -61,7 +99,9 @@ func loadTerrain(terrainSeed, ip):
 				# Apply yellow marker color to perlin patterns
 				if value > threshold:
 					image.set_pixel(w, h, Color(1,1,0,1)) # Yellow
-
+	
+	progressBarNode.value = 15
+	progressBarTextNode.text = "Filling Random Terrain"
 
 	# This component grows the base terrain (white) to the areas touching it that are surrounded by perlin patterns.
 	var pt
@@ -138,15 +178,22 @@ func loadTerrain(terrainSeed, ip):
 
 	# Unlocks image so size can be adjusted
 	image.unlock()
+	
+	progressBarNode.value = 20
+	progressBarTextNode.text = "Expanding Terrain Size"
 
 	image.resize(6000,4500,0)
+	
+	progressBarNode.value = 25
+	progressBarTextNode.text = "Adding Sky"
+
 	var sky = get_parent().get_node("Sky")
+	sky.visible = true
 	sky.scale = Vector2(image.get_width() / sky.texture.get_data().get_width(), image.get_height() / sky.texture.get_data().get_height())
-	maxLength = position.x + image.get_width()
-	maxHeight = position.y + image.get_height()
 
 	# Variables used for below optimization function
-
+	progressBarNode.value = 30
+	progressBarTextNode.text = "Adding Chunks"
 	# Tracks which sub-image we are at
 	var count = 0
 	# Tracks current location in overall image
@@ -156,11 +203,14 @@ func loadTerrain(terrainSeed, ip):
 	var cropWidth = 300
 	var cropHeight = 225
 	
+	var loadRate = float((maxLength * maxHeight) / (cropWidth * cropHeight))
 	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
 	while placingWidth < image.get_width():
 		# Reset the height every time we get to a new width chunk (reset column every row)
 		placingHeight = 0
 		while placingHeight < image.get_height():
+			var rateValue = float(progressBarNode.max_value - 30)
+			progressBarNode.value = 30 + (rateValue * (count / loadRate))
 			# Make children sprites of overall sprite with sub-images
 			var childSprite = Sprite.new()
 			childSprite.name = name + "-" + str(count)
@@ -227,10 +277,4 @@ func loadTerrain(terrainSeed, ip):
 
 			placingHeight += cropHeight
 		placingWidth += cropWidth
-
-	self.set_texture(null)
-
-	# After everything is loaded and done, client can reconnect to server
-	if !get_tree().is_network_server():
-		var network = get_node("/root/Network")
-		network.rejoin_server_after_terrain(ip)
+	controlNode.visible = false

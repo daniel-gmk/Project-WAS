@@ -1,23 +1,21 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/test-terrain-base-9.png" type="Texture" id=1]
-[ext_resource path="res://assets/test-background.png" type="Texture" id=2]
-[ext_resource path="res://VisualEffects/parent_material.shader" type="Shader" id=3]
 [ext_resource path="res://Control.gd" type="Script" id=4]
 [ext_resource path="res://Camera/Camera.gd" type="Script" id=5]
 [ext_resource path="res://Environment/TestMap/TestMap.gd" type="Script" id=6]
 [ext_resource path="res://assets/sky.png" type="Texture" id=8]
 
-[sub_resource type="ShaderMaterial" id=1]
-render_priority = 1
-shader = ExtResource( 3 )
-shader_param/outline_width = 2.0
-shader_param/outline_color = null
-shader_param/mask_texture = ExtResource( 2 )
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.988235, 0.976471, 0.87451, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.486275, 0.486275, 0.486275, 1 )
 
 [node name="environment" type="Node2D"]
 
 [node name="Sky" type="Sprite" parent="."]
+visible = false
 texture = ExtResource( 8 )
 centered = false
 
@@ -71,8 +69,48 @@ margin_bottom = 169.593
 current = true
 script = ExtResource( 5 )
 
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera"]
+
+[node name="Control" type="Control" parent="Camera/CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -299.5
+margin_right = 512.0
+margin_bottom = 299.5
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressBar" type="ProgressBar" parent="Camera/CanvasLayer/Control"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -284.5
+margin_top = 16.379
+margin_right = 284.5
+margin_bottom = 38.379
+custom_styles/fg = SubResource( 1 )
+custom_styles/bg = SubResource( 2 )
+custom_colors/font_color = Color( 0.133333, 0.133333, 0.133333, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Camera/CanvasLayer/Control"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -233.5
+margin_top = 47.877
+margin_right = 233.5
+margin_bottom = 68.877
+text = "Loading Terrain"
+align = 1
+
 [node name="TestMap" type="Sprite" parent="."]
-material = SubResource( 1 )
+visible = false
 texture = ExtResource( 1 )
 centered = false
 script = ExtResource( 6 )

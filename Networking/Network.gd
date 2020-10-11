@@ -96,9 +96,11 @@ func _connected_ok():
 	# If terrain is not loaded yet, receive seed int from server to load terrain and reconnect
 	if !loadedTerrain:
 		rpc_id(1, "server_send_terrain_seed", get_tree().get_network_unique_id())
-	else:
-		# Receive handshake from server, notifying it is connected and having server allow client to proceed registration
-		rpc_id(1, "user_ready", get_tree().get_network_unique_id(), player_name, loadedTerrain)
+
+func terrain_loaded():
+	loadedTerrain = true
+	# Receive handshake from server, notifying it is connected and having server allow client to proceed registration
+	rpc_id(1, "user_ready", get_tree().get_network_unique_id(), player_name, loadedTerrain)
 
 # Server receives handshake from client, sends client back instructions on registration
 remote func user_ready(id, player_name, loadedTerrain):
@@ -150,20 +152,12 @@ func spawn_player(id, loadedTerrain):
 remote func server_send_terrain_seed(id):
 	if get_tree().is_network_server():
 		rpc_id(id, "client_receive_terrain_seed", terrainSeed)
-	host.disconnect_peer(id)
+	#host.disconnect_peer(id)
 
 # Client receives terrain seed from server
 remote func client_receive_terrain_seed(rpcSeed):
 	terrainSeed = rpcSeed
 	get_node("/root/").get_node("environment").get_node("TestMap").loadTerrain(terrainSeed, serverIp)
-
-# Called from the Map after loading is complete, since client disconnected now we reconnect
-func rejoin_server_after_terrain(ip):
-	player_name = 'Client'
-	host    = NetworkedMultiplayerENet.new()
-	loadedTerrain = true
-	host.create_client(ip, DEFAULT_PORT)
-	get_tree().set_network_peer(host)
 
 # Called when the server clicks "start" game in base control node
 func start_game():
