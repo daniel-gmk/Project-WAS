@@ -63,6 +63,7 @@ remote func setTeleportingPawnServer(pawnName):
 	rpc("setTeleportingPawnRPC", pawnName)
 
 remote func setTeleportingPawnRPC(pawnName):
+	get_parent().get_node(pawnName).disableCollision()
 	setTeleportingPawn(pawnName)
 
 func setTeleportingPawn(pawnName):
