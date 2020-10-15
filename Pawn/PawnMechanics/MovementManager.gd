@@ -124,14 +124,24 @@ func move(delta):
 					peakHeight = position.y
 			# Stop jumping when landing on floor
 			else:
-				if jumping:
-					jumping = false
-				if airTime:
-					airTime = false
-					if ((position.y - peakHeight) > fallDamageHeight):
-						# Check fall height and send data to server node to determine damage dealt
-						if has_node("HealthManager"):
-							get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
+				# Ignore colliding on other entities
+				var collidingEntity = false
+				if _velocity.y < 0 and !jumpReleased:
+					for i in get_slide_count():
+						var collision = get_slide_collision(i)
+						if collision.collider.get_parent().has_method("verifyMovementManager"):
+							collidingEntity = true
+							break
+				if !collidingEntity:
+					if jumping:
+						jumping = false
+					if airTime:
+						airTime = false
+						if ((position.y - peakHeight) > fallDamageHeight):
+							# Check fall height and send data to server node to determine damage dealt
+							if has_node("HealthManager"):
+								get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
+
 			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x)
 
 		else:
@@ -237,3 +247,6 @@ func terminate():
 	
 func terminateTimerComplete():
 	queue_free()
+
+func verifyMovementManager():
+	return true
