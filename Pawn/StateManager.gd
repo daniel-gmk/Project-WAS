@@ -38,7 +38,7 @@ func reset():
 	get_parent().resetPhysics()
 
 func flipSprite(vel):
-	if vel >= 1:
+	if vel > 0:
 		$Sprite.flip_h = false
-	elif vel <= -1:
+	elif vel < 0:
 		$Sprite.flip_h = true
