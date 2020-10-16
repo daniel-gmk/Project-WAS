@@ -16,6 +16,8 @@ export var gravity = Vector2(0, 1800)
 var _velocity : Vector2 = Vector2.ZERO
 # Track if in the air or not
 var airTime = false
+var appliedForce = false
+var allowForceResistance = false
 
 ### Client side prediction / Server reconciliation vars
 var movement = Vector2()
@@ -98,14 +100,14 @@ func move(delta):
 	if allowMovement:
 		if is_network_master():
 			$GravityRayCastCheck.force_raycast_update()
-			if $GravityRayCastCheck.is_colliding() and !jumping:
+			if $GravityRayCastCheck.is_colliding() and !jumping and !appliedForce:
 				gravity = Vector2(0, 7000)
 			else:
 				gravity = Vector2(0, 1800)
 			$InclineRayCastCheck.force_raycast_update()
-			if $InclineRayCastCheck.is_colliding() and jumping and (($MovementInputManager.movement.x == -1 and _velocity.x > -50) or ($MovementInputManager.movement.x == 1 and _velocity.x < 50)):
+			if $InclineRayCastCheck.is_colliding() and !appliedForce and jumping and (($MovementInputManager.movement.x == -1 and _velocity.x > -50) or ($MovementInputManager.movement.x == 1 and _velocity.x < 50)):
 				_velocity.x = 0
-			else:
+			elif !((appliedForce and !allowForceResistance) or (appliedForce and $MovementInputManager.movement.x == 0)):
 				# Applies physics (speed, gravity) to the direction
 				_velocity.x = _speed * $MovementInputManager.movement.x
 			# Apply gravity
@@ -120,8 +122,11 @@ func move(delta):
 					airTime = true
 					peakHeight = position.y
 				# check if position is higher than before
-				elif airTime and position.y < peakHeight:
-					peakHeight = position.y
+				elif airTime:
+					if position.y < peakHeight:
+						peakHeight = position.y
+					else:
+						allowForceResistance = true
 			# Stop jumping when landing on floor
 			else:
 				# Ignore colliding on other entities
@@ -135,6 +140,10 @@ func move(delta):
 				if !collidingEntity:
 					if jumping:
 						jumping = false
+					if appliedForce:
+						appliedForce = false
+					if allowForceResistance:
+						allowForceResistance = false
 					if airTime:
 						airTime = false
 						if ((position.y - peakHeight) > fallDamageHeight):
@@ -142,8 +151,7 @@ func move(delta):
 							if has_node("HealthManager"):
 								get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
 
-			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x)
-
+			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce)
 		else:
 			# Client code
 			time += delta
@@ -211,7 +219,7 @@ func interpolate(old_transform):
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
 # Server sending client updated physics data and state
-puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directionRPC):
+puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directionRPC, appliedForceRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
@@ -219,11 +227,12 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directio
 	$StateManager.flipSprite(directionRPC)
 	jumping = jumpingRPC
 	jumpReleased = jumpReleasedRPC
+	appliedForce = appliedForceRPC
 
 # Server calling position reset from teleporting onto clients
 remote func resetPositionRPC():
 	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x)
+	rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce)
 
 # RPC for jump event
 remote func jumpPressedRPC():
@@ -247,6 +256,36 @@ func terminate():
 	
 func terminateTimerComplete():
 	queue_free()
+
+remote func applyForceServer(sourceLocation, force, forceDropoff):
+	applyForce(sourceLocation, force, forceDropoff)
+	rpc("applyForceRPC", sourceLocation, force, forceDropoff)
+
+remote func applyForceRPC(sourceLocation, force, forceDropoff):
+	applyForce(sourceLocation, force, forceDropoff)
+
+func applyForce(sourceLocation, force, forceDropoff): # Stun duration
+	# -> x increases
+	# v y increases
+	appliedForce = true
+	var forceDirection = Vector2.ZERO
+	if sourceLocation.x - position.x == 0:
+		forceDirection.x = 0
+	else:
+		forceDirection.x = (position.x - sourceLocation.x)
+	$GravityRayCastCheck.force_raycast_update()
+	if $GravityRayCastCheck.is_colliding():
+		if position.y - sourceLocation.y > 0:
+			forceDirection.y = ((position.y - $BodyCollision.shape.height) - sourceLocation.y)
+		else:
+			forceDirection.y = ((position.y - ($BodyCollision.shape.height * .4)) - sourceLocation.y)
+	else:
+		if sourceLocation.y - position.y == 0:
+			forceDirection.y = 0
+		else:
+			forceDirection.y = (position.y - sourceLocation.y)
+	forceDirection = forceDirection.normalized()
+	_velocity = Vector2((force / 2) * forceDirection.x, force * forceDirection.y)
 
 func verifyMovementManager():
 	return true

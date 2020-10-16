@@ -101,28 +101,39 @@ func _input(event):
 
 # Handles attacking, for now using a base projectile
 func shoot(skill_type):
-	var skill = skill_data[skill_type]
-	var damage = skill['Damage']
-	var explosion_radius = skill['Explosion_Radius']
-	var damage_falloff = skill['Damage_Falloff']
-	var ignoreSelf = skill['Ignore_Self']
-	var projectile_speed = skill['Projectile_Speed']
 	## This is local execution of projectile
 	# Get reticule to find position of reticule
 	var reticule := get_node("ReticuleAnchor/Reticule")
 	# Grab position of reticule as starting position of projectile
-	var reticule_position = reticule.global_position
-
+	
+	var physicsData = {
+		"Starting_Position": reticule.global_position,
+		"Attacker_Position": get_parent().global_position,
+		"Attack_Power": _attack_power,
+		"Attack_Scale": _attack_scale,
+	}
+	
+	var localData = {
+		"Skill_Name": skill_type,
+		"Physics_Data": physicsData,
+		"Network_Data": {
+			"Remote_Call": false
+		}
+	}
+	
+	var remoteData = {
+		"Skill_Name": skill_type,
+		"Physics_Data": physicsData,
+		"Network_Data": {
+			"Remote_Call": true,
+			"Caster_PlayerID": int(player_node.clientName)
+		}
+	}
 	# Summon projectile locally but have it just disappear on impact
-	summonProjectile(reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+	summonProjectile(localData)
 	# Broadcast RPC so projectile can be shown to other players/server
-	rpc_id(1, "summonProjectileServer", reticule_position, get_parent().global_position, projectile_speed, _attack_power, _attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, int(player_node.clientName))
-	# Reset the charge
-	_attack_power = 0
-	_attack_clicked = false
-	# Hide the reticule now that firing is done
-	chargeProgress.visible = false
-	chargeProgress.value = 0
+	rpc_id(1, "summonProjectileServer", localData, remoteData)
+	resetAttack()
 
 func resetAttack():
 	_attack_power = 0
@@ -140,35 +151,51 @@ func _render_reticule():
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileServer(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, senderPlayerID):
+remote func summonProjectileServer(localData, remoteData):
 	# If server
-	summonProjectile(startpos, position2, speed, attack_power, attack_scale, true, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type)
+	summonProjectile(remoteData)
 	# Loop through clients and launch projectile to each
-	rpc("summonProjectileRPC", startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type, senderPlayerID)
+	rpc("summonProjectileRPC", localData, remoteData["Network_Data"]["Caster_PlayerID"])
 
 # Send data of a shot projectile and simulate across server to other players
-remote func summonProjectileRPC(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type, senderPlayerID):
-	if senderPlayerID != get_tree().get_network_unique_id():
-		summonProjectile(startpos, position2, speed, attack_power, attack_scale, false, 0, 0, false, ignoreSelf, skill_type)
+remote func summonProjectileRPC(localData, caster_playerID):
+	if caster_playerID != get_tree().get_network_unique_id():
+		summonProjectile(localData)
 
 # Launches projectile/attack
-func summonProjectile(startpos, position2, speed, attack_power, attack_scale, isServer, damage, explosion_radius, damage_falloff, ignoreSelf, skill_type):
+func summonProjectile(data):
+	var skill = skill_data[data["Skill_Name"]]
+	data = merge_dict(data, skill)
+	var attackData = data["Attack_Data"]
+	var physicsData = data["Physics_Data"]
+	var networkData = data["Network_Data"]
 	# Spawn instance of projectile node
-	var scene_dir = "res://Skills/" + skill_type + ".tscn"
+	var scene_dir = "res://Skills/" + data["Skill_Name"] + ".tscn"
 	var projectile_scene = load(scene_dir)
 	var new_projectile := projectile_scene.instance() as RigidBody2D
 	# Initialize other variables for Projectile, details on the variables are on Projectile.gd
-	new_projectile.damage = damage
-	new_projectile.explosion_radius = explosion_radius
-	new_projectile.damage_falloff = damage_falloff
-	new_projectile.ignoreCaster = ignoreSelf
-	new_projectile.casterID = player_node.get_parent()
+	new_projectile.damage = attackData["Damage"]
+	new_projectile.explosion_radius = attackData["Explosion_Radius"]
+	new_projectile.damage_falloff = attackData["Damage_Falloff"]
+	new_projectile.ignoreCaster = data["Ignore_Attacker"]
+	new_projectile.casterID = get_parent()
 	new_projectile.add_collision_exception_with(get_parent())
 	# Apply reticule position as projectile's starting position
-	new_projectile.global_position = startpos
+	new_projectile.knockback_force = physicsData["Knockback_Force"]
+	new_projectile.knockback_dropoff = physicsData["Knockback_Dropoff"]
+	new_projectile.global_position = physicsData["Starting_Position"]
 	# Apply force/velocity to the projectile to launch based on charge power and direction of aim
-	new_projectile.linear_velocity = (startpos - position2) * speed * (attack_power * attack_scale)
+	new_projectile.linear_velocity = (physicsData["Starting_Position"] - physicsData["Attacker_Position"]) * physicsData["Projectile_Speed"] * (physicsData["Attack_Power"] * physicsData["Attack_Scale"])
 	# Projectile is server so set variable
-	new_projectile.server = isServer
+	new_projectile.server = networkData["Remote_Call"]
 	# Bring the configured projectile into the scene/world
 	get_node("/root/environment").add_child(new_projectile)
+
+static func merge_dict(target, patch):
+	var result = target
+	for key in patch:
+		if typeof(patch[key]) == 18 and target.has(key):
+			result[key] = merge_dict(target[key], patch[key])
+		else:
+			result[key] = patch[key]
+	return result

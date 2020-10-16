@@ -13,6 +13,9 @@ var ignoreCaster
 # Keeps track of who casted the spell for ignoreCaster
 var casterID
 
+var knockback_force
+var knockback_dropoff
+
 # Passes the size variable to child so the collision circle is appropriately sized
 func setSize(val):
 	size = val
@@ -42,7 +45,7 @@ func setExplosion():
 			var calculatedDamage
 
 			# If ignoreCaster is enabled and you're the caster, don't deal damage
-			if ignoreCaster and area.get_parent().get_parent().get_parent().get_parent() == casterID:
+			if ignoreCaster and area.get_parent().get_parent() == casterID:
 				calculatedDamage = 0
 			else:
 				# Calculate falloff if damage falloff is enabled
@@ -60,5 +63,21 @@ func setExplosion():
 			# Now that damage is calculated, pass this information to the server and have it pass damage to all clients
 			area.get_parent().serverBroadcastDamageRPC(calculatedDamage)
 
-	# After everything is set and done, remove the radial damage node. Explosion is over.
+		elif area.get_name() == "ProjectileImpulseArea":
+			if !(ignoreCaster and area.get_parent() == casterID):
+				if knockback_dropoff:
+					var entitySize = area.get_node("ImpulseCollision").shape.radius
+					# Consider the edge of the player's collision shape (circle) instead of the center, because
+					# it shouldn't matter whether the explosion is overlapping your center or your edge.
+					var totalDistance = area.global_position.distance_to(global_position) - (entitySize)
+					var calculatedForce
+					if totalDistance <= (size * 0.4):
+						calculatedForce = knockback_force
+						
+					else:
+						# Calculate falloff if outside of the center to 40% range
+						calculatedForce = knockback_force - ((totalDistance/size) * knockback_force)
+					knockback_force = calculatedForce
+				area.get_parent().applyForceServer(global_position, knockback_force, knockback_dropoff)
+
 	queue_free()

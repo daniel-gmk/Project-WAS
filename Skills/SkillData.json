@@ -1,9 +1,16 @@
 {
     "Projectile": {
-        "Damage": 500,
-        "Explosion_Radius": 42,
-        "Damage_Falloff": true,
-        "Ignore_Self": false,
-        "Projectile_Speed": 30
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
     }
 }

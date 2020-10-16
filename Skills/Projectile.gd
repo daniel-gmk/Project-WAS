@@ -22,6 +22,9 @@ var casterID
 # Tracks whether the projectile is local to the client or from the server
 var server
 
+var knockback_force
+var knockback_dropoff
+
 # Start a timer looping each second to destroy projectiles out of bounds
 var inActionTimer = Timer.new()
 
@@ -73,8 +76,10 @@ func _on_Projectile_body_entered(_body):
 		rd.position = position
 		rd.damage = damage
 		rd.damage_falloff = damage_falloff
-		rd.casterID = casterID.get_node("Player").get_node("MainPawn")
+		rd.casterID = casterID
 		rd.ignoreCaster = ignoreCaster
+		rd.knockback_force = knockback_force
+		rd.knockback_dropoff = knockback_dropoff
 		# Add the child with a deferred call approach to avoid collision/propogation errors
 		get_parent().call_deferred("add_child", rd)
 		# Ensures that the radial damage node is detecting collision
