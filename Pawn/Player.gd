@@ -26,6 +26,8 @@ func _ready():
 func _input(event):
 	if control and !$TeleportManager.teleporting:
 		if event.is_action_pressed("test"):
+			if selectMinion:
+				removeMinionSelectLocation(true)
 			rpc_id(1, "switchPawnServer")
 		elif event.is_action_pressed("test2"):
 			if !selectMinion:
@@ -89,7 +91,8 @@ func switchPawn():
 	if pawnListLastPos > 0:
 		if currentActivePawn.has_node("MovementInputManager"):
 			currentActivePawn.get_node("MovementInputManager").movement.x = 0
-		currentActivePawn.get_node("StateManager").reset()
+		currentActivePawn.get_node("StateManager").allowActions = true
+		currentActivePawn.allowMovement = true
 		if currentActivePawn.has_node("AttackManager"):
 			var attackManager = currentActivePawn.get_node("AttackManager")
 			if attackManager._attack_power > 0:

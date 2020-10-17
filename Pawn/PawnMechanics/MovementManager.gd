@@ -274,10 +274,16 @@ func applyForce(sourceLocation, force, forceDropoff): # Stun duration
 	else:
 		forceDirection.x = (position.x - sourceLocation.x)
 	$GravityRayCastCheck.force_raycast_update()
-	if $GravityRayCastCheck.is_colliding():
+	var collidingWithEntity = false
+	var test = move_and_collide(_velocity, true, true, true)
+	if test and test.collider.name == "EntityCollision":
+		collidingWithEntity = true
+	if $GravityRayCastCheck.is_colliding() or (!$GravityRayCastCheck.is_colliding() and collidingWithEntity):
 		if position.y - sourceLocation.y > 0:
+			# Top half
 			forceDirection.y = ((position.y - $BodyCollision.shape.height) - sourceLocation.y)
 		else:
+			# Bottom half
 			forceDirection.y = ((position.y - ($BodyCollision.shape.height * .4)) - sourceLocation.y)
 	else:
 		if sourceLocation.y - position.y == 0:
