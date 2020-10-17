@@ -187,6 +187,9 @@ func initiateTeleport():
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(true)
 	
+	if get_parent().selectMinion:
+		get_parent().removeMinionSelectLocation(true)
+	
 	# Change to teleporting mode
 	teleport_instance = teleport_node.instance()
 	# Get map center location:

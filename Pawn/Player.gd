@@ -15,6 +15,8 @@ var currentActivePawn
 var pawnList = []
 var minion_identifier = 0
 
+var selectMinion = false
+
 func _ready():
 	pawnList.append($MainPawn)
 	currentActivePawn = $MainPawn
@@ -26,7 +28,31 @@ func _input(event):
 		if event.is_action_pressed("test"):
 			rpc_id(1, "switchPawnServer")
 		elif event.is_action_pressed("test2"):
-			rpc_id(1, "addMinionServer", "Minion")
+			if !selectMinion:
+				addMinionSelectLocation(300, get_node("MainPawn/BodyCollision").shape.height, $MainPawn, "Minion")
+			else:
+				removeMinionSelectLocation(true)
+
+func addMinionSelectLocation(size, minionSize, callingEntity, minionType):
+	var minion_select_loc_dir = "res://Pawn/Minion/MinionSelectLocation.tscn"
+	var minion_select_loc_scene = load(minion_select_loc_dir)
+	var minion_select_loc = minion_select_loc_scene.instance()
+	minion_select_loc.name = "MinionSelect"
+	minion_select_loc.minionType = minionType
+	minion_select_loc.setSize(size, minionSize)
+	callingEntity.add_child(minion_select_loc)
+	
+	if callingEntity.has_node("AttackManager"):
+		callingEntity.get_node("AttackManager").resetAttack()
+	
+	selectMinion = true
+
+func removeMinionSelectLocation(interrupt):
+	var callingNode = find_node("MinionSelect", true, false)
+	if callingNode:
+		callingNode.queue_free()
+	if interrupt:
+		selectMinion = false
 
 func removePawnCallServer(pawn_id):
 	if !get_tree().is_network_server():
@@ -87,14 +113,17 @@ func switchToPawn(pawnName):
 		return
 	currentActivePawn = pawnList[pawnPos]
 
-remote func addMinionServer(minion_id):
-	rpc("addMinionRPC", minion_id)
-	addMinion(minion_id)
+func addMinionToServer(minion_id, pos):
+	rpc_id(1, "addMinionServer", minion_id, pos)
 
-remote func addMinionRPC(minion_id):
-	addMinion(minion_id)
+remote func addMinionServer(minion_id, pos):
+	rpc("addMinionRPC", minion_id, pos)
+	addMinion(minion_id, pos)
 
-func addMinion(minion_id):
+remote func addMinionRPC(minion_id, pos):
+	addMinion(minion_id, pos)
+
+func addMinion(minion_id, pos):
 	var minion_dir = "res://Pawn/Minion/" + minion_id + ".tscn"
 	var minion_scene = load(minion_dir)
 	var minion = minion_scene.instance()
@@ -103,6 +132,8 @@ func addMinion(minion_id):
 	minion.get_node("MovementInputManager").set_network_master(int(clientName))
 	pawnList.append(minion)
 	# Testing minion control
-	minion.position = Vector2($MainPawn.position.x, $MainPawn.position.y - $MainPawn.get_node("StateManager/Sprite").texture.get_size().y)
+	minion.global_position = pos
 	minion.get_node("StateManager").reset()
 	minion_identifier += 1
+	if control:
+		selectMinion = false

@@ -68,19 +68,18 @@ func _input(event):
 	if player_node.control and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
 		if get_node("../StateManager").allowActions:
 			# Handle charging projectile strength when shoot input is pressed and held
-			if event.is_action_pressed("shoot"):
+			if event.is_action_pressed("shoot") and !player_node.selectMinion:
 					_attack_clicked = true
 					# Shows reticule when attacking
 					chargeProgress.max_value = reticule_max
 					chargeProgress.visible = true
 		
 			# Handle launching projectile based on charge strength when input is let go
-			elif event.is_action_released("shoot"):
+			elif event.is_action_released("shoot") and !player_node.selectMinion:
 				if _attack_clicked:
 					# Standard typeless attack
 					shoot(currentSelectedAttack)
 
-		# Zoom, this will be turned off for non-spectators eventually
 		elif event is InputEventMouseButton and event.pressed:
 			if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
 				var currentSelectedAttack = currentSelectedAttack
