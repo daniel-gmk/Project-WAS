@@ -110,12 +110,16 @@ func move(delta):
 			elif !((appliedForce and !allowForceResistance) or (appliedForce and $MovementInputManager.movement.x == 0)):
 				# Applies physics (speed, gravity) to the direction
 				_velocity.x = _speed * $MovementInputManager.movement.x
+
+			if _velocity.y < -50 and jumpReleased:
+				_velocity.y = -50
+			elif _velocity.y >= -50 and !jumpReleased:
+				jumpReleased = true
+
 			# Apply gravity
 			_velocity += gravity * delta
 
 			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0), true)
-			if _velocity.y >= -50 and !jumpReleased:
-				jumpReleased = true
 
 			if !is_on_floor():
 				if !airTime:
@@ -138,6 +142,8 @@ func move(delta):
 							collidingEntity = true
 							break
 				if !collidingEntity:
+					if jumpReleased:
+						jumpReleased = false
 					if jumping:
 						jumping = false
 					if appliedForce:
@@ -150,7 +156,6 @@ func move(delta):
 							# Check fall height and send data to server node to determine damage dealt
 							if has_node("HealthManager"):
 								get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
-
 			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce)
 		else:
 			# Client code
@@ -187,7 +192,6 @@ func jumpPressed():
 # Local jump release event called from RPC
 func jumpReleased():
 	# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-	_velocity.y = -50
 	jumpReleased = true
 
 #################################SERVER FUNCTIONS
