@@ -33,6 +33,7 @@ var time = 0
 var jumping = false
 # Tracking if Jump can be released and ended early
 var jumpReleased = false
+var jumpReleasedQueue = false
 # Jumping power
 export var JUMP_FORCE = 800
 
@@ -111,16 +112,27 @@ func move(delta):
 				# Applies physics (speed, gravity) to the direction
 				_velocity.x = _speed * $MovementInputManager.movement.x
 
+			if jumpReleasedQueue:
+				if !jumpReleased and jumping:
+					jumpReleased = true
+				jumpReleasedQueue = false
+
 			if _velocity.y < -50 and jumpReleased:
 				_velocity.y = -50
-			elif _velocity.y >= -50 and !jumpReleased:
-				jumpReleased = true
 
 			# Apply gravity
 			_velocity += gravity * delta
 
 			_velocity = move_and_slide(_velocity, Vector2.UP, true, 4, deg2rad(90.0), true)
 
+			var collidingEntity = false
+			for i in get_slide_count():
+				var collision = get_slide_collision(i)
+				if collision.collider.get_parent().has_method("verifyMovementManager") or collision.collider.has_method("verifyMovementManager"):
+					collidingEntity = true
+					break
+			if _velocity.y >= -50 and jumping and !jumpReleased:
+				jumpReleased = true
 			if !is_on_floor():
 				if !airTime:
 					airTime = true
@@ -129,19 +141,13 @@ func move(delta):
 				elif airTime:
 					if position.y < peakHeight:
 						peakHeight = position.y
-					else:
+					elif !allowForceResistance:
 						allowForceResistance = true
 			# Stop jumping when landing on floor
 			else:
 				# Ignore colliding on other entities
-				var collidingEntity = false
-				if _velocity.y < 0 and !jumpReleased:
-					for i in get_slide_count():
-						var collision = get_slide_collision(i)
-						if collision.collider.get_parent().has_method("verifyMovementManager"):
-							collidingEntity = true
-							break
-				if !collidingEntity:
+				$GravityRayCastCheck.force_raycast_update()
+				if !collidingEntity or (collidingEntity and (_velocity.y == 0 or !jumping or $GravityRayCastCheck.is_colliding())):
 					if jumpReleased:
 						jumpReleased = false
 					if jumping:
@@ -176,7 +182,7 @@ func _input(event):
 				rpc_id(1, "jumpPressedRPC")
 	
 			# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-			if event.is_action_released("jump") and jumping and !jumpReleased and _velocity.y <= -50:
+			if event.is_action_released("jump"):
 				#call locally jumpReleased
 				jumpReleased()
 				#RPC to server jumpReleased
@@ -188,11 +194,13 @@ func jumpPressed():
 	peakHeight = position.y
 	jumping = true
 	jumpReleased = false
+	if !allowForceResistance:
+		allowForceResistance = true
 
 # Local jump release event called from RPC
 func jumpReleased():
 	# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
-	jumpReleased = true
+	jumpReleasedQueue = true
 
 #################################SERVER FUNCTIONS
 

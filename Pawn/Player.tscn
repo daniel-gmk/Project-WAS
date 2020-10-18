@@ -12,14 +12,14 @@
 [ext_resource path="res://CoreMechanics/TeleportManager.gd" type="Script" id=13]
 [ext_resource path="res://Pawn/StateManager.gd" type="Script" id=14]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 16, 22 )
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 6, 21 )
 
 [sub_resource type="CapsuleShape2D" id=2]
 radius = 6.0
 height = 30.0
 
-[sub_resource type="CircleShape2D" id=3]
+[sub_resource type="CircleShape2D" id=4]
 radius = 18.0
 
 [node name="Player" type="Node2D"]
@@ -31,6 +31,13 @@ collision_mask = 7
 collision/safe_margin = 0.01
 script = ExtResource( 3 )
 
+[node name="StateManager" type="Node2D" parent="MainPawn"]
+script = ExtResource( 14 )
+
+[node name="Sprite" type="Sprite" parent="MainPawn/StateManager"]
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 9 )
+
 [node name="MovementInputManager" type="Node" parent="MainPawn"]
 script = ExtResource( 6 )
 
@@ -39,7 +46,7 @@ collision_layer = 16
 collision_mask = 16
 
 [node name="EntityCollisionShape" type="CollisionShape2D" parent="MainPawn/EntityCollision"]
-shape = SubResource( 1 )
+shape = SubResource( 5 )
 
 [node name="BodyCollision" type="CollisionShape2D" parent="MainPawn"]
 shape = SubResource( 2 )
@@ -57,14 +64,7 @@ collision_layer = 8
 collision_mask = 8
 
 [node name="ImpulseCollision" type="CollisionShape2D" parent="MainPawn/ProjectileImpulseArea"]
-shape = SubResource( 3 )
-
-[node name="StateManager" type="Node2D" parent="MainPawn"]
-script = ExtResource( 14 )
-
-[node name="Sprite" type="Sprite" parent="MainPawn/StateManager"]
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 9 )
+shape = SubResource( 4 )
 
 [node name="HealthManager" parent="MainPawn" instance=ExtResource( 5 )]
 
