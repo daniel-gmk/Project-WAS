@@ -24,6 +24,11 @@ var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
 
+
+var teleportSelectPenaltyTimer = Timer.new()
+var teleportSelectPenaltyTime = 5
+var teleportSelectPenaltyHealthTaken = 0.25
+
 var teleportingPawn
 
 var initialTeleport = true
@@ -32,6 +37,7 @@ var serverCompletedResponse = false
 
 func _ready():
 	teleportingPawn = get_node("../MainPawn")
+	initializePenaltyTimer()
 	if !get_tree().is_network_server() and get_parent().get_parent().control:
 		initialize()
 
@@ -54,7 +60,14 @@ func initialize():
 	add_child(teleportCheckTimer)
 	
 	rpc_id(1, "initiateTeleportServer", get_parent().player_id)
-	
+
+func initializePenaltyTimer():
+	# Instantiate RPC check timer
+	teleportSelectPenaltyTimer.set_wait_time(teleportSelectPenaltyTime)
+	teleportSelectPenaltyTimer.set_one_shot(false)
+	teleportSelectPenaltyTimer.connect("timeout", self, "teleportSelectPenalty")
+	add_child(teleportSelectPenaltyTimer)
+
 func setTeleportingPawnToServer(pawnName):
 	rpc_id(1, "setTeleportingPawnServer", pawnName)
 
@@ -79,6 +92,7 @@ func teleport():
 
 # Calls teleport to the server with location so server can return calls to client
 func requestTeleportToServer(pos):
+	teleportSelectPenaltyTimer.stop()
 	rpc_id(1, "serverTeleportPlayer", pos)
 	rpc_id(1, "concludeTeleportServer", get_parent().player_id)
 
@@ -87,6 +101,7 @@ remote func serverTeleportPlayer(pos):
 	if get_tree().is_network_server():
 		rpc("teleportPlayerRPC", pos)
 		teleportPlayer(pos)
+		teleportSelectPenaltyTimer.stop()
 
 # Clients get new location from server and call new location
 remote func teleportPlayerRPC(pos):
@@ -204,6 +219,8 @@ func initiateTeleport():
 	
 	serverCompletedResponse = true
 	teleport_check = true
+	
+	startTeleportSelectPenaltyTimer()
 
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
@@ -226,8 +243,9 @@ func concludeTeleport():
 	# If cooldown is active (>0), resume the cooldown and deal cooldown penalty
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(false)
-		var pawnHealthManager = teleportingPawn.get_node("HealthManager")
-		pawnHealthManager.serverBroadcastDamageRPC(max(pawnHealthManager.maxHealth * teleport_penalty_damage_mincheck1, pawnHealthManager.health * teleport_penalty_damage_mincheck2))
+		if teleportingPawn.has_node("HealthManager"):
+			var pawnHealthManager = teleportingPawn.get_node("HealthManager")
+			pawnHealthManager.serverBroadcastDamageRPC(max(pawnHealthManager.maxHealth * teleport_penalty_damage_mincheck1, pawnHealthManager.health * teleport_penalty_damage_mincheck2), false)
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
@@ -265,3 +283,18 @@ func checkTeleportReachedRPC():
 		teleportCheckTimer.stop()
 	else:
 		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
+
+func startTeleportSelectPenaltyTimer():
+	teleportSelectPenaltyTimer.start()
+	get_node("../TeleportScene/TeleportCamera/CanvasLayer/TeleportUI/TextureProgress").max_value = teleportSelectPenaltyTime
+	rpc_id(1, "startTeleportSelectPenaltyTimerServer")
+
+remote func startTeleportSelectPenaltyTimerServer():
+	if get_tree().is_network_server():
+		teleportSelectPenaltyTimer.start()
+
+func teleportSelectPenalty():
+	if get_tree().is_network_server():
+		if teleportingPawn.has_node("HealthManager"):
+			var pawnHealthManager = teleportingPawn.get_node("HealthManager")
+			pawnHealthManager.serverBroadcastDamageRPC(pawnHealthManager.health * teleportSelectPenaltyHealthTaken, true)

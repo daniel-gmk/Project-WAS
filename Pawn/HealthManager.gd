@@ -52,10 +52,10 @@ func showMiniHPBar():
 		get_node("MiniHPBar").visible = true
 
 # Handles when damage is taken
-func takeDamage(damage):
+func takeDamage(damage, immortalBypass):
 	if damage < 0:
 		print("Error: Negative damage reported")
-	if !immortal:
+	if !immortal or immortalBypass:
 		health -= damage
 		# Update health bar HUD
 		if get_tree().get_network_unique_id() == player_node.player_id:
@@ -71,6 +71,7 @@ func takeDamage(damage):
 # Handles when dead, not implemented yet since gamemode should be created first
 func death():
 	print("I died")
+	# Remember to cancel teleporting
 
 # Has the server calculate fall damage and distribute that information to clients
 func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate):
@@ -78,18 +79,18 @@ func calculateFallDamageServer(fallHeight, fallDamageHeight, fallDamageRate):
 	if resultingDamage < 0:
 		print("Error, damage is negative when they should be taking damage")
 	elif !fallDamageImmunity:
-		takeDamage(resultingDamage)
-		rpc("takeDamageRPC", resultingDamage)
+		takeDamage(resultingDamage, false)
+		rpc("takeDamageRPC", resultingDamage, false)
 
 # Server receives call to locally execute damage and also replicate damage to clients
-func serverBroadcastDamageRPC(damage):
-	takeDamage(damage)
-	rpc("takeDamageRPC", damage)
+func serverBroadcastDamageRPC(damage, immortalBypass):
+	takeDamage(damage, immortalBypass)
+	rpc("takeDamageRPC", damage, immortalBypass)
 
 # I abstracted takeDamage as a local call instead of just making it a remote function in case I want to make local
 # calls down the road and not quite sure if I need to yet.
-remote func takeDamageRPC(damage):
-	takeDamage(damage)
+remote func takeDamageRPC(damage, immortalBypass):
+	takeDamage(damage, immortalBypass)
 
 #################################UI FUNCTIONS
 

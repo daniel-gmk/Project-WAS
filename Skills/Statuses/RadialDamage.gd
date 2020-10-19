@@ -61,7 +61,7 @@ func setExplosion():
 					calculatedDamage = damage
 
 			# Now that damage is calculated, pass this information to the server and have it pass damage to all clients
-			area.get_parent().serverBroadcastDamageRPC(calculatedDamage)
+			area.get_parent().serverBroadcastDamageRPC(calculatedDamage, false)
 
 		elif area.get_name() == "ProjectileImpulseArea":
 			if !(ignoreCaster and area.get_parent() == casterID):

@@ -16,6 +16,8 @@ func setCameraLocation(map_center_location):
 # Every frame set the position to the mouse
 func _process(delta):
 	$Sprite.position = get_global_mouse_position()
+	get_node("TeleportCamera/CanvasLayer/TeleportUI/Label").text = str(stepify(get_parent().get_node("TeleportManager").teleportSelectPenaltyTimer.get_time_left(), 0.1))
+	get_node("TeleportCamera/CanvasLayer/TeleportUI/TextureProgress").value = get_parent().get_node("TeleportManager").teleportSelectPenaltyTimer.get_time_left()
 
 # If the spot is available for teleporting, send instructions to player node to teleport
 func _input(event):
