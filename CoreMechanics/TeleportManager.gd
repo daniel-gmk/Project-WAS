@@ -297,4 +297,4 @@ func teleportSelectPenalty():
 	if get_tree().is_network_server():
 		if teleportingPawn.has_node("HealthManager"):
 			var pawnHealthManager = teleportingPawn.get_node("HealthManager")
-			pawnHealthManager.serverBroadcastDamageRPC(pawnHealthManager.health * teleportSelectPenaltyHealthTaken, true)
+			pawnHealthManager.serverBroadcastDamageRPC(pawnHealthManager.maxHealth * teleportSelectPenaltyHealthTaken, true)
