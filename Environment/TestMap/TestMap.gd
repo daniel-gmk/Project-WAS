@@ -4,6 +4,7 @@ var cameraNode
 var controlNode
 var progressBarNode
 var progressBarTextNode
+var minimapNode
 
 # Track the max length and height of the map for boundary checks
 var maxLength = 6000
@@ -22,6 +23,7 @@ func _exit_tree():
 # Color 0 0 1 1 is blue
 # Color 0 0 0 1 is black
 func loadTerrain(terrainSeed, ip):
+	minimapNode = get_node("/root/environment/MiniMap")
 	cameraNode = get_node("/root/environment/Camera")
 	cameraNode.position = Vector2(maxLength/2, maxHeight/2)
 	cameraNode.zoom = Vector2(6,6)
@@ -181,6 +183,20 @@ func loadThread(arguments : Array):
 	
 	progressBarNode.value = 20
 	progressBarTextNode.text = "Expanding Terrain Size"
+
+	var testImage = Image.new()
+	testImage.copy_from(image)
+	testImage.resize(240,180,0)
+	var testTexture = ImageTexture.new()
+	testTexture.create_from_image(testImage)
+	testTexture.set_flags(0)
+	var dupsprite = minimapNode
+	dupsprite.texture = testTexture
+	dupsprite.material.set_shader_param("mask_texture", load("res://assets/test-background.png"))
+	dupsprite.material.set_shader_param("outline_width", 0)
+	var minimap_destructible_scene = load("res://Environment/Destructible-Minimap.tscn")
+	var minimap_destructible       = minimap_destructible_scene.instance()
+	dupsprite.call_deferred("add_child", minimap_destructible)
 
 	image.resize(6000,4500,0)
 	
