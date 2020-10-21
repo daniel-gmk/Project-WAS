@@ -30,6 +30,7 @@ func _process(delta):
 		for pawn in player_list:
 			if pawn.name == "MainPawn":
 				minimap_gui_node.get_node("MainPawnIndicator").position = (pawn.position / minimapSize)
+				minimap_gui_node.get_node("MainPawnIndicator").visible = pawn.visible
 			else:
 				if !minimap_gui_node.has_node(pawn.name + "Indicator"):
 					var minion_indicator = Sprite.new()
@@ -40,7 +41,11 @@ func _process(delta):
 					minion_indicator.scale = Vector2(scaleVal, scaleVal)
 					minimap_gui_node.add_child(minion_indicator)
 				minimap_gui_node.get_node(pawn.name + "Indicator").position = (pawn.position / minimapSize)
+				minimap_gui_node.get_node(pawn.name + "Indicator").visible = pawn.visible
 
-	var global_camera = (get_node("/root/").size * get_parent().get_parent().zoom)
-	minimapCamera.scale = Vector2((global_camera.x / minimapSize) / minimapCamera.texture.get_width(), (global_camera.y / minimapSize) / minimapCamera.texture.get_height())
-	minimapCamera.position = get_parent().get_parent().position / minimapSize
+		var global_camera = (get_node("/root/").size * get_parent().get_parent().zoom)
+		minimapCamera.scale = Vector2((global_camera.x / minimapSize) / minimapCamera.texture.get_width(), (global_camera.y / minimapSize) / minimapCamera.texture.get_height())
+		minimapCamera.position = get_parent().get_parent().position / minimapSize
+		var currentPawn = player_node.currentActivePawn
+		minimap_gui_node.get_node("SelectedPawnIndicator").position = Vector2(currentPawn.position.x / minimapSize, (currentPawn.position.y - (currentPawn.get_node("BodyCollision").shape.height) * 13) / minimapSize)
+		minimap_gui_node.get_node("SelectedPawnIndicator").visible = currentPawn.visible

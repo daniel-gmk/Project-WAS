@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://GUI/GUI.gd" type="Script" id=1]
 [ext_resource path="res://assets/minimap-character-indicator.png" type="Texture" id=2]
 [ext_resource path="res://assets/minimap-camera-indicator.png" type="Texture" id=3]
+[ext_resource path="res://assets/minimap-selected-pawn-indicator.png" type="Texture" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0862745, 0.592157, 0, 1 )
@@ -173,3 +174,8 @@ texture = ExtResource( 2 )
 scale = Vector2( 1e-05, 1e-05 )
 z_index = 2
 texture = ExtResource( 3 )
+
+[node name="SelectedPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
+scale = Vector2( 0.3, 0.3 )
+z_index = 5
+texture = ExtResource( 4 )
