@@ -177,5 +177,5 @@ texture = ExtResource( 3 )
 
 [node name="SelectedPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
 scale = Vector2( 0.3, 0.3 )
-z_index = 5
+z_index = 6
 texture = ExtResource( 4 )

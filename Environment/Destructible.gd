@@ -87,7 +87,7 @@ func destroy(position : Vector2, radius : float):
 	# Re-render the viewport into our texture
 	rebuild_texture()
 	
-	if !get_tree().is_network_server():
+	if !get_tree().is_network_server(): # and local
 		get_node("/root/environment/TestMap/").minimapNode.get_node("Destructible").destroy(position, radius)
 
 	# Wait until all viewports have re-rendered before pushing our viewport to the destruction shader.

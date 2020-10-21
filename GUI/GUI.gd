@@ -8,23 +8,27 @@ var minimap_gui_node
 var minimap_node
 var minimapSize
 var minimapCamera
+var player_node
+var local = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var testMap = get_node("/root/environment/TestMap")
-	minimap_gui_node = get_node(minimap_gui_nodepath)
-	minimap_node = testMap.minimapNode
-	minimapSize = testMap.minimapRatio
-	minimap_node.get_parent().remove_child(minimap_node)
-	minimap_gui_node.add_child(minimap_node)
-	minimap_node.set_owner(minimap_gui_node)
-	minimap_node.z_index = 1
-	minimapCamera = minimap_gui_node.get_node("CameraIndicator")
+	player_node = get_parent().get_parent().get_parent()
+	if !get_tree().is_network_server() and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
+		local = true
+		var testMap = get_node("/root/environment/TestMap")
+		minimap_gui_node = get_node(minimap_gui_nodepath)
+		minimap_node = testMap.minimapNode
+		minimapSize = testMap.minimapRatio
+		minimap_node.get_parent().remove_child(minimap_node)
+		minimap_gui_node.add_child(minimap_node)
+		minimap_node.set_owner(minimap_gui_node)
+		minimap_node.z_index = 1
+		minimapCamera = minimap_gui_node.get_node("CameraIndicator")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if !get_tree().is_network_server():
-		var player_node = get_parent().get_parent().get_parent()
+	if local and !player_node.get_node("TeleportManager").teleporting:
 		var player_list = player_node.pawnList
 		var mainPawnSize = player_node.get_node("MainPawn/BodyCollision").shape.height
 		for pawn in player_list:
@@ -49,3 +53,28 @@ func _process(delta):
 		var currentPawn = player_node.currentActivePawn
 		minimap_gui_node.get_node("SelectedPawnIndicator").position = Vector2(currentPawn.position.x / minimapSize, (currentPawn.position.y - (currentPawn.get_node("BodyCollision").shape.height) * 13) / minimapSize)
 		minimap_gui_node.get_node("SelectedPawnIndicator").visible = currentPawn.visible
+
+		var enemy_list = get_tree().get_nodes_in_group("OnScreenEntities")
+		if enemy_list.size() > 0:
+			for enemy in enemy_list:
+				var enemy_indicator_name = str(player_node.get_parent().name) + enemy.name + "Indicator"
+				if !enemy.get_node("VisibilityNotifier").inView:
+					if minimap_gui_node.has_node(enemy_indicator_name):
+						minimap_gui_node.get_node(enemy_indicator_name).queue_free()
+					continue
+				if player_node.currentActivePawn.has_node("VisionManager") and player_node.currentActivePawn.get_node("VisionManager").underground:
+					var vision_overlap_list = player_node.currentActivePawn.get_node("VisionManager").overlapping_nodes
+					if vision_overlap_list.find(enemy) == -1:
+						if minimap_gui_node.has_node(enemy_indicator_name):
+							minimap_gui_node.get_node(enemy_indicator_name).queue_free()
+						continue
+				if !minimap_gui_node.has_node(enemy_indicator_name):
+					var enemy_indicator = Sprite.new()
+					enemy_indicator.name = enemy_indicator_name
+					enemy_indicator.texture = load("res://assets/minimap-enemy-indicator.png")
+					enemy_indicator.z_index = 5
+					var scaleVal = (enemy.get_node("BodyCollision").shape.height/mainPawnSize) / 4
+					enemy_indicator.scale = Vector2(scaleVal, scaleVal)
+					minimap_gui_node.add_child(enemy_indicator)
+				minimap_gui_node.get_node(enemy_indicator_name).position = (enemy.position / minimapSize)
+				minimap_gui_node.get_node(enemy_indicator_name).visible = enemy.visible

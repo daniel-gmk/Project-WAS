@@ -115,11 +115,13 @@ func switchToPlayerCamera():
 
 func hideCamera():
 	# Disable HUD
-	get_node("CanvasLayer").get_node("GUI").visible = false
+	if has_node("CanvasLayer/GUI"):
+		get_node("CanvasLayer").get_node("GUI").visible = false
 
 func showCamera():
 	# Enable HUD
-	get_node("CanvasLayer").get_node("GUI").visible = true
+	if has_node("CanvasLayer/GUI"):
+		get_node("CanvasLayer").get_node("GUI").visible = true
 
 func changeTarget(node):
 	target = node

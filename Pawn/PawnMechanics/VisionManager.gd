@@ -13,6 +13,7 @@ export var lightMin = .125
 export var lightMax = 12
 export var lightTextureOffset = 245
 var casting = false
+var overlapping_nodes = []
 
 var player_node
 
@@ -75,8 +76,16 @@ func _physics_process(_delta : float):
 			$CanvasModulate.visible = false
 			underground = false
 			casting = false
+			get_node("LightCollisionArea/LightCollisionShape").shape.radius = (originalLightSize * ($LightSource.texture.get_size().x-lightTextureOffset))/2
 
 	if underground and currentLightSize != newLightSize:
 		currentLightSize = lerp(currentLightSize, newLightSize, 0.01)
 		$LightSource.texture_scale = currentLightSize
+		get_node("LightCollisionArea/LightCollisionShape").shape.radius = (currentLightSize * ($LightSource.texture.get_size().x-lightTextureOffset))/2
 
+func _on_LightCollisionArea_body_entered(body):
+	if body != get_parent():
+		overlapping_nodes.append(body)
+
+func _on_LightCollisionArea_body_exited(body):
+	overlapping_nodes.erase(body)
