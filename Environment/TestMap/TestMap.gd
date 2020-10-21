@@ -5,10 +5,13 @@ var controlNode
 var progressBarNode
 var progressBarTextNode
 var minimapNode
+var minimapRatio
 
 # Track the max length and height of the map for boundary checks
 var maxLength = 6000
 var maxHeight = 4500
+
+var minimapSize = Vector2(240, 180)
 
 var _chunk_threads := Array()
 
@@ -186,7 +189,8 @@ func loadThread(arguments : Array):
 
 	var testImage = Image.new()
 	testImage.copy_from(image)
-	testImage.resize(240,180,0)
+	testImage.resize(minimapSize.x,minimapSize.y,0)
+	minimapRatio = float(maxLength) / float(minimapSize.x)
 	var testTexture = ImageTexture.new()
 	testTexture.create_from_image(testImage)
 	testTexture.set_flags(0)
@@ -198,7 +202,7 @@ func loadThread(arguments : Array):
 	var minimap_destructible       = minimap_destructible_scene.instance()
 	dupsprite.call_deferred("add_child", minimap_destructible)
 
-	image.resize(6000,4500,0)
+	image.resize(maxLength,maxHeight,0)
 	
 	progressBarNode.value = 25
 	progressBarTextNode.text = "Adding Sky"
