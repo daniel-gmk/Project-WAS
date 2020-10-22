@@ -76,12 +76,12 @@ func _physics_process(_delta : float):
 			$CanvasModulate.visible = false
 			underground = false
 			casting = false
-			get_node("LightCollisionArea/LightCollisionShape").shape.radius = (originalLightSize * ($LightSource.texture.get_size().x-lightTextureOffset))/2
+			get_node("LightCollisionArea/LightCollisionShape").shape.radius = (originalLightSize * ($LightSource.texture.get_size().x-(lightTextureOffset-60)))/2
 
 	if underground and currentLightSize != newLightSize:
 		currentLightSize = lerp(currentLightSize, newLightSize, 0.01)
 		$LightSource.texture_scale = currentLightSize
-		get_node("LightCollisionArea/LightCollisionShape").shape.radius = (currentLightSize * ($LightSource.texture.get_size().x-lightTextureOffset))/2
+		get_node("LightCollisionArea/LightCollisionShape").shape.radius = (currentLightSize * ($LightSource.texture.get_size().x-(lightTextureOffset-60)))/2
 
 func _on_LightCollisionArea_body_entered(body):
 	if body != get_parent():
