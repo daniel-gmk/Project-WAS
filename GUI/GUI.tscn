@@ -1,12 +1,16 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://GUI/GUI.gd" type="Script" id=1]
 [ext_resource path="res://assets/minimap-character-indicator.png" type="Texture" id=2]
 [ext_resource path="res://assets/minimap-camera-indicator.png" type="Texture" id=3]
 [ext_resource path="res://assets/minimap-selected-pawn-indicator.png" type="Texture" id=4]
+[ext_resource path="res://assets/teleport-cooldown-icon.png" type="Texture" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0862745, 0.592157, 0, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0, 0.0235294, 0.376471, 1 )
 
 [node name="GUI" type="Control"]
 anchor_left = 0.5
@@ -22,7 +26,8 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-minimap_gui_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer")
+minimap_gui_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight")
+teleport_cooldown_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer/TPCooldownContainer/TPCooldown")
 
 [node name="MainGUIContainer" type="MarginContainer" parent="."]
 anchor_right = 1.0
@@ -63,7 +68,7 @@ margin_bottom = 180.0
 rect_min_size = Vector2( 1024, 180 )
 mouse_filter = 2
 
-[node name="ChatContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
+[node name="MapContainerLeft" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
 margin_right = 240.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 240, 180 )
@@ -76,44 +81,38 @@ margin_bottom = 180.0
 rect_min_size = Vector2( 520, 180 )
 mouse_filter = 2
 
-[node name="MainHealthContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
+[node name="HealthCenterContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
 margin_right = 536.0
-margin_bottom = 86.0
-rect_min_size = Vector2( 0, 86 )
+margin_bottom = 66.0
 mouse_filter = 2
 
-[node name="HealthCenterContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer"]
-margin_right = 536.0
-margin_bottom = 86.0
-mouse_filter = 2
-
-[node name="LeftMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer"]
+[node name="LeftMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer"]
 margin_right = 64.0
-margin_bottom = 86.0
+margin_bottom = 66.0
 rect_min_size = Vector2( 64, 0 )
 mouse_filter = 2
 
-[node name="CenterContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer"]
+[node name="CenterContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer"]
 margin_left = 68.0
 margin_right = 468.0
-margin_bottom = 86.0
+margin_bottom = 66.0
 mouse_filter = 2
 
-[node name="VerticalCenter" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer"]
+[node name="VerticalCenter" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer/CenterContainer"]
 margin_right = 400.0
-margin_bottom = 86.0
+margin_bottom = 66.0
 mouse_filter = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
+[node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
 margin_right = 400.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 0, 62 )
+margin_bottom = 42.0
+rect_min_size = Vector2( 0, 42 )
 mouse_filter = 2
 
-[node name="MainHealthBar" type="ProgressBar" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
-margin_top = 66.0
+[node name="MainHealthBar" type="ProgressBar" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer/CenterContainer/VerticalCenter"]
+margin_top = 46.0
 margin_right = 400.0
-margin_bottom = 86.0
+margin_bottom = 66.0
 rect_min_size = Vector2( 400, 20 )
 mouse_filter = 2
 custom_styles/fg = SubResource( 1 )
@@ -123,7 +122,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HealthValueText" type="Label" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer/CenterContainer/VerticalCenter/MainHealthBar"]
+[node name="HealthValueText" type="Label" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer/CenterContainer/VerticalCenter/MainHealthBar"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -139,43 +138,164 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="RightMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainHealthContainer/HealthCenterContainer"]
+[node name="RightMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer"]
 margin_left = 472.0
 margin_right = 536.0
-margin_bottom = 86.0
+margin_bottom = 66.0
 rect_min_size = Vector2( 64, 0 )
 mouse_filter = 2
 
-[node name="AttacksContainer" type="GridContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
-margin_top = 90.0
+[node name="MainAttacksContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer"]
+margin_top = 70.0
 margin_right = 536.0
-margin_bottom = 180.0
-rect_min_size = Vector2( 0, 90 )
-mouse_filter = 2
+margin_bottom = 174.0
+rect_min_size = Vector2( 0, 104 )
 
-[node name="MapContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
+[node name="LeftMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer"]
+margin_right = 64.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 64, 0 )
+
+[node name="Panel" type="Panel" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer"]
+margin_left = 68.0
+margin_right = 468.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 400, 0 )
+custom_styles/panel = SubResource( 2 )
+
+[node name="AttacksBorderHContainer2" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -52.0
+margin_right = 203.0
+margin_bottom = 52.0
+rect_min_size = Vector2( 402, 100 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LeftMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2"]
+margin_right = 45.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 45, 0 )
+
+[node name="AttacksBorderVContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2"]
+margin_left = 49.0
+margin_right = 353.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 304, 90 )
+
+[node name="AttacksContainerMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/AttacksBorderVContainer"]
+margin_right = 304.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 300, 50 )
+
+[node name="AttacksContainer" type="GridContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/AttacksBorderVContainer/AttacksContainerMargin"]
+margin_right = 304.0
+margin_bottom = 50.0
+mouse_filter = 2
+columns = 6
+
+[node name="AttacksContainer2Margin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/AttacksBorderVContainer"]
+margin_top = 54.0
+margin_right = 304.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 300, 50 )
+
+[node name="AttacksContainer2" type="GridContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/AttacksBorderVContainer/AttacksContainer2Margin"]
+margin_right = 304.0
+margin_bottom = 50.0
+mouse_filter = 2
+columns = 6
+
+[node name="RightMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2"]
+margin_left = 357.0
+margin_right = 406.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 45, 0 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin"]
+margin_right = 49.0
+margin_bottom = 104.0
+
+[node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer"]
+margin_right = 49.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer"]
+margin_top = 54.0
+margin_right = 49.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2"]
+margin_right = 49.0
+margin_bottom = 50.0
+
+[node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer"]
+margin_right = 49.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer"]
+margin_top = 19.0
+margin_right = 49.0
+margin_bottom = 49.0
+
+[node name="TPCooldownContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer"]
+margin_right = 30.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="TPCooldown" type="TextureProgress" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer/TPCooldownContainer"]
+margin_right = 30.0
+margin_bottom = 30.0
+step = 0.001
+texture_under = ExtResource( 5 )
+texture_progress = ExtResource( 5 )
+fill_mode = 2
+tint_under = Color( 0, 1, 0, 1 )
+tint_progress = Color( 1, 0, 0, 1 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer"]
+margin_left = 34.0
+margin_right = 49.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 15, 30 )
+
+[node name="RightMargin" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer"]
+margin_left = 472.0
+margin_right = 536.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 64, 0 )
+
+[node name="MapContainerRight" type="MarginContainer" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer"]
 margin_left = 784.0
 margin_right = 1024.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 240, 180 )
 mouse_filter = 2
 
-[node name="ColorRect" type="ColorRect" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
+[node name="ColorRect" type="ColorRect" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight"]
 margin_right = 240.0
 margin_bottom = 180.0
 color = Color( 0.0862745, 0.529412, 0.611765, 1 )
 
-[node name="MainPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
+[node name="MainPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight"]
 scale = Vector2( 0.5, 0.5 )
 z_index = 4
 texture = ExtResource( 2 )
 
-[node name="CameraIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
+[node name="CameraIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight"]
 scale = Vector2( 1e-05, 1e-05 )
 z_index = 2
 texture = ExtResource( 3 )
 
-[node name="SelectedPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainer"]
+[node name="SelectedPawnIndicator" type="Sprite" parent="MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight"]
 scale = Vector2( 0.3, 0.3 )
 z_index = 6
 texture = ExtResource( 4 )

@@ -4,6 +4,8 @@ extends Control
 # Declare member variables here. Examples:
 # var a = 2
 export var minimap_gui_nodepath : NodePath
+export var teleport_cooldown_nodepath : NodePath
+var teleport_cooldown
 var minimap_gui_node
 var minimap_node
 var minimapSize
@@ -15,9 +17,14 @@ var indicatorScript
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	player_node = get_parent().get_parent().get_parent()
+	teleport_cooldown = get_node(teleport_cooldown_nodepath)
 	indicatorScript = preload("res://GUI/Indicator.gd")
 	if !get_tree().is_network_server() and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
 		local = true
+		
+		teleport_cooldown.max_value = player_node.get_node("TeleportManager").teleportCooldown
+		teleport_cooldown.value = player_node.get_node("TeleportManager").teleportCooldown
+		
 		var testMap = get_node("/root/environment/TestMap")
 		minimap_gui_node = get_node(minimap_gui_nodepath)
 		minimap_node = testMap.minimapNode
@@ -31,6 +38,9 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if local and !player_node.get_node("TeleportManager").teleporting:
+		
+		teleport_cooldown.value = player_node.get_node("TeleportManager").teleportCooldownTimer.get_time_left()
+
 		var player_list = player_node.pawnList
 		var mainPawnSize = player_node.get_node("MainPawn/BodyCollision").shape.height
 
