@@ -176,7 +176,7 @@ func build_collisions_from_image():
 
 	# This will generate polygons for the given coordinate rectangle within the bitmap
 	# In our case, our given coordinates are the entire image.
-	var polygons = bitmap.opaque_to_polygons(Rect2(Vector2(0,0), bitmap.get_size()))
+	var polygons = bitmap.opaque_to_polygons(Rect2(Vector2(0,0), bitmap.get_size()), 5)
 
 	# Now create a collision polygon for each polygon returned
 	# For the most part there will probably only be one.... unless you have islands

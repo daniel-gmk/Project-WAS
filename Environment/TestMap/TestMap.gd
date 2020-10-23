@@ -160,7 +160,7 @@ func loadThread(arguments : Array):
 		var topBottomFlag = false
 		while (x1 >= 0) and (image.get_pixel(x1, y) == Color(1,1,0,1)):
 			if y > 0 and y < image.get_height()-1:
-				if image.get_pixel(x1, y+1) == Color(0,0,0,0) or image.get_pixel(x1, y+1) == Color(0,0,0,0):
+				if image.get_pixel(x1, y-1) == Color(0,0,0,0) or image.get_pixel(x1, y-1) == Color(0,0,0,0):
 					topBottomFlag = true
 			x1 -= 1
 		if (x1 != -1 and image.get_pixel(x1, y) == Color(1,1,1,1)):
@@ -169,7 +169,7 @@ func loadThread(arguments : Array):
 		x1 = x
 		while (x1 < image.get_width()) and (image.get_pixel(x1, y) == Color(1,1,0,1)):
 			if y > 0 and y < image.get_height()-1 and !topBottomFlag:
-				if image.get_pixel(x1, y+1) == Color(0,0,0,0) or image.get_pixel(x1, y+1) == Color(0,0,0,0):
+				if image.get_pixel(x1, y-1) == Color(0,0,0,0) or image.get_pixel(x1, y-1) == Color(0,0,0,0):
 					topBottomFlag = true
 			x1 += 1
 		if (x1 != image.get_width() and image.get_pixel(x1, y) == Color(1,1,1,1)):
@@ -180,6 +180,69 @@ func loadThread(arguments : Array):
 				image.set_pixel(u, y, Color(1,1,1,1))
 			else:
 				image.set_pixel(u, y, Color(0,0,0,0))
+
+	var bm := BitMap.new()
+	bm.create_from_image_alpha(image)
+	var bm2 = bm.duplicate() as BitMap
+	
+	for w in image.get_width():
+		for h in image.get_height():
+			if w == 0 or h == 0 or w == image.get_width()-1 or h == image.get_height()-1:
+				if bm2.get_bit(Vector2(w, h)):
+					continue
+				bm2.set_bit(Vector2(w, h), true)
+				var fillArray = []
+				fillArray.push_back([w, h])
+				var n
+				while fillArray.size() > 0:
+					n = fillArray.pop_front()
+					if n[0]-1 > 0 and !bm2.get_bit(Vector2(n[0]-1, n[1])):
+						bm2.set_bit(Vector2(n[0]-1, n[1]), true)
+						fillArray.push_back([n[0]-1, n[1]])
+					if n[0]+1 < image.get_width() and !bm2.get_bit(Vector2(n[0]+1, n[1])):
+						bm2.set_bit(Vector2(n[0]+1, n[1]), true)
+						fillArray.push_back([n[0]+1, n[1]])
+					if n[1]-1 > 0 and !bm2.get_bit(Vector2(n[0], n[1]-1)):
+						bm2.set_bit(Vector2(n[0], n[1]-1), true)
+						fillArray.push_back([n[0], n[1]-1])
+					if n[1]+1 < image.get_height() and !bm2.get_bit(Vector2(n[0], n[1]+1)):
+						bm2.set_bit(Vector2(n[0], n[1]+1), true)
+						fillArray.push_back([n[0], n[1]+1])
+	
+	for w in image.get_width():
+		for h in image.get_height():
+			if !bm2.get_bit(Vector2(w, h)):
+				bm2.set_bit(Vector2(w, h), true)
+				bm.set_bit(Vector2(w, h), true)
+				var fillArray = []
+				fillArray.push_back([w, h])
+				var n
+				while fillArray.size() > 0:
+					n = fillArray.pop_front()
+					if n[0]-1 > 0 and !bm2.get_bit(Vector2(n[0]-1, n[1])):
+						bm2.set_bit(Vector2(n[0]-1, n[1]), true)
+						bm.set_bit(Vector2(n[0]-1, n[1]), true)
+						fillArray.push_back([n[0]-1, n[1]])
+					if n[0]+1 < image.get_width() and !bm2.get_bit(Vector2(n[0]+1, n[1])):
+						bm2.set_bit(Vector2(n[0]+1, n[1]), true)
+						bm.set_bit(Vector2(n[0]+1, n[1]), true)
+						fillArray.push_back([n[0]+1, n[1]])
+					if n[1]-1 > 0 and !bm2.get_bit(Vector2(n[0], n[1]-1)):
+						bm2.set_bit(Vector2(n[0], n[1]-1), true)
+						bm.set_bit(Vector2(n[0], n[1]-1), true)
+						fillArray.push_back([n[0], n[1]-1])
+					if n[1]+1 < image.get_height() and !bm2.get_bit(Vector2(n[0], n[1]+1)):
+						bm2.set_bit(Vector2(n[0], n[1]+1), true)
+						bm.set_bit(Vector2(n[0], n[1]+1), true)
+						fillArray.push_back([n[0], n[1]+1])
+	
+	# for each pixel in bitmap, set pixel in image2
+	for w in image.get_width():
+		for h in image.get_height():
+			if bm.get_bit(Vector2(w, h)):
+				image.set_pixel(w, h, Color(1,1,1,1))
+			else:
+				image.set_pixel(w, h, Color(1,1,1,0))
 
 	# Unlocks image so size can be adjusted
 	image.unlock()
@@ -255,22 +318,42 @@ func loadThread(arguments : Array):
 			image2.lock()
 			# Track whether the sub-image is fully transparent or not
 			var transparent = true
+			var opaque = false
 			var bitmap := BitMap.new()
 			bitmap.create_from_image_alpha(image2)
-			bitmap.grow_mask(5, Rect2(Vector2(), bitmap.get_size()))
 			
 			var bitmapsize = bitmap.get_size()
 			# Checks if transparent so it can save time and not have to add destructible nodes if fully transparent
 			for w in image2.get_width():
 				for h in image2.get_height():
 					# Grab pixels that are the contour
-					if bitmap.get_bit(Vector2(w,h)):
-						image2.set_pixel(w, h, Color(1,1,1,1))
+					if image2.get_pixel(w,h).a > 0:
 						if transparent:
 							transparent = false
-					else:
-						image2.set_pixel(w, h, Color(0,0,0,0))
-						
+							break
+			
+			if !transparent:
+				opaque = true
+				for w in image2.get_width():
+					for h in image2.get_height():
+						# Grab pixels that are the contour
+						if image2.get_pixel(w,h).a < 1:
+							if opaque:
+								opaque = false
+								break
+				
+			if !transparent and !opaque:
+				
+				bitmap.grow_mask(5, Rect2(Vector2(), bitmap.get_size()))
+				
+				# for each pixel in bitmap, set pixel in image2
+				for w in image2.get_width():
+					for h in image2.get_height():
+						if bitmap.get_bit(Vector2(w, h)):
+							image2.set_pixel(w, h, Color(1,1,1,1))
+						else:
+							image2.set_pixel(w, h, Color(1,1,1,0))
+
 			image2.unlock()
 			# Remove mipmaps so there arent weird aliasing/filter/mipmap lines between sub-images, especially when zooming
 			image2.clear_mipmaps()
