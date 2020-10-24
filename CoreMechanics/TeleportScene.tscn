@@ -4,7 +4,7 @@
 [ext_resource path="res://CoreMechanics/TeleportSprite.gd" type="Script" id=2]
 [ext_resource path="res://assets/teleport-icon.png" type="Texture" id=3]
 [ext_resource path="res://Camera/TeleportCamera.gd" type="Script" id=4]
-[ext_resource path="res://assets/teleport-penalty-cooldown.png" type="Texture" id=5]
+[ext_resource path="res://GUI/GUI.tscn" type="PackedScene" id=5]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 15.5
@@ -19,83 +19,9 @@ script = ExtResource( 4 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="TeleportCamera"]
 
-[node name="TeleportUI" type="Control" parent="TeleportCamera/CanvasLayer"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -512.0
-margin_top = -300.0
-margin_right = 512.0
-margin_bottom = 300.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Panel" type="Panel" parent="TeleportCamera/CanvasLayer/TeleportUI"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -107.0
-margin_top = -152.0
-margin_right = -3.0
-
-[node name="TextureProgress" type="TextureProgress" parent="TeleportCamera/CanvasLayer/TeleportUI"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -105.0
-margin_top = -100.0
-margin_right = -4.99994
-step = 0.001
-texture_under = ExtResource( 5 )
-texture_progress = ExtResource( 5 )
-fill_mode = 5
-tint_under = Color( 1, 1, 1, 0 )
-tint_progress = Color( 1, 1, 1, 0.411765 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="TeleportCamera/CanvasLayer/TeleportUI"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -105.0
-margin_top = -97.0
-margin_right = -5.0
-margin_bottom = 3.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-text = "0"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Disclaimer" type="Label" parent="TeleportCamera/CanvasLayer/TeleportUI"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -107.0
-margin_top = -150.0
-margin_right = -2.99988
-margin_bottom = -110.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-text = "Time left before health penalty:"
-align = 1
-valign = 1
-autowrap = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="GUI" parent="TeleportCamera/CanvasLayer" instance=ExtResource( 5 )]
+enabled = false
+teleportMode = true
 
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 0.03, 0.03 )

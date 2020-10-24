@@ -65,7 +65,7 @@ func _physics_process(_delta : float):
 				shoot(currentSelectedAttack)
 
 func _input(event):
-	if player_node.control and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
+	if player_node.control and !player_node.menuPressed and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
 		if get_node("../StateManager").allowActions:
 			# Handle charging projectile strength when shoot input is pressed and held
 			if event.is_action_pressed("shoot") and !player_node.selectMinion:

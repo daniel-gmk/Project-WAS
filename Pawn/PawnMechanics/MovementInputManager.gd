@@ -18,7 +18,7 @@ func _physics_process(delta):
 
 func _unhandled_input(event):
 	# Client code
-	if is_network_master() and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
+	if is_network_master() and !player_node.menuPressed and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
 		if(event.is_action_pressed("left")):
 			movement.x = -1
 		if(event.is_action_pressed("right")):

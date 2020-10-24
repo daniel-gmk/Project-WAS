@@ -14,17 +14,20 @@ export var mainPawnAttackList = ["Projectile"]
 var currentActivePawn
 var pawnList = []
 var minion_identifier = 0
-
+var menuPressed = false
 var selectMinion = false
+var player_gui
+var teleport_gui
 
 func _ready():
+	player_gui = get_node("PlayerCamera/CanvasLayer/GUI")
 	pawnList.append($MainPawn)
 	currentActivePawn = $MainPawn
 	# Gives the authority of the input manager to the player
 	get_node("MainPawn/MovementInputManager").set_network_master(int(clientName))
 
 func _input(event):
-	if control and !$TeleportManager.teleporting:
+	if control and !menuPressed and !$TeleportManager.teleporting:
 		if event.is_action_pressed("test"):
 			if selectMinion:
 				removeMinionSelectLocation(true)
@@ -34,6 +37,34 @@ func _input(event):
 				addMinionSelectLocation(300, get_node("MainPawn/BodyCollision").shape.height, $MainPawn, "Minion")
 			else:
 				removeMinionSelectLocation(true)
+
+func switch_gui_to_teleport():
+	player_gui.enabled = false
+	teleport_gui.enabled = true
+
+func switch_gui_to_player():
+	player_gui.enabled = true
+	teleport_gui.enabled = false
+
+func menu(shouldOpen):
+	if shouldOpen == true and !menuPressed:
+		menuPress()
+	elif shouldOpen == false:
+		menuRelease()
+
+func menuPress():
+	menuPressed = true
+	if currentActivePawn.has_node("MovementInputManager"):
+		currentActivePawn.get_node("MovementInputManager").movement.x = 0
+	if currentActivePawn.has_node("AttackManager"):
+		var attackManager = currentActivePawn.get_node("AttackManager")
+		if attackManager._attack_power > 0:
+			attackManager.shoot(attackManager.currentSelectedAttack)
+	print("Menu Pressed")
+
+func menuRelease():
+	menuPressed = false
+	print("Menu Released")
 
 func addMinionSelectLocation(size, minionSize, callingEntity, minionType):
 	var minion_select_loc_dir = "res://Pawn/Minion/MinionSelectLocation.tscn"

@@ -58,7 +58,6 @@ func _exit_tree():
 	for thread in _destruction_threads:
 		thread.wait_to_finish()
 
-
 func _unhandled_input(event):
 	if (event.is_action_pressed("ui_accept")):
 		# DEBUG:

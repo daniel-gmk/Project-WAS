@@ -5,7 +5,7 @@ var mainPosition
 
 func _input(event):
 	# Zoom on scrolling
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and !get_parent().get_parent().menuPressed:
 		var new_zoom := Vector2.ZERO
 		if event.button_index == BUTTON_WHEEL_UP:
 			position = position.linear_interpolate(get_global_mouse_position(), 0.2)

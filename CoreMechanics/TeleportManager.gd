@@ -220,6 +220,9 @@ func initiateTeleport():
 	serverCompletedResponse = true
 	teleport_check = true
 	
+	get_parent().teleport_gui = get_node("../TeleportScene/TeleportCamera/CanvasLayer/GUI")
+	get_parent().switch_gui_to_teleport()
+	
 	startTeleportSelectPenaltyTimer()
 
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
@@ -249,6 +252,8 @@ func concludeTeleport():
 	else:
 		# If cooldown is not active (== 0), set cooldown
 		useteleportCooldown()
+
+	get_parent().switch_gui_to_player()
 
 	rpc_id(1, "broadcastTeleportConclusionServer")
 	
@@ -286,7 +291,6 @@ func checkTeleportReachedRPC():
 
 func startTeleportSelectPenaltyTimer():
 	teleportSelectPenaltyTimer.start()
-	get_node("../TeleportScene/TeleportCamera/CanvasLayer/TeleportUI/TextureProgress").max_value = teleportSelectPenaltyTime
 	rpc_id(1, "startTeleportSelectPenaltyTimerServer")
 
 remote func startTeleportSelectPenaltyTimerServer():

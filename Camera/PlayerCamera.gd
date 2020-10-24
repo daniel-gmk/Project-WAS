@@ -27,8 +27,6 @@ var root
 # Stores the player's MainPawn child for when the player is being focused.
 var playerOwner
 
-var shiftHolding = false
-
 func _ready() -> void:
 	if get_tree().is_network_server() or !get_parent().control:
 		queue_free()
@@ -40,13 +38,6 @@ func _ready() -> void:
 	#make_current()
 	current_position = position
 
-func _input(event):
-	if event.is_action_pressed("shift"):
-		shiftHolding = true
-
-	if event.is_action_released("shift"):
-		shiftHolding = false
-
 func _physics_process(delta: float) -> void:
 	if !lastPlayerOwnerPosition:
 		destination_position = target.position
@@ -56,7 +47,7 @@ func _physics_process(delta: float) -> void:
 		force_update_scroll()
 
 func _unhandled_input(event):
-	if get_parent().control:
+	if get_parent().control and !get_parent().menuPressed:
 		# Handles the initial and final trigger for dragging the camera
 		if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT:
 			get_tree().set_input_as_handled()
@@ -82,7 +73,7 @@ func _unhandled_input(event):
 			_previous_position = event.position
 	
 		# Zoom, this will be turned off for non-spectators eventually
-		elif event is InputEventMouseButton and event.pressed and shiftHolding:
+		elif event is InputEventMouseButton and event.pressed:
 			var new_zoom := Vector2.ZERO
 			if event.button_index == BUTTON_WHEEL_UP:
 				new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)

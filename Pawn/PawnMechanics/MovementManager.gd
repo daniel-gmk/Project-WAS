@@ -173,7 +173,7 @@ func move(delta):
 # Execute upon input (so far jump and shoot)
 func _input(event):
 	# Only execute locally so input wouldnt change other characters
-	if get_parent().control and !get_node("../TeleportManager").teleporting and get_parent().currentActivePawn == self and $StateManager.allowActions:
+	if get_parent().control and !get_parent().menuPressed and !get_node("../TeleportManager").teleporting and get_parent().currentActivePawn == self and $StateManager.allowActions:
 			# Handle jump input when pressed
 			if event.is_action_pressed("jump") and !jumping:
 				#call locally jumpPressed
