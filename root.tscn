@@ -123,6 +123,7 @@ centered = false
 script = ExtResource( 6 )
 
 [node name="MiniMap" type="Sprite" parent="."]
+self_modulate = Color( 1, 1, 1, 0.784314 )
 material = SubResource( 3 )
 z_index = -1
 centered = false
