@@ -24,6 +24,7 @@ var teleport_penalty_damage_mincheck1 = 0.1
 # Mincheck2 checks if 25% of CURRENT health is the larger value
 var teleport_penalty_damage_mincheck2 = 0.25
 
+var accumulatedTeleportDamage = 0
 
 var teleportSelectPenaltyTimer = Timer.new()
 var teleportSelectPenaltyTime = 5
@@ -127,6 +128,7 @@ remote func setInitiateTeleportVariablesRPC():
 func setInitiateTeleportVariables():
 	if initialTeleport:
 		add_to_group("TeleportManagers")
+	accumulatedTeleportDamage = 0
 	if teleportingPawn.has_node("HealthManager"):
 		teleportingPawn.get_node("HealthManager").hideMiniHPBar()
 	if teleportingPawn.has_node("StateManager"):
@@ -197,7 +199,6 @@ remote func approveConcludeTeleportRequestRPC():
 
 # Instructions for freezing player and setting variables/views to choose teleport location
 func initiateTeleport():
-	
 	# Pause existing teleport cooldown if active
 	if teleportCooldownTimer.get_time_left() > 0:
 		teleportCooldownTimer.set_paused(true)
@@ -301,4 +302,10 @@ func teleportSelectPenalty():
 	if get_tree().is_network_server():
 		if teleportingPawn.has_node("HealthManager"):
 			var pawnHealthManager = teleportingPawn.get_node("HealthManager")
-			pawnHealthManager.serverBroadcastDamageRPC(pawnHealthManager.maxHealth * teleportSelectPenaltyHealthTaken, true)
+			var penaltyDamage = pawnHealthManager.maxHealth * teleportSelectPenaltyHealthTaken
+			pawnHealthManager.serverBroadcastDamageRPC(penaltyDamage, true)
+			accumulatedTeleportDamage += penaltyDamage
+			rpc("sendAccumulatedTeleportDamage", accumulatedTeleportDamage)
+
+remote func sendAccumulatedTeleportDamage(accumulatedTeleportDamageRPC):
+	accumulatedTeleportDamage = accumulatedTeleportDamageRPC

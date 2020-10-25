@@ -166,6 +166,7 @@ func _process(delta):
 		if teleportMode:
 			teleport.get_node("Label").text = str(stepify(player_node.get_node("TeleportManager").teleportSelectPenaltyTimer.get_time_left(), 0.1))
 			teleport.get_node("TextureProgress").value = player_node.get_node("TeleportManager").teleportSelectPenaltyTimer.get_time_left()
+			teleport.get_node("DamageLabel").text = "-" + str(player_node.get_node("TeleportManager").accumulatedTeleportDamage) + "HP"
 		else:
 			var player_list = player_node.pawnList
 			var mainPawnSize = player_node.get_node("MainPawn/BodyCollision").shape.height
