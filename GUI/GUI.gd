@@ -25,9 +25,14 @@ var local = false
 var indicatorScript
 var chatOpen = false
 var escOpen = false
+var chatTextExpire = 5.0
+var textFlagOptions = ["[All]", "[Team]", "[Whisper]"]
+var textFlagColors = ["[color=white]", "[color=#3399ff]", "[color=#ff66ff]"]
+var textFlagPlacement = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	add_to_group("GUI")
 	if teleportMode:
 		player_node = get_parent().get_parent().get_parent().get_parent()
 	else:
@@ -35,6 +40,7 @@ func _ready():
 	teleport_cooldown = get_node(teleport_cooldown_nodepath)
 	chat = get_node(chat_nodepath)
 	healthbar = get_node(healthbar_nodepath)
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/TextFlag").bbcode_text = textFlagOptions[textFlagPlacement]
 	if teleportMode:
 		teleport = get_node(teleport_nodepath)
 		teleport.get_node("TextureProgress").max_value = player_node.get_node("TeleportManager").teleportSelectPenaltyTime
@@ -70,6 +76,7 @@ func _input(event):
 					openChat()
 					player_node.menu(true)
 				else:
+					sendMessageLocal()
 					closeChat()
 					player_node.menu(false)
 
@@ -82,6 +89,9 @@ func _input(event):
 			else:
 				player_node.menu(false)
 				closeEsc()
+		
+		elif event.is_action_pressed("tab") and chatOpen:
+			rotateTextFlagPlacement()
 
 func closeOtherMenus():
 	if chatOpen:
@@ -89,20 +99,57 @@ func closeOtherMenus():
 
 func openChat():
 	chat.self_modulate = Color(1, 1, 1, 1)
-	chat.get_node("HBoxContainer/VBoxContainer/LineEdit").visible = true
-	chat.get_node("HBoxContainer/VBoxContainer/LineEdit").set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage").visible = true
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").visible = true
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").visible = false
+	chat.get_node("HBoxContainer/VBoxContainer/ColorRect").visible = true
+	chat.self_modulate = Color(0,0,0,.24)
 	chat.set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").call_deferred("grab_focus")
 	chatOpen = true
 	# Enable mouse events
 
 func closeChat():
 	# Send whatever is currently in chat to everyone else and empty the current chat
 	chat.self_modulate = Color(1, 1, 1, 0)
-	chat.get_node("HBoxContainer/VBoxContainer/LineEdit").visible = false
-	chat.get_node("HBoxContainer/VBoxContainer/LineEdit").set_mouse_filter(2)
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage").visible = false
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").set_mouse_filter(2)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").set_mouse_filter(2)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").visible = false
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").visible = true
+	chat.get_node("HBoxContainer/VBoxContainer/ColorRect").visible = false
+	chat.self_modulate = Color(0,0,0,0)
 	chat.set_mouse_filter(2)
 	chatOpen = false
 	# Disable mouse events
+
+func sendMessageLocal():
+	if chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").text != "":
+		var lineEdit = chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit")
+		var message = lineEdit.text
+		lineEdit.text = ""
+		for gui_node_in_group in get_tree().get_nodes_in_group("GUI"):
+			gui_node_in_group.sendMessage(message, textFlagPlacement)
+		get_node("/root/1/MessageHandler").sendMessageToServer(message, player_node.clientName, textFlagPlacement)
+
+func sendMessage(message, flagPlacement):
+	var time = OS.get_time()
+	var timemin
+	if time.minute < 10:
+		timemin = "0" + str(time.minute)
+	else:
+		timemin = str(time.minute)
+	var prefix = "[" + str(time.hour) + ":" + timemin + "] " + player_node.get_node("MainPawn").name + ": "
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text += textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "\n"
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text += "[ghost time=" + str(OS.get_ticks_msec()) + "]" + textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "[/ghost]" + "\n"
+
+func rotateTextFlagPlacement():
+	textFlagPlacement += 1
+	if textFlagPlacement == textFlagOptions.size():
+		textFlagPlacement = 0
+	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/TextFlag").bbcode_text = textFlagColors[textFlagPlacement] + textFlagOptions[textFlagPlacement] + "[/color]"
 
 func openEsc():
 	escOpen = true

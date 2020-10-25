@@ -272,7 +272,8 @@ func loadThread(arguments : Array):
 
 	var sky = get_parent().get_node("Sky")
 	sky.visible = true
-	sky.scale = Vector2(image.get_width() / sky.texture.get_data().get_width(), image.get_height() / sky.texture.get_data().get_height())
+	sky.scale = Vector2(image.get_width()+2000 / sky.texture.get_data().get_width(), image.get_height()+2000 / sky.texture.get_data().get_height())
+	sky.position = Vector2(-1000, -1000)
 
 	# Variables used for below optimization function
 	progressBarNode.value = 30

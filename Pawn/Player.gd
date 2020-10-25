@@ -60,11 +60,9 @@ func menuPress():
 		var attackManager = currentActivePawn.get_node("AttackManager")
 		if attackManager._attack_power > 0:
 			attackManager.shoot(attackManager.currentSelectedAttack)
-	print("Menu Pressed")
 
 func menuRelease():
 	menuPressed = false
-	print("Menu Released")
 
 func addMinionSelectLocation(size, minionSize, callingEntity, minionType):
 	var minion_select_loc_dir = "res://Pawn/Minion/MinionSelectLocation.tscn"
