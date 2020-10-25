@@ -162,7 +162,8 @@ func move(delta):
 							# Check fall height and send data to server node to determine damage dealt
 							if has_node("HealthManager"):
 								get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
-			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce)
+						peakHeight = position.y
+			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce, peakHeight)
 		else:
 			# Client code
 			time += delta
@@ -175,7 +176,7 @@ func _input(event):
 	# Only execute locally so input wouldnt change other characters
 	if get_parent().control and !get_parent().menuPressed and !get_node("../TeleportManager").teleporting and get_parent().currentActivePawn == self and $StateManager.allowActions:
 			# Handle jump input when pressed
-			if event.is_action_pressed("jump") and !jumping:
+			if event.is_action_pressed("jump") and !jumping and ((position.y - peakHeight) <= (fallDamageHeight * 2)):
 				#call locally jumpPressed
 				jumpPressed()
 				#RPC to server jumpPressed
@@ -231,7 +232,7 @@ func interpolate(old_transform):
 	transform.origin = old_transform.origin.linear_interpolate(transform.origin,weight)
 
 # Server sending client updated physics data and state
-puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directionRPC, appliedForceRPC):
+puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directionRPC, appliedForceRPC, peakHeightRPC):
 	self.remote_transform = t
 	self.remote_vel = velocity
 	self.ack = ack
@@ -240,11 +241,12 @@ puppet func update_state(t, velocity, ack, jumpingRPC, jumpReleasedRPC, directio
 	jumping = jumpingRPC
 	jumpReleased = jumpReleasedRPC
 	appliedForce = appliedForceRPC
+	peakHeight = peakHeightRPC
 
 # Server calling position reset from teleporting onto clients
 remote func resetPositionRPC():
 	position = Vector2(0,0)
-	rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce)
+	rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce, peakHeight)
 
 # RPC for jump event
 remote func jumpPressedRPC():
