@@ -43,6 +43,7 @@ texture = ExtResource( 9 )
 script = ExtResource( 6 )
 
 [node name="EntityCollision" type="StaticBody2D" parent="MainPawn"]
+visible = false
 collision_layer = 16
 collision_mask = 16
 
@@ -54,7 +55,7 @@ shape = SubResource( 2 )
 
 [node name="GravityRayCastCheck" type="RayCast2D" parent="MainPawn"]
 enabled = true
-cast_to = Vector2( 0, 40 )
+cast_to = Vector2( 0, 50 )
 
 [node name="InclineRayCastCheck" type="RayCast2D" parent="MainPawn"]
 enabled = true
