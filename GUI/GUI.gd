@@ -32,7 +32,6 @@ var textFlagPlacement = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	add_to_group("GUI")
 	if teleportMode:
 		player_node = get_parent().get_parent().get_parent().get_parent()
 	else:
@@ -47,6 +46,16 @@ func _ready():
 		teleport.visible = true
 		get_node(minimap_gui_nodepath).visible = false
 		healthbar.visible = false
+		for getgui in get_tree().get_nodes_in_group("GUI"):
+			var exit = false
+			if getgui.chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text != "":
+				chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text = getgui.chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text
+				exit = true
+			if getgui.chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text != "":
+				chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text = getgui.chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text
+				exit = true
+			if exit:
+				break
 		if !get_tree().is_network_server() and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
 			local = true
 	else:
@@ -66,6 +75,8 @@ func _ready():
 			minimap_node.set_owner(minimap_gui_node)
 			minimap_node.z_index = 1
 			minimapCamera = minimap_gui_node.get_node("CameraIndicator")
+			add_to_group("localGUI")
+	add_to_group("GUI")
 
 func _input(event):
 	if enabled:
@@ -101,7 +112,9 @@ func openChat():
 	chat.self_modulate = Color(1, 1, 1, 1)
 	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage").visible = true
 	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer").set_mouse_filter(0)
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").set_mouse_filter(0)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").set_mouse_filter(0)
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").visible = true
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").visible = false
 	chat.get_node("HBoxContainer/VBoxContainer/ColorRect").visible = true
@@ -116,7 +129,9 @@ func closeChat():
 	chat.self_modulate = Color(1, 1, 1, 0)
 	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage").visible = false
 	chat.get_node("HBoxContainer/VBoxContainer/SendingMessage/LineEdit").set_mouse_filter(2)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer").set_mouse_filter(2)
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").set_mouse_filter(2)
+	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").set_mouse_filter(2)
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").visible = false
 	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").visible = true
 	chat.get_node("HBoxContainer/VBoxContainer/ColorRect").visible = false
@@ -131,19 +146,25 @@ func sendMessageLocal():
 		var message = lineEdit.text
 		lineEdit.text = ""
 		for gui_node_in_group in get_tree().get_nodes_in_group("GUI"):
-			gui_node_in_group.sendMessage(message, textFlagPlacement)
-		get_node("/root/1/MessageHandler").sendMessageToServer(message, player_node.clientName, textFlagPlacement)
+			gui_node_in_group.sendMessage(message, player_node.clientName, textFlagPlacement, false)
+		get_node("/root/1/MessageHandler").sendMessageToServer(message, player_node.clientName, textFlagPlacement, false)
 
-func sendMessage(message, flagPlacement):
+func sendMessage(message, playerClient, flagPlacement, systemMessage):
 	var time = OS.get_time()
 	var timemin
 	if time.minute < 10:
 		timemin = "0" + str(time.minute)
 	else:
 		timemin = str(time.minute)
-	var prefix = "[" + str(time.hour) + ":" + timemin + "] " + player_node.get_node("MainPawn").name + ": "
-	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text += textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "\n"
-	chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text += "[ghost time=" + str(OS.get_ticks_msec()) + "]" + textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "[/ghost]" + "\n"
+	var prefix
+	if systemMessage:
+		prefix = "[" + str(time.hour) + ":" + timemin + "] " + "SYSTEM" + ": "
+		chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text += "[color=yellow]" + prefix + message + "[/color]" + "\n"
+		chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text += "[ghost time=" + str(OS.get_ticks_msec()) + "]" + "[color=yellow]" + prefix + message + "[/color]" + "[/ghost]" + "\n"
+	else:
+		prefix = "[" + str(time.hour) + ":" + timemin + "] " + playerClient + ": "
+		chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SavedMessages").bbcode_text += "[url=" + playerClient + "]" + textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "[/url]" + "\n"
+		chat.get_node("HBoxContainer/VBoxContainer/MarginContainer/SentMessages").bbcode_text += "[url=" + playerClient + "]" + "[ghost time=" + str(OS.get_ticks_msec()) + "]" + textFlagColors[flagPlacement] + textFlagOptions[flagPlacement] + prefix + message + "[/color]" + "[/ghost]" + "[/url]" + "\n"
 
 func rotateTextFlagPlacement():
 	textFlagPlacement += 1

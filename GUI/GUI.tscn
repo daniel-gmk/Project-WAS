@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://GUI/GUI.gd" type="Script" id=1]
 [ext_resource path="res://assets/minimap-character-indicator.png" type="Texture" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://assets/teleport-cooldown-icon.png" type="Texture" id=5]
 [ext_resource path="res://assets/teleport-penalty-cooldown.png" type="Texture" id=6]
 [ext_resource path="res://GUI/RichTextGhost.gd" type="Script" id=7]
+[ext_resource path="res://GUI/ChatMenu.gd" type="Script" id=8]
 
 [sub_resource type="RichTextEffect" id=1]
 script = ExtResource( 7 )
@@ -116,13 +117,13 @@ margin_bottom = 300.0
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer"]
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 300.0
-rect_min_size = Vector2( 312, 0 )
+rect_min_size = Vector2( 320, 0 )
 mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer"]
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 162.0
 rect_min_size = Vector2( 0, 162 )
 mouse_filter = 2
@@ -130,7 +131,7 @@ mouse_filter = 2
 [node name="Panel" type="Panel" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer"]
 self_modulate = Color( 0, 0, 0, 0 )
 margin_top = 166.0
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 300.0
 rect_min_size = Vector2( 0, 134 )
 mouse_filter = 2
@@ -138,36 +139,42 @@ mouse_filter = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel"]
 margin_right = 312.0
 margin_bottom = 130.0
-rect_min_size = Vector2( 312, 130 )
+rect_min_size = Vector2( 320, 130 )
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer"]
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 130.0
-rect_min_size = Vector2( 312, 0 )
+rect_min_size = Vector2( 320, 0 )
 mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer/VBoxContainer"]
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 106.0
+mouse_filter = 2
 
 [node name="SavedMessages" type="RichTextLabel" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer/VBoxContainer/MarginContainer"]
 visible = false
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 106.0
 rect_min_size = Vector2( 0, 106 )
+mouse_filter = 2
 bbcode_enabled = true
+meta_underlined = false
 scroll_following = true
 custom_effects = [ SubResource( 1 ) ]
+script = ExtResource( 8 )
 
 [node name="SentMessages" type="RichTextLabel" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer/VBoxContainer/MarginContainer"]
-margin_right = 312.0
+margin_right = 320.0
 margin_bottom = 106.0
 rect_min_size = Vector2( 0, 106 )
+mouse_filter = 2
 bbcode_enabled = true
+meta_underlined = false
 scroll_active = false
 scroll_following = true
 custom_effects = [ SubResource( 1 ) ]
@@ -190,6 +197,7 @@ mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer/VBoxContainer/SendingMessage"]
 margin_bottom = 18.0
+mouse_filter = 2
 
 [node name="TextFlag" type="RichTextLabel" parent="MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel/HBoxContainer/VBoxContainer/SendingMessage"]
 margin_left = 4.0

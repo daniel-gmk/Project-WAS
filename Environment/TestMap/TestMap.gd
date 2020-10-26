@@ -345,7 +345,7 @@ func loadThread(arguments : Array):
 				
 			if !transparent and !opaque:
 				
-				bitmap.grow_mask(5, Rect2(Vector2(), bitmap.get_size()))
+				bitmap.grow_mask(10, Rect2(Vector2(), bitmap.get_size()))
 				
 				# for each pixel in bitmap, set pixel in image2
 				for w in image2.get_width():

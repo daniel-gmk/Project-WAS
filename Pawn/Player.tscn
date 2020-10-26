@@ -55,7 +55,6 @@ shape = SubResource( 2 )
 
 [node name="GravityRayCastCheck" type="RayCast2D" parent="MainPawn"]
 enabled = true
-cast_to = Vector2( 0, 50 )
 
 [node name="InclineRayCastCheck" type="RayCast2D" parent="MainPawn"]
 enabled = true
