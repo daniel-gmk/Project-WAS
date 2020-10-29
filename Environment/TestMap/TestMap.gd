@@ -259,7 +259,7 @@ func loadThread(arguments : Array):
 	testTexture.set_flags(0)
 	var dupsprite = minimapNode
 	dupsprite.texture = testTexture
-	dupsprite.material.set_shader_param("mask_texture", load("res://assets/test-background.png"))
+	dupsprite.material.set_shader_param("mask_texture", load("res://assets/minimap-background.png"))
 	dupsprite.material.set_shader_param("outline_width", 0)
 	var minimap_destructible_scene = load("res://Environment/Destructible-Minimap.tscn")
 	var minimap_destructible       = minimap_destructible_scene.instance()
