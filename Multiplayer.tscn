@@ -35,12 +35,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CreateButton" type="Button" parent="Control"]
+[node name="CreateWithP2P" type="Button" parent="Control"]
+margin_left = 226.0
+margin_top = 85.0
+margin_right = 438.0
+margin_bottom = 161.0
+text = "Create (Peer to Peer)"
+
+[node name="CreateWithDedicated" type="Button" parent="Control"]
 margin_left = 228.0
 margin_top = 181.0
 margin_right = 438.0
 margin_bottom = 258.0
-text = "Create"
+text = "Create (Dedicated Host)"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -127,6 +134,7 @@ self_modulate = Color( 1, 1, 1, 0.803922 )
 material = SubResource( 3 )
 z_index = -1
 centered = false
-[connection signal="pressed" from="Control/CreateButton" to="Control" method="_on_CreateButton_pressed"]
+[connection signal="pressed" from="Control/CreateWithP2P" to="Control" method="_on_CreateWithP2P_pressed"]
+[connection signal="pressed" from="Control/CreateWithDedicated" to="Control" method="_on_CreateButton_pressed"]
 [connection signal="pressed" from="Control/JoinButton" to="Control" method="_on_JoinButton_pressed"]
 [connection signal="pressed" from="Control/Startbutton" to="Control" method="_on_Startbutton_pressed"]

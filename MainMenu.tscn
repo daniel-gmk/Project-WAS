@@ -66,39 +66,6 @@ VScrollBar/styles/grabber_pressed = SubResource( 12 )
 VScrollBar/styles/scroll = SubResource( 13 )
 VScrollBar/styles/scroll_focus = SubResource( 14 )
 
-[sub_resource type="StyleBoxFlat" id=39]
-bg_color = Color( 1, 1, 1, 0.705882 )
-
-[sub_resource type="StyleBoxFlat" id=40]
-bg_color = Color( 1, 1, 1, 0.509804 )
-
-[sub_resource type="StyleBoxFlat" id=41]
-bg_color = Color( 1, 1, 1, 0.862745 )
-
-[sub_resource type="Theme" id=42]
-Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
-Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
-Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
-Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
-Button/constants/hseparation = 2
-Button/fonts/font = null
-Button/styles/disabled = null
-Button/styles/focus = null
-Button/styles/hover = SubResource( 39 )
-Button/styles/normal = SubResource( 40 )
-Button/styles/pressed = SubResource( 41 )
-
-[sub_resource type="Theme" id=43]
-
-[sub_resource type="StyleBoxFlat" id=56]
-bg_color = Color( 1, 1, 1, 0.705882 )
-
-[sub_resource type="StyleBoxFlat" id=57]
-bg_color = Color( 1, 1, 1, 0.862745 )
-
-[sub_resource type="StyleBoxFlat" id=46]
-bg_color = Color( 1, 1, 1, 0.509804 )
-
 [sub_resource type="StyleBoxFlat" id=16]
 bg_color = Color( 1, 1, 1, 0.705882 )
 
@@ -121,54 +88,131 @@ Button/styles/hover = SubResource( 16 )
 Button/styles/normal = SubResource( 17 )
 Button/styles/pressed = SubResource( 18 )
 
-[sub_resource type="StyleBoxEmpty" id=20]
+[sub_resource type="Theme" id=20]
 
-[sub_resource type="StyleBoxEmpty" id=21]
+[sub_resource type="StyleBoxFlat" id=21]
+bg_color = Color( 1, 1, 1, 0.705882 )
 
-[sub_resource type="StyleBoxEmpty" id=22]
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 1, 1, 1, 0.862745 )
 
-[sub_resource type="StyleBoxEmpty" id=23]
+[sub_resource type="StyleBoxFlat" id=23]
+bg_color = Color( 1, 1, 1, 0.509804 )
 
-[sub_resource type="StyleBoxEmpty" id=24]
+[sub_resource type="StyleBoxFlat" id=24]
+bg_color = Color( 1, 1, 1, 0.705882 )
 
-[sub_resource type="StyleBoxEmpty" id=25]
+[sub_resource type="StyleBoxFlat" id=25]
+bg_color = Color( 1, 1, 1, 0.509804 )
 
-[sub_resource type="StyleBoxEmpty" id=26]
+[sub_resource type="StyleBoxFlat" id=26]
+bg_color = Color( 1, 1, 1, 0.862745 )
 
-[sub_resource type="StyleBoxEmpty" id=27]
+[sub_resource type="Theme" id=27]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 24 )
+Button/styles/normal = SubResource( 25 )
+Button/styles/pressed = SubResource( 26 )
 
 [sub_resource type="StyleBoxEmpty" id=28]
 
 [sub_resource type="StyleBoxEmpty" id=29]
 
-[sub_resource type="Theme" id=30]
+[sub_resource type="StyleBoxEmpty" id=30]
+
+[sub_resource type="StyleBoxEmpty" id=31]
+
+[sub_resource type="StyleBoxEmpty" id=32]
+
+[sub_resource type="StyleBoxEmpty" id=33]
+
+[sub_resource type="StyleBoxEmpty" id=34]
+
+[sub_resource type="StyleBoxEmpty" id=35]
+
+[sub_resource type="StyleBoxEmpty" id=36]
+
+[sub_resource type="StyleBoxEmpty" id=37]
+
+[sub_resource type="Theme" id=38]
 HScrollBar/icons/decrement = null
 HScrollBar/icons/decrement_highlight = null
 HScrollBar/icons/increment = null
 HScrollBar/icons/increment_highlight = null
-HScrollBar/styles/grabber = SubResource( 20 )
-HScrollBar/styles/grabber_highlight = SubResource( 21 )
-HScrollBar/styles/grabber_pressed = SubResource( 22 )
-HScrollBar/styles/scroll = SubResource( 23 )
-HScrollBar/styles/scroll_focus = SubResource( 24 )
+HScrollBar/styles/grabber = SubResource( 28 )
+HScrollBar/styles/grabber_highlight = SubResource( 29 )
+HScrollBar/styles/grabber_pressed = SubResource( 30 )
+HScrollBar/styles/scroll = SubResource( 31 )
+HScrollBar/styles/scroll_focus = SubResource( 32 )
 VScrollBar/icons/decrement = null
 VScrollBar/icons/decrement_highlight = null
 VScrollBar/icons/increment = null
 VScrollBar/icons/increment_highlight = null
-VScrollBar/styles/grabber = SubResource( 25 )
-VScrollBar/styles/grabber_highlight = SubResource( 26 )
-VScrollBar/styles/grabber_pressed = SubResource( 27 )
-VScrollBar/styles/scroll = SubResource( 28 )
-VScrollBar/styles/scroll_focus = SubResource( 29 )
+VScrollBar/styles/grabber = SubResource( 33 )
+VScrollBar/styles/grabber_highlight = SubResource( 34 )
+VScrollBar/styles/grabber_pressed = SubResource( 35 )
+VScrollBar/styles/scroll = SubResource( 36 )
+VScrollBar/styles/scroll_focus = SubResource( 37 )
 
-[sub_resource type="StyleBoxFlat" id=55]
+[sub_resource type="StyleBoxFlat" id=39]
 bg_color = Color( 1, 1, 1, 0.705882 )
 
-[sub_resource type="StyleBoxFlat" id=54]
+[sub_resource type="StyleBoxFlat" id=40]
 bg_color = Color( 1, 1, 1, 0.862745 )
 
-[sub_resource type="StyleBoxFlat" id=49]
+[sub_resource type="StyleBoxFlat" id=41]
 bg_color = Color( 1, 1, 1, 0.509804 )
+
+[sub_resource type="StyleBoxFlat" id=42]
+bg_color = Color( 1, 1, 1, 0.705882 )
+
+[sub_resource type="StyleBoxFlat" id=43]
+bg_color = Color( 1, 1, 1, 0.509804 )
+
+[sub_resource type="StyleBoxFlat" id=44]
+bg_color = Color( 1, 1, 1, 0.862745 )
+
+[sub_resource type="Theme" id=45]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 42 )
+Button/styles/normal = SubResource( 43 )
+Button/styles/pressed = SubResource( 44 )
+
+[sub_resource type="StyleBoxFlat" id=46]
+bg_color = Color( 1, 1, 1, 0.705882 )
+
+[sub_resource type="StyleBoxFlat" id=47]
+bg_color = Color( 1, 1, 1, 0.509804 )
+
+[sub_resource type="StyleBoxFlat" id=48]
+bg_color = Color( 1, 1, 1, 0.862745 )
+
+[sub_resource type="Theme" id=49]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 46 )
+Button/styles/normal = SubResource( 47 )
+Button/styles/pressed = SubResource( 48 )
 
 [sub_resource type="StyleBoxFlat" id=50]
 bg_color = Color( 1, 1, 1, 0.705882 )
@@ -192,55 +236,33 @@ Button/styles/hover = SubResource( 50 )
 Button/styles/normal = SubResource( 51 )
 Button/styles/pressed = SubResource( 52 )
 
-[sub_resource type="StyleBoxFlat" id=31]
-bg_color = Color( 1, 1, 1, 0.705882 )
-
-[sub_resource type="StyleBoxFlat" id=32]
-bg_color = Color( 1, 1, 1, 0.509804 )
-
-[sub_resource type="StyleBoxFlat" id=33]
-bg_color = Color( 1, 1, 1, 0.862745 )
-
-[sub_resource type="Theme" id=34]
-Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
-Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
-Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
-Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
-Button/constants/hseparation = 2
-Button/fonts/font = null
-Button/styles/disabled = null
-Button/styles/focus = null
-Button/styles/hover = SubResource( 31 )
-Button/styles/normal = SubResource( 32 )
-Button/styles/pressed = SubResource( 33 )
-
-[sub_resource type="StyleBoxFlat" id=35]
-bg_color = Color( 1, 1, 1, 0.705882 )
-
-[sub_resource type="StyleBoxFlat" id=36]
-bg_color = Color( 1, 1, 1, 0.509804 )
-
-[sub_resource type="StyleBoxFlat" id=37]
-bg_color = Color( 1, 1, 1, 0.862745 )
-
-[sub_resource type="Theme" id=38]
-Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
-Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
-Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
-Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
-Button/constants/hseparation = 2
-Button/fonts/font = null
-Button/styles/disabled = null
-Button/styles/focus = null
-Button/styles/hover = SubResource( 35 )
-Button/styles/normal = SubResource( 36 )
-Button/styles/pressed = SubResource( 37 )
-
-[sub_resource type="StyleBoxFlat" id=58]
+[sub_resource type="StyleBoxFlat" id=54]
 bg_color = Color( 1, 1, 1, 0.54902 )
 
+[sub_resource type="Theme" id=55]
+Panel/styles/panel = SubResource( 54 )
+
+[sub_resource type="StyleBoxFlat" id=56]
+bg_color = Color( 1, 1, 1, 0.705882 )
+
+[sub_resource type="StyleBoxFlat" id=57]
+bg_color = Color( 1, 1, 1, 0.509804 )
+
+[sub_resource type="StyleBoxFlat" id=58]
+bg_color = Color( 1, 1, 1, 0.862745 )
+
 [sub_resource type="Theme" id=59]
-Panel/styles/panel = SubResource( 58 )
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 56 )
+Button/styles/normal = SubResource( 57 )
+Button/styles/pressed = SubResource( 58 )
 
 [sub_resource type="StyleBoxFlat" id=60]
 bg_color = Color( 1, 1, 1, 0.705882 )
@@ -263,28 +285,6 @@ Button/styles/focus = null
 Button/styles/hover = SubResource( 60 )
 Button/styles/normal = SubResource( 61 )
 Button/styles/pressed = SubResource( 62 )
-
-[sub_resource type="StyleBoxFlat" id=64]
-bg_color = Color( 1, 1, 1, 0.705882 )
-
-[sub_resource type="StyleBoxFlat" id=65]
-bg_color = Color( 1, 1, 1, 0.509804 )
-
-[sub_resource type="StyleBoxFlat" id=66]
-bg_color = Color( 1, 1, 1, 0.862745 )
-
-[sub_resource type="Theme" id=67]
-Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
-Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
-Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
-Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
-Button/constants/hseparation = 2
-Button/fonts/font = null
-Button/styles/disabled = null
-Button/styles/focus = null
-Button/styles/hover = SubResource( 64 )
-Button/styles/normal = SubResource( 65 )
-Button/styles/pressed = SubResource( 66 )
 
 [node name="MainMenu" type="Node2D"]
 
@@ -361,7 +361,7 @@ grow_vertical = 0
 rect_min_size = Vector2( 0, 30 )
 size_flags_horizontal = 9
 size_flags_vertical = 9
-theme = SubResource( 42 )
+theme = SubResource( 19 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -386,10 +386,10 @@ grow_vertical = 0
 rect_min_size = Vector2( 0, 30 )
 size_flags_horizontal = 9
 size_flags_vertical = 9
-theme = SubResource( 43 )
-custom_styles/hover = SubResource( 56 )
-custom_styles/pressed = SubResource( 57 )
-custom_styles/normal = SubResource( 46 )
+theme = SubResource( 20 )
+custom_styles/hover = SubResource( 21 )
+custom_styles/pressed = SubResource( 22 )
+custom_styles/normal = SubResource( 23 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -411,7 +411,7 @@ margin_top = 164.0
 margin_right = 384.0
 margin_bottom = 204.0
 rect_min_size = Vector2( 0, 40 )
-theme = SubResource( 19 )
+theme = SubResource( 27 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -429,7 +429,7 @@ margin_bottom = 110.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_min_size = Vector2( 340, 0 )
-theme = SubResource( 30 )
+theme = SubResource( 38 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -457,9 +457,9 @@ __meta__ = {
 margin_right = 240.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 0, 30 )
-custom_styles/hover = SubResource( 55 )
-custom_styles/pressed = SubResource( 54 )
-custom_styles/normal = SubResource( 49 )
+custom_styles/hover = SubResource( 39 )
+custom_styles/pressed = SubResource( 40 )
+custom_styles/normal = SubResource( 41 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -480,7 +480,7 @@ margin_top = 44.0
 margin_right = 240.0
 margin_bottom = 74.0
 rect_min_size = Vector2( 0, 30 )
-theme = SubResource( 53 )
+theme = SubResource( 45 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -502,7 +502,7 @@ margin_top = 224.0
 margin_right = 384.0
 margin_bottom = 264.0
 rect_min_size = Vector2( 0, 40 )
-theme = SubResource( 34 )
+theme = SubResource( 49 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -518,7 +518,7 @@ margin_top = 284.0
 margin_right = 384.0
 margin_bottom = 324.0
 rect_min_size = Vector2( 0, 40 )
-theme = SubResource( 38 )
+theme = SubResource( 53 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -537,7 +537,7 @@ texture = ExtResource( 3 )
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 59 )
+theme = SubResource( 55 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -594,7 +594,7 @@ rect_min_size = Vector2( 0, 50 )
 margin_right = 146.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 146, 0 )
-theme = SubResource( 63 )
+theme = SubResource( 59 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
@@ -612,7 +612,7 @@ margin_left = 172.0
 margin_right = 318.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 146, 0 )
-theme = SubResource( 67 )
+theme = SubResource( 63 )
 custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_hover = Color( 0, 0, 0, 1 )

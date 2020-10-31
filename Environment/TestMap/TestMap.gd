@@ -41,10 +41,13 @@ func loadTerrain(terrainSeed, ip):
 		print("Error creating destruction thread: ", error)
 	_chunk_threads.push_back(thread)
 
+	var network = get_node("/root/Network")
 	# After everything is loaded and done, client can reconnect to server
 	if !get_tree().is_network_server():
-		var network = get_node("/root/Network")
 		network.terrain_loaded()
+	else:
+		if network.hostingMode == 1:
+			get_node("/root/environment/Control").rect_position = Vector2(maxLength/8, maxHeight/8)
 
 func loadThread(arguments : Array):
 	progressBarNode.value = 5

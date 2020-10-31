@@ -4,6 +4,7 @@ extends Node2D
 
 var control   = false
 var player_id = 0
+var server_controlled = false
 
 export var map_path = "/root/environment/TestMap"
 export var eventHandler_path = "/root/1"
@@ -31,7 +32,12 @@ func _input(event):
 		if event.is_action_pressed("test"):
 			if selectMinion:
 				removeMinionSelectLocation(true)
-			rpc_id(1, "switchPawnServer")
+			
+			if get_tree().is_network_server():
+				if server_controlled:
+					switchPawnAsServer()
+			else:
+				rpc_id(1, "switchPawnServer")
 		elif event.is_action_pressed("test2"):
 			if !selectMinion:
 				addMinionSelectLocation(300, get_node("MainPawn/BodyCollision").shape.height, $MainPawn, "Minion")
@@ -89,6 +95,10 @@ func removePawnCallServer(pawn_id):
 	if !get_tree().is_network_server():
 		rpc_id(1, "removePawnServer", pawn_id)
 
+func removePawnAsServer(pawn_id):
+	removePawn(pawn_id)
+	rpc("removePawnRPC", pawn_id)
+
 remote func removePawnServer(pawn_id):
 	removePawn(pawn_id)
 	rpc("removePawnRPC", pawn_id)
@@ -106,6 +116,10 @@ func removePawn(pawn_id):
 	erasePawn.get_node("StateManager").freeze()
 	erasePawn.get_node("StateManager").hide()
 	erasePawn.terminate()
+
+func switchPawnAsServer():
+	switchPawn()
+	rpc("switchPawnRPC")
 
 remote func switchPawnServer():
 	switchPawn()
@@ -147,6 +161,10 @@ func switchToPawn(pawnName):
 
 func addMinionToServer(minion_id, pos):
 	rpc_id(1, "addMinionServer", minion_id, pos)
+
+func addMinionAsServer(minion_id, pos):
+	rpc("addMinionRPC", minion_id, pos)
+	addMinion(minion_id, pos)
 
 remote func addMinionServer(minion_id, pos):
 	rpc("addMinionRPC", minion_id, pos)

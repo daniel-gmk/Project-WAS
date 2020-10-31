@@ -128,10 +128,18 @@ func shoot(skill_type):
 			"Caster_PlayerID": int(player_node.clientName)
 		}
 	}
-	# Summon projectile locally but have it just disappear on impact
-	summonProjectile(localData)
-	# Broadcast RPC so projectile can be shown to other players/server
-	rpc_id(1, "summonProjectileServer", localData, remoteData)
+	
+	
+	if get_tree().is_network_server():
+		if player_node.server_controlled:
+			summonProjectileAsServer(localData, remoteData)
+	else:
+		# Summon projectile locally but have it just disappear on impact
+		summonProjectile(localData)
+		# Broadcast RPC so projectile can be shown to other players/server
+		rpc_id(1, "summonProjectileServer", localData, remoteData)
+	
+	
 	resetAttack()
 
 func resetAttack():
@@ -148,6 +156,13 @@ func _render_reticule():
 	# Change charge HUD display so it fills up as charging
 	if _attack_clicked:
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)
+
+# Send data of a shot projectile and simulate across server to other players
+func summonProjectileAsServer(localData, remoteData):
+	# If server
+	summonProjectile(remoteData)
+	# Loop through clients and launch projectile to each
+	rpc("summonProjectileRPC", localData, remoteData["Network_Data"]["Caster_PlayerID"])
 
 # Send data of a shot projectile and simulate across server to other players
 remote func summonProjectileServer(localData, remoteData):

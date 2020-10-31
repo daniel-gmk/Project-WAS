@@ -4,18 +4,11 @@ extends Node2D
 # Track scene type of explosion effect
 export var explosion_scene : PackedScene
 # Called when the node enters the scene tree for the first time.
-
-func _ready():
-	# Don't show any GUI elements to the server
-	if get_tree().is_network_server():
-		# Set camera focus to player
-		$ServerCamera.control = true
-		var camera = $ServerCamera
-		camera.root = self
-		camera.playerOwner = self
-		camera.make_current()
-	else:
-		$ServerCamera.queue_free()
+# Variables passed to player node
+var player_id
+var control
+# Load player node
+var player_scene = preload("res://Pawn/Player.tscn")
 
 func _process(delta):
 	if get_tree().is_network_server():
@@ -30,6 +23,20 @@ func _process(delta):
 					node.concludeTeleportAsServer()
 					node.initialTeleport = false
 					node.remove_from_group("TeleportManagers")
+
+# On call, instantiate and create a player node for the client.
+func startGameCharacter(serverControlled):
+	var player = player_scene.instance()
+	
+	player.player_id = player_id
+	player.control   = control
+
+	if serverControlled:
+		get_node("/root/environment/Camera").queue_free()
+		player.server_controlled = true
+
+	# Instantiate the character
+	add_child(player)
 
 # Remote function called by server to also execute terrain destruction but from server's perspective instead
 # of client's perspective as an authoritative approach.

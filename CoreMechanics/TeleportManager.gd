@@ -39,7 +39,7 @@ var serverCompletedResponse = false
 func _ready():
 	teleportingPawn = get_node("../MainPawn")
 	initializePenaltyTimer()
-	if !get_tree().is_network_server() and get_parent().get_parent().control:
+	if (!get_tree().is_network_server() or (get_tree().is_network_server() and get_parent().server_controlled)) and get_parent().get_parent().control:
 		initialize()
 
 func initialize():
@@ -59,8 +59,14 @@ func initialize():
 	teleportCheckTimer.set_one_shot(false)
 	teleportCheckTimer.connect("timeout", self, "checkTeleportReachedRPC")
 	add_child(teleportCheckTimer)
-	
-	rpc_id(1, "initiateTeleportServer", get_parent().player_id)
+
+	if get_tree().is_network_server():
+		if get_parent().server_controlled:
+			rpc("setInitiateTeleportVariablesRPC")
+			setInitiateTeleportVariables()
+			call_deferred("initiateTeleport")
+	else:
+		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
 
 func initializePenaltyTimer():
 	# Instantiate RPC check timer
@@ -71,6 +77,10 @@ func initializePenaltyTimer():
 
 func setTeleportingPawnToServer(pawnName):
 	rpc_id(1, "setTeleportingPawnServer", pawnName)
+
+func setTeleportingPawnAsServer(pawnName):
+	setTeleportingPawn(pawnName)
+	rpc("setTeleportingPawnRPC", pawnName)
 
 remote func setTeleportingPawnServer(pawnName):
 	setTeleportingPawn(pawnName)
@@ -97,6 +107,19 @@ func requestTeleportToServer(pos):
 	rpc_id(1, "serverTeleportPlayer", pos)
 	rpc_id(1, "concludeTeleportServer", get_parent().player_id)
 
+func requestTeleportAsServer(pos):
+	teleportSelectPenaltyTimer.stop()
+	rpc("teleportPlayerRPC", pos)
+	teleportPlayer(pos)
+	
+	if initialTeleport:
+		showPawn()
+	else:
+		rpc("setConcludeTeleportVariablesRPC")
+		setConcludeTeleportVariables()
+
+	concludeTeleport()
+
 # Server tells ALL clients via RPC of the new location, then calls locally
 remote func serverTeleportPlayer(pos):
 	if get_tree().is_network_server():
@@ -117,7 +140,7 @@ remote func initiateTeleportServer(id):
 	if get_tree().is_network_server():
 		rpc("setInitiateTeleportVariablesRPC")
 		setInitiateTeleportVariables()
-		
+
 		rpc_id(id, "approveInitiateTeleportRequestRPC")
 
 # Freezes and hides player for clients
@@ -256,7 +279,12 @@ func concludeTeleport():
 
 	get_parent().switch_gui_to_player()
 
-	rpc_id(1, "broadcastTeleportConclusionServer")
+	if get_tree().is_network_server():
+		if get_parent().server_controlled:
+			broadcastTeleportConclusion()
+			rpc("broadcastTeleportConclusionRPC")
+	else:
+		rpc_id(1, "broadcastTeleportConclusionServer")
 	
 remote func broadcastTeleportConclusionServer():
 	broadcastTeleportConclusion()
@@ -292,7 +320,8 @@ func checkTeleportReachedRPC():
 
 func startTeleportSelectPenaltyTimer():
 	teleportSelectPenaltyTimer.start()
-	rpc_id(1, "startTeleportSelectPenaltyTimerServer")
+	if !get_tree().is_network_server():
+		rpc_id(1, "startTeleportSelectPenaltyTimerServer")
 
 remote func startTeleportSelectPenaltyTimerServer():
 	if get_tree().is_network_server():

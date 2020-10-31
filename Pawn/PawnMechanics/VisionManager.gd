@@ -20,7 +20,7 @@ var player_node
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	player_node = get_parent().get_parent()
-	if get_tree().is_network_server() or !player_node.control:
+	if (get_tree().is_network_server() and !player_node.server_controlled) or !player_node.control:
 		queue_free()
 	mapWidth = get_node(player_node.map_path).maxLength
 	mapHeight = get_node(player_node.map_path).maxHeight

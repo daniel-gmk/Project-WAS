@@ -82,10 +82,20 @@ func _process(delta):
 			if MainPawn:
 				if !get_node("../TeleportManager").teleporting:
 					get_node("../TeleportManager").teleporting = true
-					rpc_id(1, "resetPositionRPC")
-					get_node("../TeleportManager").setTeleportingPawnToServer(name)
+					if get_tree().is_network_server():
+						if get_parent().server_controlled:
+							position = Vector2(0,0)
+							get_node("../TeleportManager").setTeleportingPawnAsServer(name)
+					else:
+						rpc_id(1, "resetPositionRPC")
+						get_node("../TeleportManager").setTeleportingPawnToServer(name)
 			else:
-				if !get_tree().is_network_server():
+				if get_tree().is_network_server():
+					if get_parent().server_controlled:
+						terminatePending = true
+						terminatePendingAsServer()
+						get_parent().removePawnAsServer(name)
+				else:
 					terminatePending = true
 					rpc_id(1, "terminatePendingServer")
 					get_parent().removePawnCallServer(name)
@@ -163,6 +173,8 @@ func move(delta):
 							if has_node("HealthManager"):
 								get_node("HealthManager").calculateFallDamageServer(position.y - peakHeight, fallDamageHeight, fallDamageRate)
 						peakHeight = position.y
+			$StateManager.flipSprite($MovementInputManager.movement.x)
+
 			rpc_unreliable("update_state",transform, _velocity, $MovementInputManager.movement_counter, jumping, jumpReleased, $MovementInputManager.movement.x, appliedForce, peakHeight)
 		else:
 			# Client code
@@ -180,14 +192,16 @@ func _input(event):
 				#call locally jumpPressed
 				jumpPressed()
 				#RPC to server jumpPressed
-				rpc_id(1, "jumpPressedRPC")
+				if !get_tree().is_network_server():
+					rpc_id(1, "jumpPressedRPC")
 	
 			# Handle jump input when key is released, which cuts the jump distance short and allows jump height control
 			if event.is_action_released("jump"):
 				#call locally jumpReleased
 				jumpReleased()
 				#RPC to server jumpReleased
-				rpc_id(1, "jumpReleasedRPC")
+				if !get_tree().is_network_server():
+					rpc_id(1, "jumpReleasedRPC")
 
 # Local jump event called from RPC
 func jumpPressed():
@@ -256,6 +270,9 @@ remote func jumpPressedRPC():
 remote func jumpReleasedRPC():
 	jumpReleased()
 
+func terminatePendingAsServer():
+	terminatePending = true
+
 remote func terminatePendingServer():
 	terminatePending = true
 
@@ -272,6 +289,10 @@ func terminateTimerComplete():
 	queue_free()
 
 remote func applyForceServer(sourceLocation, force, forceDropoff):
+	applyForce(sourceLocation, force, forceDropoff)
+	rpc("applyForceRPC", sourceLocation, force, forceDropoff)
+
+func applyForceAsServer(sourceLocation, force, forceDropoff):
 	applyForce(sourceLocation, force, forceDropoff)
 	rpc("applyForceRPC", sourceLocation, force, forceDropoff)
 

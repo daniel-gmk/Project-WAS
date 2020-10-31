@@ -56,11 +56,11 @@ func _ready():
 				exit = true
 			if exit:
 				break
-		if !get_tree().is_network_server() and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
+		if (!get_tree().is_network_server() or (get_tree().is_network_server() and player_node.server_controlled)) and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
 			local = true
 	else:
 		indicatorScript = preload("res://GUI/Indicator.gd")
-		if !get_tree().is_network_server() and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
+		if (!get_tree().is_network_server() or (get_tree().is_network_server() and player_node.server_controlled)) and int(player_node.get_parent().name) == get_tree().get_network_unique_id():
 			local = true
 			
 			teleport_cooldown.max_value = player_node.get_node("TeleportManager").teleportCooldown
@@ -147,7 +147,12 @@ func sendMessageLocal():
 		lineEdit.text = ""
 		for gui_node_in_group in get_tree().get_nodes_in_group("GUI"):
 			gui_node_in_group.sendMessage(message, player_node.clientName, textFlagPlacement, false)
-		get_node("/root/1/MessageHandler").sendMessageToServer(message, player_node.clientName, textFlagPlacement, false)
+
+		if get_tree().is_network_server():
+			if player_node.server_controlled:
+				get_node("/root/1/MessageHandler").sendMessageAsServer(message, player_node.clientName, textFlagPlacement, false)
+		else:
+			get_node("/root/1/MessageHandler").sendMessageToServer(message, player_node.clientName, textFlagPlacement, false)
 
 func sendMessage(message, playerClient, flagPlacement, systemMessage):
 	var time = OS.get_time()

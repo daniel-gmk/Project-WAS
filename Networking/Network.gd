@@ -25,6 +25,9 @@ var player_scene = preload("res://Networking/Client.tscn")
 # Track host
 var host
 
+# 0 = dedicated, 1 = p2p
+var hostingMode = 0
+
 # Link Godot networking functions to the local functions here
 func _ready():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
@@ -34,7 +37,8 @@ func _ready():
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 
 # Function for server when hosting
-func start_server():
+func start_server_dedicated():
+	hostingMode = 0
 	# Name can be customizable, but for server will not be visible anyway
 	player_name = 'Server'
 	host    = NetworkedMultiplayerENet.new()
@@ -53,7 +57,28 @@ func start_server():
 	get_node("/root/environment/TestMap").loadTerrain(terrainSeed, "127.0.0.1")
 	# Spawn invisible server node
 	spawn_player(1, true)
-	
+
+func start_server_peertopeer():
+	hostingMode = 1
+	# Name can be customizable, but for server will not be visible anyway
+	player_name = 'Server'
+	host    = NetworkedMultiplayerENet.new()
+	# Atempt to create server
+	var err = host.create_server(DEFAULT_PORT, MAX_PEERS)
+	# Joins its own server when successfully created
+	if (err!=OK):
+		join_server('127.0.0.1')
+		return
+	# Establishes role as server
+	get_tree().set_network_peer(host)
+	# Initialize terrain seed, randomized
+	randomize()
+	terrainSeed = randi()
+	# Locally load the terrain as server
+	get_node("/root/environment/TestMap").loadTerrain(terrainSeed, "127.0.0.1")
+	# Spawn invisible server node
+	spawn_player(1, true)
+
 # Function for clients when joining/connecting, establishing connection
 func join_server(ip):
 	# Name can be changed to steam name or custom name down the road
@@ -133,6 +158,9 @@ func spawn_player(id, loadedTerrain):
 		var event_manager = event_manager_scene.instance()
 		event_manager.set_name(str(id))
 		get_node("/root/").call_deferred("add_child", event_manager)
+		if hostingMode == 1 and get_tree().is_network_server():
+			event_manager.player_id = id
+			event_manager.control   = true
 	else:
 		# If player and terrain is now loaded
 		# Load the normal character node
@@ -163,29 +191,27 @@ remote func client_receive_terrain_seed(rpcSeed):
 func start_game():
 	if get_tree().is_network_server():
 		# For all clients, instantiate their player and MainPawn nodes
-		for peer_id in players:
-			if peer_id != 1:
-				rpc_id(peer_id, "startPlayerGameCharacterRPC", peer_id)
+		if hostingMode == 0:
+			for peer_id in players:
+				if peer_id != 1:
+					rpc("startPlayerGameCharacterRPC", peer_id)
+					startPlayerGameCharacter(peer_id)
+		elif hostingMode == 1:
+			players[1] = "Server"
+			for peer_id in players:
+				rpc("startPlayerGameCharacterRPC", peer_id)
 				startPlayerGameCharacter(peer_id)
-	else:
-		rpc_id(1, "start_game_server")
-
-remote func start_game_server():
-	if get_tree().is_network_server():
-		start_game()
-
-# Have the client tell other clients to instantiate their player/MainPawn nodes
-# And then instantiate their player/MainPawn node locally
-remote func startPlayerGameCharacterRPC(peer_id):
-	get_node("/root/").get_node("environment").get_node("Camera").queue_free()
-	rpc("startPlayerGameCharacterRPC2", peer_id)
-	startPlayerGameCharacter(peer_id)
 
 # This is for other clients when a different client tells it to instantiate their player/MainPawn nodes
-remote func startPlayerGameCharacterRPC2(peer_id):
-	if !get_tree().is_network_server():
-		startPlayerGameCharacter(peer_id)
+remote func startPlayerGameCharacterRPC(peer_id):
+	startPlayerGameCharacter(peer_id)
 
 # Called by all clients to have their client node instantiate the player/MainPawn node
 func startPlayerGameCharacter(peer_id):
-	get_node("/root/").get_node(str(peer_id)).startGameCharacter()
+	if peer_id == 1 and get_tree().is_network_server() and hostingMode == 1:
+		get_node("/root/").get_node(str(peer_id)).startGameCharacter(true)
+	else:
+		if peer_id == 1:
+			get_node("/root/").get_node(str(peer_id)).startGameCharacter(false)
+		else:
+			get_node("/root/").get_node(str(peer_id)).startGameCharacter()

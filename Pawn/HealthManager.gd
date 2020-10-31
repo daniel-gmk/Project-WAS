@@ -23,17 +23,16 @@ func _ready():
 	player_node = get_parent().get_parent()
 	# Set health
 	health = maxHealth
-	if !get_tree().is_network_server():
-		if get_parent().MainPawn and player_node.control:
-			if has_node("MiniHPBar"):
-				get_node("MiniHPBar").queue_free()
-			GUI_node = player_node.get_node("PlayerCamera/CanvasLayer/GUI")
-			main_health_bar_root = GUI_node.find_node("MainHealthBar")
-			main_health_bar_text = main_health_bar_root.find_node("HealthValueText")
-			initiate_main_health_ui()
-		elif has_node("MiniHPBar"):
-			mini_health_bar_root = get_node("MiniHPBar")
-			initiate_mini_health_ui()
+	if get_parent().MainPawn and player_node.control:
+		if has_node("MiniHPBar"):
+			get_node("MiniHPBar").queue_free()
+		GUI_node = player_node.get_node("PlayerCamera/CanvasLayer/GUI")
+		main_health_bar_root = GUI_node.find_node("MainHealthBar")
+		main_health_bar_text = main_health_bar_root.find_node("HealthValueText")
+		initiate_main_health_ui()
+	elif has_node("MiniHPBar"):
+		mini_health_bar_root = get_node("MiniHPBar")
+		initiate_mini_health_ui()
 	# Not entirely sure if this does anything but it sets collision monitoring on for the character to detect aoe damage
 	$DamageCollisionArea.monitorable = true
 
@@ -62,7 +61,7 @@ func takeDamage(damage, immortalBypass):
 			if get_parent().MainPawn:
 				main_health_bar_root.value = health
 				main_health_bar_text.text = String(round(health))
-		if has_node("MiniHPBar") and !get_tree().is_network_server():
+		if has_node("MiniHPBar"):
 			mini_health_bar_root.value = health
 		# Dead if health falls below min value
 		if health <= minHealth:

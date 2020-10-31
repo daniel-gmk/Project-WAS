@@ -47,4 +47,7 @@ func check_ackowledged_inputs():
 func send_inputs(delta):
 	movement_counter += 1
 	movement_list.push_back([movement_counter, delta, movement])
-	rpc_unreliable_id(1,"update_input_on_server",movement_counter, movement)
+	if get_tree().is_network_server():
+		update_input_on_server(movement_counter, movement)
+	else:
+		rpc_unreliable_id(1,"update_input_on_server",movement_counter, movement)

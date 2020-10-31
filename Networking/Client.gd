@@ -9,6 +9,8 @@ var player_scene = preload("res://Pawn/Player.tscn")
 
 # On call, instantiate and create a player node for the client.
 func startGameCharacter():
+	if has_node("/root/environment/Camera"):
+		get_node("/root/environment/Camera").queue_free()
 	var player = player_scene.instance()
 	
 	player.player_id = player_id

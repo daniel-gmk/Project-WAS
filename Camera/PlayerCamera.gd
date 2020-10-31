@@ -28,7 +28,7 @@ var root
 var playerOwner
 
 func _ready() -> void:
-	if get_tree().is_network_server() or !get_parent().control:
+	if (get_tree().is_network_server() and !get_parent().server_controlled) or !get_parent().control:
 		queue_free()
 	# Set camera focus to player
 	target = get_parent().get_node("MainPawn")
