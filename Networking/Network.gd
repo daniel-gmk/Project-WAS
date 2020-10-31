@@ -212,6 +212,7 @@ func startPlayerGameCharacter(peer_id):
 		get_node("/root/").get_node(str(peer_id)).startGameCharacter(true)
 	else:
 		if peer_id == 1:
-			get_node("/root/").get_node(str(peer_id)).startGameCharacter(false)
+			if !get_tree().is_network_server():
+				get_node("/root/").get_node(str(peer_id)).startGameCharacter(false)
 		else:
 			get_node("/root/").get_node(str(peer_id)).startGameCharacter()

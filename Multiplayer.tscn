@@ -41,6 +41,9 @@ margin_top = 85.0
 margin_right = 438.0
 margin_bottom = 161.0
 text = "Create (Peer to Peer)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="CreateWithDedicated" type="Button" parent="Control"]
 margin_left = 228.0

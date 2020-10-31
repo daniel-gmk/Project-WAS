@@ -15,6 +15,8 @@ var minimapSize = Vector2(240, 180)
 
 var _chunk_threads := Array()
 
+var gui = false
+
 func _exit_tree():
 	for thread in _chunk_threads:
 		thread.wait_to_finish()
@@ -27,13 +29,18 @@ func _exit_tree():
 # Color 0 0 0 1 is black
 func loadTerrain(terrainSeed, ip):
 	minimapNode = get_node("/root/environment/MiniMap")
-	cameraNode = get_node("/root/environment/Camera")
-	cameraNode.position = Vector2(maxLength/2, maxHeight/2)
-	cameraNode.zoom = Vector2(6,6)
-	controlNode = cameraNode.get_node("CanvasLayer/Control")
-	controlNode.visible = true
-	progressBarNode = controlNode.get_node("ProgressBar")
-	progressBarTextNode = controlNode.get_node("Label")
+	
+	if !get_tree().is_network_server() or get_node("/root/Network").hostingMode == 1:
+		gui = true
+	
+	if gui:
+		cameraNode = get_node("/root/environment/Camera")
+		cameraNode.position = Vector2(maxLength/2, maxHeight/2)
+		cameraNode.zoom = Vector2(6,6)
+		controlNode = cameraNode.get_node("CanvasLayer/Control")
+		controlNode.visible = true
+		progressBarNode = controlNode.get_node("ProgressBar")
+		progressBarTextNode = controlNode.get_node("Label")
 	
 	var thread := Thread.new()
 	var error = thread.start(self, "loadThread", [terrainSeed])
@@ -50,8 +57,9 @@ func loadTerrain(terrainSeed, ip):
 			get_node("/root/environment/Control").rect_position = Vector2(maxLength/8, maxHeight/8)
 
 func loadThread(arguments : Array):
-	progressBarNode.value = 5
-	progressBarTextNode.text = "Loading Image Data"
+	if gui:
+		progressBarNode.value = 5
+		progressBarTextNode.text = "Loading Image Data"
 	# Loads the image into file
 	var image = texture.get_data()
 	set_texture(null)
@@ -59,8 +67,9 @@ func loadThread(arguments : Array):
 	# Locks image so pixels can be retrieved and modified
 	image.lock()
 	
-	progressBarNode.value = 10
-	progressBarTextNode.text = "Generating Random Terrain"
+	if gui:
+		progressBarNode.value = 10
+		progressBarTextNode.text = "Generating Random Terrain"
 	
 	# First perlin noise is for the blue contour
 	var noise = OpenSimplexNoise.new()
@@ -108,8 +117,9 @@ func loadThread(arguments : Array):
 				if value > threshold:
 					image.set_pixel(w, h, Color(1,1,0,1)) # Yellow
 	
-	progressBarNode.value = 15
-	progressBarTextNode.text = "Filling Random Terrain"
+	if gui:
+		progressBarNode.value = 15
+		progressBarTextNode.text = "Filling Random Terrain"
 
 	# This component grows the base terrain (white) to the areas touching it that are surrounded by perlin patterns.
 	var pt
@@ -250,8 +260,9 @@ func loadThread(arguments : Array):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 	
-	progressBarNode.value = 20
-	progressBarTextNode.text = "Expanding Terrain Size"
+	if gui:
+		progressBarNode.value = 20
+		progressBarTextNode.text = "Expanding Terrain Size"
 
 	var testImage = Image.new()
 	testImage.copy_from(image)
@@ -270,17 +281,19 @@ func loadThread(arguments : Array):
 
 	image.resize(maxLength,maxHeight,0)
 	
-	progressBarNode.value = 25
-	progressBarTextNode.text = "Adding Sky"
+	if gui:
+		progressBarNode.value = 25
+		progressBarTextNode.text = "Adding Sky"
 
 	var sky = get_parent().get_node("Sky")
 	sky.visible = true
 	sky.scale = Vector2(image.get_width()+2000 / sky.texture.get_data().get_width(), image.get_height()+2000 / sky.texture.get_data().get_height())
 	sky.position = Vector2(-1000, -1000)
 
-	# Variables used for below optimization function
-	progressBarNode.value = 30
-	progressBarTextNode.text = "Adding Chunks"
+	if gui:
+		# Variables used for below optimization function
+		progressBarNode.value = 30
+		progressBarTextNode.text = "Adding Chunks"
 	# Tracks which sub-image we are at
 	var count = 0
 	# Tracks current location in overall image
@@ -296,8 +309,9 @@ func loadThread(arguments : Array):
 		# Reset the height every time we get to a new width chunk (reset column every row)
 		placingHeight = 0
 		while placingHeight < image.get_height():
-			var rateValue = float(progressBarNode.max_value - 30)
-			progressBarNode.value = 30 + (rateValue * (count / loadRate))
+			if gui:
+				var rateValue = float(progressBarNode.max_value - 30)
+				progressBarNode.value = 30 + (rateValue * (count / loadRate))
 			# Make children sprites of overall sprite with sub-images
 			var childSprite = Sprite.new()
 			childSprite.name = name + "-" + str(count)
@@ -384,4 +398,5 @@ func loadThread(arguments : Array):
 
 			placingHeight += cropHeight
 		placingWidth += cropWidth
-	controlNode.visible = false
+	if gui:
+		controlNode.visible = false
