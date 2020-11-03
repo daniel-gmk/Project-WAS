@@ -1,5 +1,7 @@
 extends Node2D
 
+var entitySize
+
 # Makes child camera the current camera in scene
 func setCamera():
 	$TeleportCamera.make_current()
@@ -20,10 +22,23 @@ func _process(delta):
 # If the spot is available for teleporting, send instructions to player node to teleport
 func _input(event):
 	if event.is_action_pressed("shoot") and !get_parent().menuPressed and get_node("../TeleportManager").serverCompletedResponse:
-		if $Sprite.get_node("Area2D").get_overlapping_bodies().size() == 0:
-			if get_tree().is_network_server() and get_parent().server_controlled:
-				get_parent().get_node("TeleportManager").requestTeleportAsServer($Sprite.position)
-				get_node("../TeleportManager").serverCompletedResponse = false
+		if $Sprite.get_node("EnvironmentArea2D").get_overlapping_bodies().size() == 0:
+			if $Sprite.get_node("EntityArea2D").get_overlapping_bodies().size() > 0:
+				var ePos = Vector2($Sprite.position.x, $Sprite.position.y + entitySize.y)
+				if get_tree().is_network_server():
+					if get_parent().server_controlled:
+						get_node("/root/1/").reposition_entity_AsServer(ePos, entitySize)
+						call_deferred("clickedTeleport", ePos)
+				else:
+					get_node("/root/1/").reposition_entity_ToServer(ePos, entitySize)
+					call_deferred("clickedTeleport", ePos)
 			else:
-				get_parent().get_node("TeleportManager").requestTeleportToServer($Sprite.position)
-				get_node("../TeleportManager").serverCompletedResponse = false
+				call_deferred("clickedTeleport", $Sprite.position)
+
+func clickedTeleport(pos):
+	if get_tree().is_network_server() and get_parent().server_controlled:
+		get_parent().get_node("TeleportManager").requestTeleportAsServer(pos)
+		get_node("../TeleportManager").serverCompletedResponse = false
+	else:
+		get_parent().get_node("TeleportManager").requestTeleportToServer(pos)
+		get_node("../TeleportManager").serverCompletedResponse = false

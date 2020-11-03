@@ -9,6 +9,7 @@ var player_id
 var control
 # Load player node
 var player_scene = preload("res://Pawn/Player.tscn")
+var terrainDamage = load("res://Environment/TerrainDamage.tscn")
 
 func _process(delta):
 	if get_tree().is_network_server():
@@ -65,3 +66,28 @@ func destroyTerrainServerRPC(terrainChunks, pos, rad):
 		if terrain_chunk.get_parent().has_method("destroy"):
 			terrain_chunk.get_parent().destroyRPCServer(pos, rad)
 			terrain_chunk.get_parent().destroy(pos, rad)
+
+func reposition_entity_ToServer(entityPos, es):
+	rpc_id(1, "reposition_entity_server", entityPos, es)
+
+func reposition_entity_AsServer(entityPos, es):
+	reposition_entity_serverCall(entityPos, es)
+
+remote func reposition_entity_server(entityPos, es):
+	reposition_entity_serverCall(entityPos, es)
+
+func reposition_entity_serverCall(entityPos, es):
+	rpc("reposition_entity_RPC", entityPos, es)
+	reposition_entity(entityPos, es)
+
+remote func reposition_entity_RPC(entityPos, es):
+	reposition_entity(entityPos, es)
+
+func reposition_entity(entityPos, es):
+	var td = terrainDamage.instance()
+	td.position = entityPos
+	# Add the child with a deferred call approach to avoid collision/propogation errors
+	get_parent().call_deferred("add_child", td)
+	td.monitoring = true
+	td.setSize(max(es.x, es.y))
+	td.call_deferred("setExplosion")

@@ -44,7 +44,7 @@ script = ExtResource( 6 )
 
 [node name="EntityCollision" type="StaticBody2D" parent="MainPawn"]
 visible = false
-collision_layer = 16
+collision_layer = 80
 collision_mask = 16
 
 [node name="EntityCollisionShape" type="CollisionShape2D" parent="MainPawn/EntityCollision"]
@@ -86,9 +86,10 @@ script = ExtResource( 7 )
 
 [node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 1 )]
 light_mask = 0
-margin_top = -600.841
-margin_right = 512.0
-margin_bottom = -0.840942
+margin_left = -512.42
+margin_top = -601.261
+margin_right = 511.58
+margin_bottom = -1.26135
 
 [node name="TeleportManager" type="Node" parent="."]
 script = ExtResource( 13 )

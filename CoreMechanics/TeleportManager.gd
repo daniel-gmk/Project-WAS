@@ -79,8 +79,8 @@ func setTeleportingPawnToServer(pawnName):
 	rpc_id(1, "setTeleportingPawnServer", pawnName)
 
 func setTeleportingPawnAsServer(pawnName):
-	setTeleportingPawn(pawnName)
 	rpc("setTeleportingPawnRPC", pawnName)
+	setTeleportingPawn(pawnName)
 
 remote func setTeleportingPawnServer(pawnName):
 	setTeleportingPawn(pawnName)
@@ -99,7 +99,12 @@ func setTeleportingPawn(pawnName):
 func teleport():
 	# Set teleporting
 	teleportCheckTimer.start()
-	rpc_id(1, "initiateTeleportServer", get_parent().player_id)
+	
+	if get_tree().is_network_server():
+		if get_parent().server_controlled:
+			initiateTeleportAsServer(get_parent().player_id)
+	else:
+		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
 
 # Calls teleport to the server with location so server can return calls to client
 func requestTeleportToServer(pos):
@@ -135,6 +140,13 @@ remote func teleportPlayerRPC(pos):
 func teleportPlayer(pos):
 	teleportingPawn.position = pos
 
+func initiateTeleportAsServer(id):
+	if get_tree().is_network_server():
+		rpc("setInitiateTeleportVariablesRPC")
+		setInitiateTeleportVariables()
+
+		initiateTeleport()
+		
 # Server knows to freeze and hide player for ALL clients
 remote func initiateTeleportServer(id):
 	if get_tree().is_network_server():
@@ -173,7 +185,6 @@ remote func concludeTeleportServer(id):
 
 		if initialTeleport:
 			rpc_id(id, "showPawnRPC")
-			showPawn()
 		else:
 			rpc("setConcludeTeleportVariablesRPC")
 			setConcludeTeleportVariables()
@@ -235,6 +246,8 @@ func initiateTeleport():
 	var map_center_location = Vector2((get_node("/root/").get_node("environment").get_node("TestMap").maxLength)/2, (get_node("/root/").get_node("environment").get_node("TestMap").maxHeight)/2)
 	if get_parent().has_node("PlayerCamera"):
 		get_parent().get_node("PlayerCamera").switchFromPlayerCamera()
+		
+	teleport_instance.entitySize = teleportingPawn.get_node("EntityCollision/EntityCollisionShape").shape.extents
 	# Instantiate the teleport node
 	get_parent().add_child(teleport_instance)
 	# Set teleport's camera and location

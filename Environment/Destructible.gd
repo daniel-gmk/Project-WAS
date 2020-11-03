@@ -70,6 +70,7 @@ func _unhandled_input(event):
 
 func destroyRPCServer(pos, rad):
 	rpc("destroyRPC", pos, rad)
+	destroy(pos, rad)
 
 remote func destroyRPC(pos, rad):
 	destroy(pos, rad)
@@ -92,13 +93,12 @@ func destroy(position : Vector2, radius : float):
 	# Wait until all viewports have re-rendered before pushing our viewport to the destruction shader.
 	yield(VisualServer, "frame_post_draw")
 	
-	if !get_tree().is_network_server():
-		# Sprite rebuild thread!
-		var thread2 := Thread.new()
-		var error2 = thread2.start(self, "republish_sprite", [1])
-		if error2 != OK:
-			print("Error creating destruction thread: ", error2)
-		_destruction_threads.push_back(thread2)
+	# Sprite rebuild thread!
+	var thread2 := Thread.new()
+	var error2 = thread2.start(self, "republish_sprite", [1])
+	if error2 != OK:
+		print("Error creating destruction thread: ", error2)
+	_destruction_threads.push_back(thread2)
 
 func _cull_foreground_duplicates():
 	for dup in _to_cull:

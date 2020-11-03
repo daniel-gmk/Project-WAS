@@ -21,6 +21,9 @@ func sendMessageAsServer(message, player_id, flagPlacement, systemMessage):
 
 remote func sendMessageServer(message, player_id, flagPlacement, systemMessage):
 	rpc("sendMessageRPC", message, player_id, flagPlacement, systemMessage)
+	if int(player_id) != get_tree().get_network_unique_id():
+		for gui_node_in_group in get_tree().get_nodes_in_group("GUI"):
+			gui_node_in_group.sendMessage(message, player_id, flagPlacement, systemMessage)
 
 remote func sendMessageRPC(message, player_id, flagPlacement, systemMessage):
 	if int(player_id) != get_tree().get_network_unique_id():

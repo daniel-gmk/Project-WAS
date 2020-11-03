@@ -59,13 +59,13 @@ func enableCollision():
 	$BodyCollision.disabled = false
 	$GravityRayCastCheck.enabled = true
 	$InclineRayCastCheck.enabled = true
-	get_node("EntityCollision/EntityCollisionShape").disabled = false
+	#get_node("EntityCollision/EntityCollisionShape").disabled = false
 
 func disableCollision():
 	$BodyCollision.disabled = true
 	$GravityRayCastCheck.enabled = false
 	$InclineRayCastCheck.enabled = false
-	get_node("EntityCollision/EntityCollisionShape").disabled = true
+	#get_node("EntityCollision/EntityCollisionShape").disabled = true
 
 func resetPhysics():
 	jumping = false

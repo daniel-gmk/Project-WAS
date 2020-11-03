@@ -229,7 +229,7 @@ func _process(delta):
 			var enemy_list = get_tree().get_nodes_in_group("OnScreenEntities")
 			if enemy_list.size() > 0:
 				for enemy in enemy_list:
-					var enemy_indicator_name = str(player_node.get_parent().name) + enemy.name + "Indicator"
+					var enemy_indicator_name = str(enemy.get_parent().get_parent().name) + enemy.name + "Indicator"
 					if !enemy.get_node("VisibilityNotifier").inView:
 						if minimap_gui_node.has_node(enemy_indicator_name):
 							minimap_gui_node.get_node(enemy_indicator_name).queue_free()
