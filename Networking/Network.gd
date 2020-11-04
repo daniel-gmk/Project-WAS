@@ -122,6 +122,16 @@ func _connected_ok():
 	if !loadedTerrain:
 		rpc_id(1, "server_send_terrain_seed", get_tree().get_network_unique_id())
 
+# Server sends terrain seed to client
+remote func server_send_terrain_seed(id):
+	if get_tree().is_network_server():
+		rpc_id(id, "client_receive_terrain_seed", terrainSeed)
+
+# Client receives terrain seed from server
+remote func client_receive_terrain_seed(rpcSeed):
+	terrainSeed = rpcSeed
+	get_node("/root/").get_node("environment").get_node("TestMap").loadTerrain(terrainSeed, serverIp)
+
 func terrain_loaded():
 	loadedTerrain = true
 	# Receive handshake from server, notifying it is connected and having server allow client to proceed registration
@@ -175,17 +185,6 @@ func spawn_player(id, loadedTerrain):
 			
 		# Instantiate the character
 		get_node("/root/").call_deferred("add_child", player)
-
-# Server sends terrain seed to client
-remote func server_send_terrain_seed(id):
-	if get_tree().is_network_server():
-		rpc_id(id, "client_receive_terrain_seed", terrainSeed)
-	#host.disconnect_peer(id)
-
-# Client receives terrain seed from server
-remote func client_receive_terrain_seed(rpcSeed):
-	terrainSeed = rpcSeed
-	get_node("/root/").get_node("environment").get_node("TestMap").loadTerrain(terrainSeed, serverIp)
 
 # Called when the server clicks "start" game in base control node
 func start_game():

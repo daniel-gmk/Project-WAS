@@ -37,7 +37,6 @@ var initialTeleport = true
 var serverCompletedResponse = false
 
 func _ready():
-	teleportingPawn = get_node("../MainPawn")
 	initializePenaltyTimer()
 	if (!get_tree().is_network_server() or (get_tree().is_network_server() and get_parent().server_controlled)) and get_parent().get_parent().control:
 		initialize()
@@ -62,29 +61,22 @@ func initialize():
 
 	if get_tree().is_network_server():
 		if get_parent().server_controlled:
-			rpc("setInitiateTeleportVariablesRPC")
-			setInitiateTeleportVariables()
-			call_deferred("initiateTeleport")
+			setTeleportingPawnAsServer("MainPawn")
 	else:
-		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
-
-func initializePenaltyTimer():
-	# Instantiate RPC check timer
-	teleportSelectPenaltyTimer.set_wait_time(teleportSelectPenaltyTime)
-	teleportSelectPenaltyTimer.set_one_shot(false)
-	teleportSelectPenaltyTimer.connect("timeout", self, "teleportSelectPenalty")
-	add_child(teleportSelectPenaltyTimer)
+		setTeleportingPawnToServer("MainPawn")
 
 func setTeleportingPawnToServer(pawnName):
 	rpc_id(1, "setTeleportingPawnServer", pawnName)
 
 func setTeleportingPawnAsServer(pawnName):
-	rpc("setTeleportingPawnRPC", pawnName)
-	setTeleportingPawn(pawnName)
+	setTeleportingPawnServerCall(pawnName)
 
 remote func setTeleportingPawnServer(pawnName):
-	setTeleportingPawn(pawnName)
+	setTeleportingPawnServerCall(pawnName)
+
+func setTeleportingPawnServerCall(pawnName):
 	rpc("setTeleportingPawnRPC", pawnName)
+	setTeleportingPawn(pawnName)
 
 remote func setTeleportingPawnRPC(pawnName):
 	get_parent().get_node(pawnName).disableCollision()
@@ -102,58 +94,23 @@ func teleport():
 	
 	if get_tree().is_network_server():
 		if get_parent().server_controlled:
-			initiateTeleportAsServer(get_parent().player_id)
+			initiateTeleportAsServer()
 	else:
 		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
 
-# Calls teleport to the server with location so server can return calls to client
-func requestTeleportToServer(pos):
-	teleportSelectPenaltyTimer.stop()
-	rpc_id(1, "serverTeleportPlayer", pos)
-	rpc_id(1, "concludeTeleportServer", get_parent().player_id)
-
-func requestTeleportAsServer(pos):
-	teleportSelectPenaltyTimer.stop()
-	rpc("teleportPlayerRPC", pos)
-	teleportPlayer(pos)
-	
-	if initialTeleport:
-		showPawn()
-	else:
-		rpc("setConcludeTeleportVariablesRPC")
-		setConcludeTeleportVariables()
-
-	concludeTeleport()
-
-# Server tells ALL clients via RPC of the new location, then calls locally
-remote func serverTeleportPlayer(pos):
-	if get_tree().is_network_server():
-		rpc("teleportPlayerRPC", pos)
-		teleportPlayer(pos)
-		teleportSelectPenaltyTimer.stop()
-
-# Clients get new location from server and call new location
-remote func teleportPlayerRPC(pos):
-	teleportPlayer(pos)
-
-# Function that changes position of player to new position
-func teleportPlayer(pos):
-	teleportingPawn.position = pos
-
-func initiateTeleportAsServer(id):
-	if get_tree().is_network_server():
-		rpc("setInitiateTeleportVariablesRPC")
-		setInitiateTeleportVariables()
-
-		initiateTeleport()
+func initiateTeleportAsServer():
+	initiateTeleportServerCall()
+	call_deferred("initiateTeleport")
 		
 # Server knows to freeze and hide player for ALL clients
 remote func initiateTeleportServer(id):
+	initiateTeleportServerCall()
+	rpc_id(id, "approveInitiateTeleportRequestRPC")
+
+func initiateTeleportServerCall():
 	if get_tree().is_network_server():
 		rpc("setInitiateTeleportVariablesRPC")
 		setInitiateTeleportVariables()
-
-		rpc_id(id, "approveInitiateTeleportRequestRPC")
 
 # Freezes and hides player for clients
 remote func setInitiateTeleportVariablesRPC():
@@ -178,58 +135,6 @@ func setInitiateTeleportVariables():
 remote func approveInitiateTeleportRequestRPC():
 	# RPC to JUST THE PLAYER the initiate teleport and the test var
 	initiateTeleport()
-
-# After teleport is complete, we proceed with having the server unhide the player and unfreeze, and etc
-remote func concludeTeleportServer(id):
-	if get_tree().is_network_server():
-
-		if initialTeleport:
-			rpc_id(id, "showPawnRPC")
-		else:
-			rpc("setConcludeTeleportVariablesRPC")
-			setConcludeTeleportVariables()
-
-		rpc_id(id, "approveConcludeTeleportRequestRPC")
-
-func concludeTeleportAsServer():
-	rpc("setConcludeTeleportVariablesRPC")
-	setConcludeTeleportVariables()
-	rpc("concludeTeleportInitialRPC")
-	concludeTeleportInitial()
-
-remote func concludeTeleportInitialRPC():
-	concludeTeleportInitial()
-	
-func concludeTeleportInitial():
-	teleportingPawn = null
-	teleporting = false
-
-# All clients receive new information from server on unhiding and allowing resuming of actions
-remote func setConcludeTeleportVariablesRPC():
-	setConcludeTeleportVariables()
-
-# Unhide and allow resuming of actions
-func setConcludeTeleportVariables():
-	# RPC the player sprite being visible and able to take damage again
-	if teleportingPawn.has_node("HealthManager"):
-		teleportingPawn.get_node("HealthManager").showMiniHPBar()
-	if teleportingPawn.has_node("StateManager"):
-		teleportingPawn.get_node("StateManager").reset()
-		teleportingPawn.get_node("StateManager").show()
-	if get_parent().has_node("PlayerCamera"):
-		get_parent().get_node("PlayerCamera").showCamera()
-
-remote func showPawnRPC():
-	showPawn()
-
-func showPawn():
-	if teleportingPawn.has_node("StateManager"):
-		teleportingPawn.get_node("StateManager").showSpriteOnly()
-
-# Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
-remote func approveConcludeTeleportRequestRPC():
-	# RPC to JUST THE PLAYER the conclude teleport and the test var
-	concludeTeleport()
 
 # Instructions for freezing player and setting variables/views to choose teleport location
 func initiateTeleport():
@@ -261,6 +166,84 @@ func initiateTeleport():
 	get_parent().switch_gui_to_teleport()
 	
 	startTeleportSelectPenaltyTimer()
+
+
+
+# Calls teleport to the server with location so server can return calls to client
+func requestTeleportToServer(pos):
+	teleportSelectPenaltyTimer.stop()
+	rpc_id(1, "serverTeleportPlayer", pos)
+	rpc_id(1, "concludeTeleportServer", get_parent().player_id)
+
+func requestTeleportAsServer(pos):
+	serverTeleportPlayerCall(pos)
+	concludeTeleportServerCall(get_parent().player_id)
+
+# Server tells ALL clients via RPC of the new location, then calls locally
+remote func serverTeleportPlayer(pos):
+	serverTeleportPlayerCall(pos)
+
+func serverTeleportPlayerCall(pos):
+	if get_tree().is_network_server():
+		rpc("teleportPlayerRPC", pos)
+		teleportPlayer(pos)
+		teleportSelectPenaltyTimer.stop()
+
+# Clients get new location from server and call new location
+remote func teleportPlayerRPC(pos):
+	teleportPlayer(pos)
+
+# Function that changes position of player to new position
+func teleportPlayer(pos):
+	teleportingPawn.position = pos
+
+# After teleport is complete, we proceed with having the server unhide the player and unfreeze, and etc
+remote func concludeTeleportServer(id):
+	concludeTeleportServerCall(id)
+
+func concludeTeleportServerCall(id):
+	if get_tree().is_network_server():
+
+		if initialTeleport:
+			if get_parent().server_controlled:
+				showPawn()
+			else:
+				rpc_id(id, "showPawnRPC")
+		else:
+			rpc("setConcludeTeleportVariablesRPC")
+			setConcludeTeleportVariables()
+
+		if get_parent().server_controlled:
+			concludeTeleport()
+		else:
+			rpc_id(id, "approveConcludeTeleportRequestRPC")
+
+remote func showPawnRPC():
+	showPawn()
+
+func showPawn():
+	if teleportingPawn.has_node("StateManager"):
+		teleportingPawn.get_node("StateManager").showSpriteOnly()
+
+# All clients receive new information from server on unhiding and allowing resuming of actions
+remote func setConcludeTeleportVariablesRPC():
+	setConcludeTeleportVariables()
+
+# Unhide and allow resuming of actions
+func setConcludeTeleportVariables():
+	# RPC the player sprite being visible and able to take damage again
+	if teleportingPawn.has_node("HealthManager"):
+		teleportingPawn.get_node("HealthManager").showMiniHPBar()
+	if teleportingPawn.has_node("StateManager"):
+		teleportingPawn.get_node("StateManager").reset()
+		teleportingPawn.get_node("StateManager").show()
+	if get_parent().has_node("PlayerCamera"):
+		get_parent().get_node("PlayerCamera").showCamera()
+
+# Server now sends the client that called to teleport the instructions to set cooldown, unfreeze character, etc
+remote func approveConcludeTeleportRequestRPC():
+	# RPC to JUST THE PLAYER the conclude teleport and the test var
+	concludeTeleport()
 
 # Instructions after teleporting to change variables/views back to original character and set cooldown/damage
 func concludeTeleport():
@@ -313,6 +296,21 @@ func broadcastTeleportConclusion():
 	else:
 		initialTeleport = false
 
+
+func concludeTeleportAsServer():
+	rpc("setConcludeTeleportVariablesRPC")
+	setConcludeTeleportVariables()
+	rpc("concludeTeleportInitialRPC")
+	concludeTeleportInitial()
+
+remote func concludeTeleportInitialRPC():
+	concludeTeleportInitial()
+	
+func concludeTeleportInitial():
+	teleportingPawn = null
+	teleporting = false
+
+
 # Function handling when teleport cooldown is over and teleport is replenished
 func teleportCooldownReset():
 	if teleportCount < maxTeleports:
@@ -330,6 +328,13 @@ func checkTeleportReachedRPC():
 		teleportCheckTimer.stop()
 	else:
 		rpc_id(1, "initiateTeleportServer", get_parent().player_id)
+
+func initializePenaltyTimer():
+	# Instantiate RPC check timer
+	teleportSelectPenaltyTimer.set_wait_time(teleportSelectPenaltyTime)
+	teleportSelectPenaltyTimer.set_one_shot(false)
+	teleportSelectPenaltyTimer.connect("timeout", self, "teleportSelectPenalty")
+	add_child(teleportSelectPenaltyTimer)
 
 func startTeleportSelectPenaltyTimer():
 	teleportSelectPenaltyTimer.start()
