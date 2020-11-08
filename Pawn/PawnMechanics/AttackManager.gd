@@ -1,6 +1,27 @@
 extends Node2D
 
+##### This node allows attacking capabilities for the parent node that it is attached to
+
+### Node Management
+# Variables that manage the modularity of the module
+# Tracks the main player node that manages this node's parent
+var player_node
+# Tracks whether this node is initialized
+var initialized = false
+
+### Attack Handler
+# Variables pertaining to management of attacks
+# All available attacks in array
+export var attackList = []
+# Current selected Attack from attack array
+var currentSelectedAttack
+# Skill data stored locally
+export var skilldata_file_path = "res://Skills/SkillData.json"
+# Extracted skill data to local memory
+var skill_data
+
 ### Attack
+# Variables pertaining to a single attack
 # Allow setting attack projectile 
 # Plan to consolidate remaining data below so server sends this data to client for various attacks
 # How long the player charged the attack
@@ -12,25 +33,20 @@ onready var _auto_attack_power : float = 1
 # Whether player released shot
 var _attack_clicked : bool = false
 
-### Reticule/charging UI, this specific HUD component is separate from the rest of the GUI/HUD, too lazy to move tbh
+### UI
+# Reticule/charging UI, this specific HUD component is separate from the rest of the GUI/HUD
 # Track the actual Reticule component within the reticule parent as a var
 var chargeProgress
 # Static value for tracking the charge value before it fills the reticule
 var reticule_max = 2
 
-var skill_data
-
-export var attackList = []
-var currentSelectedAttack
-
-export var skilldata_file_path = "res://Skills/SkillData.json"
-var player_node
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	player_node = get_parent().get_parent()
+# Called to start the module/node
+func initialize():
+	# Set node values
+	player_node = get_parent().player_node
 	chargeProgress = get_node("ReticuleAnchor/ChargeReticule")
-	
+
+	# Load local skill data file
 	var file = File.new()
 	if file.open(skilldata_file_path, file.READ) != OK:
 		print("error opening file")
@@ -42,44 +58,56 @@ func _ready():
 		print("error parsing file")
 		return
 	skill_data = file_parse.result
+	
+	# Set Attack List for MainPawns, the minions' are hardcoded
 	if get_parent().MainPawn:
 		# Set attacks
 		attackList = player_node.mainPawnAttackList # Replace with logic to pull from spell selection
+
+	# Set current attack to the first attack on the attack list
 	currentSelectedAttack = attackList[0]
 
-func _process(delta):
-	# Locally render the reticule every tick, optimize this to only be needed when attacking
-	_render_reticule()
+	# Sets node as initialized
+	initialized = true
 
+# Runs every frame
+func _process(delta):
+	if initialized:
+		# Locally render the reticule every tick, optimize this to only be needed when attacking
+		_render_reticule()
+
+# Runs every physics frame
 func _physics_process(_delta : float):
-	# Execute only for local player
-	if player_node.control:
-		if get_node("../StateManager").allowActions:
-			# Charge attack if holding charge button for shooting projectile
-			if _attack_clicked:
-				_attack_power += _delta
-			
-			# If the player has been holding the attack button long enough it auto fires
-			if _attack_power >= _auto_attack_power:
-				# Same standard typeless attack as line 120
-				shoot(currentSelectedAttack)
+	# Execute conditionally, helper function below
+	if actionAllowed():
+		# Charge attack if holding charge button for shooting projectile
+		if _attack_clicked:
+			_attack_power += _delta
+		
+		# If the player has been holding the attack button long enough it auto fires
+		if _attack_power >= _auto_attack_power:
+			# Same standard typeless attack as line 120
+			shoot(currentSelectedAttack)
 
 func _input(event):
-	if player_node.control and !player_node.menuPressed and !player_node.get_node("TeleportManager").teleporting and player_node.currentActivePawn == get_parent():
-		if get_node("../StateManager").allowActions:
+	# Execute conditionally, helper function below
+	if actionAllowed():
+		# If not selecting a minion, otherwise it also shoots when selecting a minion location
+		if !player_node.selectMinion:
 			# Handle charging projectile strength when shoot input is pressed and held
-			if event.is_action_pressed("shoot") and !player_node.selectMinion:
+			if event.is_action_pressed("shoot"):
 					_attack_clicked = true
 					# Shows reticule when attacking
 					chargeProgress.max_value = reticule_max
 					chargeProgress.visible = true
 		
 			# Handle launching projectile based on charge strength when input is let go
-			elif event.is_action_released("shoot") and !player_node.selectMinion:
+			elif event.is_action_released("shoot"):
 				if _attack_clicked:
 					# Standard typeless attack
 					shoot(currentSelectedAttack)
 
+		# Handles scrolling input for rotating selected attack
 		elif event is InputEventMouseButton and event.pressed:
 			if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
 				var currentSelectedAttack = currentSelectedAttack
@@ -103,7 +131,8 @@ func shoot(skill_type):
 	## This is local execution of projectile
 	# Get reticule to find position of reticule
 	var reticule := get_node("ReticuleAnchor/Reticule")
-	# Grab position of reticule as starting position of projectile
+	
+	# Fill data parsed from local file
 	
 	var physicsData = {
 		"Starting_Position": reticule.global_position,
@@ -129,7 +158,7 @@ func shoot(skill_type):
 		}
 	}
 	
-	
+	# Shoot
 	if get_tree().is_network_server():
 		if player_node.server_controlled:
 			summonProjectileAsServer(localData, remoteData)
@@ -138,16 +167,18 @@ func shoot(skill_type):
 		summonProjectile(localData)
 		# Broadcast RPC so projectile can be shown to other players/server
 		rpc_id(1, "summonProjectileServer", localData, remoteData)
-	
-	
+
+	# Reset attack
 	resetAttack()
 
 func resetAttack():
+	# Reset attack charge parameters
 	_attack_power = 0
 	_attack_clicked = false
 	# Hide the reticule now that firing is done
-	chargeProgress.visible = false
-	chargeProgress.value = 0
+	if chargeProgress != null:
+		chargeProgress.visible = false
+		chargeProgress.value = 0
 
 # Render the reticle so it shows projectile charge
 func _render_reticule():
@@ -157,21 +188,21 @@ func _render_reticule():
 	if _attack_clicked:
 		chargeProgress.value = clamp(_attack_power + (1.05 * _auto_attack_power), (1.05 * _auto_attack_power), reticule_max)
 
-# Send data of a shot projectile and simulate across server to other players
+# Handle projectile shooting across RPC
+# Wrapper shooting as P2P server
 func summonProjectileAsServer(localData, remoteData):
-	# If server
-	summonProjectile(remoteData)
-	# Loop through clients and launch projectile to each
-	rpc("summonProjectileRPC", localData, remoteData["Network_Data"]["Caster_PlayerID"])
-
-# Send data of a shot projectile and simulate across server to other players
+	summonProjectileServerCall(localData, remoteData)
+# Wrapper calling server from client
 remote func summonProjectileServer(localData, remoteData):
-	# If server
+	summonProjectileServerCall(localData, remoteData)
+# Server calling locally and broadcast to clients
+func summonProjectileServerCall(localData, remoteData):
+	# Call locally as server
 	summonProjectile(remoteData)
-	# Loop through clients and launch projectile to each
+	# Call a "visual-only" projectile to all other clients
 	rpc("summonProjectileRPC", localData, remoteData["Network_Data"]["Caster_PlayerID"])
 
-# Send data of a shot projectile and simulate across server to other players
+# Calling a "visual-only" projectile from server to all other clients except local player
 remote func summonProjectileRPC(localData, caster_playerID):
 	if caster_playerID != get_tree().get_network_unique_id():
 		summonProjectile(localData)
@@ -205,6 +236,7 @@ func summonProjectile(data):
 	# Bring the configured projectile into the scene/world
 	get_node("/root/environment").add_child(new_projectile)
 
+# Helper function to merge dictionaries, Godot doesn't have one natively...
 static func merge_dict(target, patch):
 	var result = target
 	for key in patch:
@@ -213,3 +245,15 @@ static func merge_dict(target, patch):
 		else:
 			result[key] = patch[key]
 	return result
+
+# Helper function showing whether the player can perform actions
+func actionAllowed():
+	if (initialized 
+		and player_node.control 
+		and !player_node.menuPressed 
+		and !player_node.get_node("TeleportManager").teleporting 
+		and player_node.currentActivePawn == get_parent()
+		and get_parent().get_node("StateManager").allowActions):
+			return true
+	else:
+		return false

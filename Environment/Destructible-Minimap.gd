@@ -1,28 +1,34 @@
 extends Node2D
 
-### This node is in charge of terrain generation, destruction, and updating. Main component of Destructible.tscn.
-# This component was created by someone else so it isn't as well documented by me until I need to modify it
+##### This node is a copy of Destructible script specifically for minimap use. 
+# Physics is removed and size is reduced
+# Decided to copy it in case there are drastic changes or custom changes instead of a parent-child structure
 
+# Tracks path to destruction circle for making holes in the sprite
 export var viewport_destruction_nodepath : NodePath
-export var collision_holder_node_path : NodePath
-
-var world_size : Vector2
-
-var collision_holder : Node2D
-var _to_cull : Array
-
-var _image_republish_texture := ImageTexture.new()
-
-var _parent_material : Material
-var _destruction_threads := Array()
+# Node for the destruction circle
 var _viewport_destruction_node : Node
 
+# Tracks the size of the destruction node
+var world_size : Vector2
+# Tracks nodes to destroy after temporarily using them
+var _to_cull : Array
+# Threads for that update the sprite in the background instead of interrupting the main thread
+var _destruction_threads := Array()
+
+# Copy of main texture that gets updated with new sprite with destruction
+var _image_republish_texture := ImageTexture.new()
+# Material that holds the sprite destruction shader
+var _parent_material : Material
+
+# Called when node loads
 func _ready():
-	readyFunc()
+	initialize()
+
+# Separated initialization in case manual initialization is desired
+func initialize():
 	
-func readyFunc():
-	
-	collision_holder = get_node(collision_holder_node_path)
+	# Setting initial variables
 	world_size = (get_parent() as Sprite).get_rect().size
 	_parent_material = get_parent().material
 	_viewport_destruction_node = get_node(viewport_destruction_nodepath)
@@ -47,39 +53,22 @@ func readyFunc():
 	# Wait for all viewports to re-render before we build our image
 	yield(VisualServer, "frame_post_draw")
 
-func calculate_bounds(tilemap):
-	var cell_bounds = tilemap.get_used_rect()
-	# create transform
-	var cell_to_pixel = Transform2D(Vector2(tilemap.cell_size.x * tilemap.scale.x, 0), Vector2(0, tilemap.cell_size.y * tilemap.scale.y), Vector2())
-	# apply transform
-	return Rect2(cell_to_pixel * cell_bounds.position, cell_to_pixel * cell_bounds.size).size
-
-func _exit_tree():
-	for thread in _destruction_threads:
-		thread.wait_to_finish()
-
-func _unhandled_input(event):
-	if (event.is_action_pressed("ui_accept")):
-		# DEBUG:
-		var bitmap := BitMap.new()
-		bitmap.create_from_image_alpha($Sprite.texture.get_data())
-		$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
-
+# Calling destruction of terrain from server to other clients
 func destroyRPCServer(pos, rad):
 	rpc("destroyRPC", pos, rad)
 
+# Receiving call from server to locally destroy
 remote func destroyRPC(pos, rad):
 	destroy(pos, rad)
 
+# Destruction (makes a hole) of terrain
 func destroy(position : Vector2, radius : float):
 	
 	# Move our subtractive-circle so that our Viewport deletes pixels that were in our explosion
 	_viewport_destruction_node.reposition(_world_to_viewport(position / 25.0), radius / 25.0)
+
 	# Re-render the viewport into our texture
-	
 	rebuild_texture()
-	
-	#get_node("/root/environment/MiniMap/Destructible").destroy(position * (1/30), radius * 1/30)
 
 	# Wait until all viewports have re-rendered before pushing our viewport to the destruction shader.
 	yield(VisualServer, "frame_post_draw")
@@ -92,16 +81,12 @@ func destroy(position : Vector2, radius : float):
 			print("Error creating destruction thread: ", error2)
 		_destruction_threads.push_back(thread2)
 
-func _cull_foreground_duplicates():
-	for dup in _to_cull:
-		dup.queue_free()
-	_to_cull = Array()
-
-
+# Re-renders viewport
 func rebuild_texture():
 	# Force re-render to update our target viewport
 	$Viewport.render_target_update_mode = Viewport.UPDATE_ONCE
 
+# Updates sprite, likely after destruction
 func republish_sprite(arguments : Array):
 	# Assume the image has changed, so we'll need to update our ImageTexture
 	_image_republish_texture.create_from_image($Sprite.texture.get_data())
@@ -113,7 +98,7 @@ func republish_sprite(arguments : Array):
 	if _parent_material != null:
 		_parent_material.set_shader_param("destruction_mask", _image_republish_texture)
 
-
+# Helper function to convert viewport coordinates to world coordinates
 func _viewport_to_world(var point : Vector2) -> Vector2:
 	var dynamic_texture_size = $Viewport.get_size()
 	return Vector2(
@@ -121,7 +106,7 @@ func _viewport_to_world(var point : Vector2) -> Vector2:
 		((point.y + get_viewport_rect().position.y) / dynamic_texture_size.y) * world_size.y
 	)
 
-
+# Helper function to convert world coordinates to viewport coordinates
 func _world_to_viewport(var point : Vector2) -> Vector2:
 	var dynamic_texture_size = $Viewport.get_size()
 	var parent_offset = get_parent().position
@@ -129,3 +114,14 @@ func _world_to_viewport(var point : Vector2) -> Vector2:
 		(((point.x - parent_offset.x ) / world_size.x) * dynamic_texture_size.x + get_viewport_rect().position.x),
 		(((point.y - parent_offset.y ) / world_size.y) * dynamic_texture_size.y + get_viewport_rect().position.y)
 	)
+
+# Removes duplicate nodes used to copy the parent into local viewport to make changes to it
+func _cull_foreground_duplicates():
+	for dup in _to_cull:
+		dup.queue_free()
+	_to_cull = Array()
+
+# Purging threads when node is destroyed
+func _exit_tree():
+	for thread in _destruction_threads:
+		thread.wait_to_finish()

@@ -12,8 +12,9 @@ var damage_falloff
 var ignoreCaster
 # Keeps track of who casted the spell for ignoreCaster
 var casterID
-
+# Tracks amount of knockback force when physics knockback is applied
 var knockback_force
+# Tracks whether there is dropoff of knockback or not (whether the distance from center affects knockback amount)
 var knockback_dropoff
 
 # Passes the size variable to child so the collision circle is appropriately sized

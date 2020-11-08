@@ -67,15 +67,15 @@ collision_mask = 8
 [node name="ImpulseCollision" type="CollisionShape2D" parent="MainPawn/ProjectileImpulseArea"]
 shape = SubResource( 3 )
 
+[node name="VisibilityNotifier" type="VisibilityNotifier2D" parent="MainPawn"]
+rect = Rect2( -13, -21, 26, 42 )
+script = ExtResource( 10 )
+
 [node name="HealthManager" parent="MainPawn" instance=ExtResource( 5 )]
 
 [node name="AttackManager" parent="MainPawn" instance=ExtResource( 8 )]
 
 [node name="VisionManager" parent="MainPawn" instance=ExtResource( 4 )]
-
-[node name="VisibilityNotifier" type="VisibilityNotifier2D" parent="MainPawn"]
-rect = Rect2( -13, -21, 26, 42 )
-script = ExtResource( 10 )
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 z_index = 1

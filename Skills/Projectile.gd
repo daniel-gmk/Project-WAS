@@ -1,6 +1,6 @@
 extends RigidBody2D
 
-### Root node for projectile, handling behavior when hitting entities
+##### Root node for projectile, handling behavior when hitting entities
 
 # Track size of terrain damage radius, allow it to be set
 var explosion_radius
@@ -21,8 +21,9 @@ var ignoreCaster
 var casterID
 # Tracks whether the projectile is local to the client or from the server
 var server
-
+# Tracks amount of knockback force when physics knockback is applied
 var knockback_force
+# Tracks whether there is dropoff of knockback or not (whether the distance from center affects knockback amount)
 var knockback_dropoff
 
 # Start a timer looping each second to destroy projectiles out of bounds

@@ -1,17 +1,20 @@
 extends Node2D
 
-# Allow setting attack projectile 
-# Track scene type of explosion effect
-export var explosion_scene : PackedScene
-# Called when the node enters the scene tree for the first time.
-# Variables passed to player node
-var player_id
+##### Manages certain abstracted events for server-client RPC calls, but also doubles as P2P server's local client
+
+# Tracks whether the client node is locally controlled or not
 var control
 # Load player node
 var player_scene = preload("res://Pawn/Player.tscn")
-var terrainDamage = load("res://Environment/TerrainDamage.tscn")
 
+# Loads terrain damage node that destroys terrain
+var terrainDamage = load("res://Environment/TerrainDamage.tscn")
+# Causes explosions
+export var explosion_scene : PackedScene
+
+# Called every tick
 func _process(delta):
+	# Server control of synchronized teleporting on initial game start
 	if get_tree().is_network_server():
 		var triggerInitialTeleport = true
 		var node_group = get_tree().get_nodes_in_group("TeleportManagers")
@@ -27,17 +30,22 @@ func _process(delta):
 
 # On call, instantiate and create a player node for the client.
 func startGameCharacter(serverControlled):
-	var player = player_scene.instance()
 	
-	player.player_id = player_id
-	player.control   = control
+	# Create a player scene as a child and attach
+	var player = player_scene.instance()
 
+	# Remove the initial camera node and set P2P server setting for local client access
 	if serverControlled:
 		get_node("/root/environment/Camera").queue_free()
 		player.server_controlled = true
+	
+	# Set variables to be passed to player node
+	player.control   = control
+	player.clientName = name
 
 	# Instantiate the character
 	add_child(player)
+	player.initialize()
 
 # Remote function called by server to also execute terrain destruction but from server's perspective instead
 # of client's perspective as an authoritative approach.
@@ -67,22 +75,24 @@ func destroyTerrainServerRPC(terrainChunks, pos, rad):
 			terrain_chunk.get_parent().destroyRPCServer(pos, rad)
 			terrain_chunk.get_parent().destroy(pos, rad)
 
+# Wrapper RPC for client to call server
 func reposition_entity_ToServer(entityPos, es):
 	rpc_id(1, "reposition_entity_server", entityPos, es)
 
-func reposition_entity_AsServer(entityPos, es):
-	reposition_entity_serverCall(entityPos, es)
-
+# Wrapper RPC for when server is called from client to call serverCall (below)
 remote func reposition_entity_server(entityPos, es):
 	reposition_entity_serverCall(entityPos, es)
 
+# Wrapper RPC for server to call RPC and locally
 func reposition_entity_serverCall(entityPos, es):
 	rpc("reposition_entity_RPC", entityPos, es)
 	reposition_entity(entityPos, es)
 
+# Wrapper RPC from server to clients to call locally
 remote func reposition_entity_RPC(entityPos, es):
 	reposition_entity(entityPos, es)
 
+# Repositions an entity (player main pawn or minion) and sets explosion
 func reposition_entity(entityPos, es):
 	var td = terrainDamage.instance()
 	td.position = entityPos

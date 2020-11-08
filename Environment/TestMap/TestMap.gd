@@ -1,27 +1,38 @@
 extends Sprite
 
-var cameraNode
-var controlNode
-var progressBarNode
-var progressBarTextNode
-var minimapNode
-var minimapRatio
+##### This node handles terrain generation for the initial test map and minimap
 
+### Map Variables
 # Track the max length and height of the map for boundary checks
 var maxLength = 6000
 var maxHeight = 4500
-
-var minimapSize = Vector2(240, 180)
-
+# Track the arrays used for processing the map in a background thread and prevent "not responding"
 var _chunk_threads := Array()
 
+### GUI Element Variables
+# Tracks whether a GUI for loading screen is used
 var gui = false
+# Tracks the camera node used for viewing the map and load screen
+var cameraNode
+# Tracks the base GUI node for the loading screen
+var controlNode
+# Tracks the loading bar
+var progressBarNode
+# Tracks text under the loading bar stating the progress
+var progressBarTextNode
+# Tracks the minimap node to render the map to it
+var minimapNode
+# Tracks the size ratio between the minimap and the screen
+var minimapRatio
+# Tracks the size/dimensions of the minimap
+var minimapSize = Vector2(240, 180)
 
+# Closes open threads when exited from the scene
 func _exit_tree():
 	for thread in _chunk_threads:
 		thread.wait_to_finish()
 
-# Generates the entire terrain and collision from seed, unique and dynamic shape
+# Starts the generation process in another thread and signals clients back to server as loading map
 # TODO: Save colors as variables. For now:
 # Color 1 1 1 1 is white
 # Color 1 1 0 1 is yellow
@@ -30,9 +41,11 @@ func _exit_tree():
 func loadTerrain(terrainSeed, ip):
 	minimapNode = get_node("/root/environment/MiniMap")
 	
+	# Set loading screen to be used
 	if !get_tree().is_network_server() or get_node("/root/Network").hostingMode == 1:
 		gui = true
 	
+	# Generate loading screen GUI
 	if gui:
 		cameraNode = get_node("/root/environment/Camera")
 		cameraNode.position = Vector2(maxLength/2, maxHeight/2)
@@ -41,32 +54,38 @@ func loadTerrain(terrainSeed, ip):
 		controlNode.visible = true
 		progressBarNode = controlNode.get_node("ProgressBar")
 		progressBarTextNode = controlNode.get_node("Label")
-	
+
+	# Start background thread for terrain generation
 	var thread := Thread.new()
 	var error = thread.start(self, "loadThread", [terrainSeed])
 	if error != OK:
 		print("Error creating destruction thread: ", error)
 	_chunk_threads.push_back(thread)
 
-	var network = get_node("/root/Network")
 	# After everything is loaded and done, client can reconnect to server
+	var network = get_node("/root/Network")
 	if !get_tree().is_network_server():
 		network.terrain_loaded()
 	else:
 		if network.hostingMode == 1:
 			get_node("/root/environment/Control").rect_position = Vector2(maxLength/8, maxHeight/8)
 
+# Generates the entire terrain and collision from seed, unique and dynamic shape in a background thread
 func loadThread(arguments : Array):
+
+	# Update loading bar
 	if gui:
 		progressBarNode.value = 5
 		progressBarTextNode.text = "Loading Image Data"
+
 	# Loads the image into file
 	var image = texture.get_data()
 	set_texture(null)
 	visible = true
 	# Locks image so pixels can be retrieved and modified
 	image.lock()
-	
+
+	# Update loading bar
 	if gui:
 		progressBarNode.value = 10
 		progressBarTextNode.text = "Generating Random Terrain"
@@ -117,6 +136,7 @@ func loadThread(arguments : Array):
 				if value > threshold:
 					image.set_pixel(w, h, Color(1,1,0,1)) # Yellow
 	
+	# Update loading bar
 	if gui:
 		progressBarNode.value = 15
 		progressBarTextNode.text = "Filling Random Terrain"
@@ -128,7 +148,8 @@ func loadThread(arguments : Array):
 	var x1
 	var spanAbove
 	var spanBelow
-	
+
+	# Uses scanline fill algorithm ported here
 	while points['fg'].size() > 0:
 		pt = points['fg'].pop_back()
 		x = pt[0]
@@ -152,16 +173,17 @@ func loadThread(arguments : Array):
 			elif spanBelow and y < (image.get_height()-1) and (image.get_pixel(x1, y+1) != Color(0,0,0,1)):
 				spanBelow = 0
 			x1 += 1
-		
+
 	# This component removes perlin yellow placeholder colors
 	for w in image.get_width():
 		for h in image.get_height():
-			# Grab pixels that are the contour
+			# Grab pixels that are the contour of the base for the next component
 			if image.get_pixel(w, h) == Color(0,0,0,1):
 				image.set_pixel(w, h, Color(0,0,0,0))
 			if image.get_pixel(w, h) == Color(1,1,0,1):
 				points['bg'].push_back([w, h])
 	
+	# This component smooths out the resulting gaps/wedges within the terrain using a modified scanline fill, requires the map to have been filled already hence separate scanline fills
 	var x2
 	while points['bg'].size() > 0:
 		var whiteL = false
@@ -194,10 +216,17 @@ func loadThread(arguments : Array):
 			else:
 				image.set_pixel(u, y, Color(0,0,0,0))
 
+	# This components converts the resulting image to a bitmap to perform a hole-filling algorithm.
+	# Existing holes and spots in the map cause rendering problems because Godot's bitmap-to-polygon 
+	# function needed to add collision to this map is not properly working with holes
 	var bm := BitMap.new()
 	bm.create_from_image_alpha(image)
 	var bm2 = bm.duplicate() as BitMap
-	
+
+	# First, we have two copies of the bitmap. The first copy fills everything outside the map, meaning the only thing left unfilled is holes inside the map
+	# Then, we parse through the first copy and perform a fill on the inner parts on the second copy, essentially only filling the holes inside
+
+	# Fill everything outside the first copy's map first
 	for w in image.get_width():
 		for h in image.get_height():
 			if w == 0 or h == 0 or w == image.get_width()-1 or h == image.get_height()-1:
@@ -221,7 +250,8 @@ func loadThread(arguments : Array):
 					if n[1]+1 < image.get_height() and !bm2.get_bit(Vector2(n[0], n[1]+1)):
 						bm2.set_bit(Vector2(n[0], n[1]+1), true)
 						fillArray.push_back([n[0], n[1]+1])
-	
+
+	# Parse through first copy for holes inside, but make changes to the second copy, and ultimately use the second copy
 	for w in image.get_width():
 		for h in image.get_height():
 			if !bm2.get_bit(Vector2(w, h)):
@@ -248,8 +278,8 @@ func loadThread(arguments : Array):
 						bm2.set_bit(Vector2(n[0], n[1]+1), true)
 						bm.set_bit(Vector2(n[0], n[1]+1), true)
 						fillArray.push_back([n[0], n[1]+1])
-	
-	# for each pixel in bitmap, set pixel in image2
+
+	# Replace the image data with the bit's data
 	for w in image.get_width():
 		for h in image.get_height():
 			if bm.get_bit(Vector2(w, h)):
@@ -260,10 +290,12 @@ func loadThread(arguments : Array):
 	# Unlocks image so size can be adjusted
 	image.unlock()
 	
+	# Update loading bar
 	if gui:
 		progressBarNode.value = 20
 		progressBarTextNode.text = "Expanding Terrain Size"
 
+	# Create minimap as a copy of the new terrain
 	var testImage = Image.new()
 	testImage.copy_from(image)
 	testImage.resize(minimapSize.x,minimapSize.y,0)
@@ -278,22 +310,28 @@ func loadThread(arguments : Array):
 	var minimap_destructible_scene = load("res://Environment/Destructible-Minimap.tscn")
 	var minimap_destructible       = minimap_destructible_scene.instance()
 	dupsprite.call_deferred("add_child", minimap_destructible)
-
-	image.resize(maxLength,maxHeight,0)
 	
+	# Upscale the map to max length, making it a little bit jagged (so we need to smooth it later)
+	image.resize(maxLength,maxHeight,0)
+
+	# Update loading bar
 	if gui:
 		progressBarNode.value = 25
 		progressBarTextNode.text = "Adding Sky"
 
+	# Add sky sprite to background
 	var sky = get_parent().get_node("Sky")
 	sky.visible = true
 	sky.scale = Vector2(image.get_width()+2000 / sky.texture.get_data().get_width(), image.get_height()+2000 / sky.texture.get_data().get_height())
 	sky.position = Vector2(-1000, -1000)
 
+	# Update loading bar
 	if gui:
-		# Variables used for below optimization function
 		progressBarNode.value = 30
 		progressBarTextNode.text = "Adding Chunks"
+
+	# This component is an optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
+
 	# Tracks which sub-image we are at
 	var count = 0
 	# Tracks current location in overall image
@@ -302,16 +340,21 @@ func loadThread(arguments : Array):
 	# Size of chunks
 	var cropWidth = 300
 	var cropHeight = 225
-	
+	# The rate in which each chunk update will update the loading bar
 	var loadRate = float((maxLength * maxHeight) / (cropWidth * cropHeight))
-	# Optimization of map rendering. Break the map into chunks and only attach destruction nodes to non-sky terrain
+
+	# Parse through rows
 	while placingWidth < image.get_width():
 		# Reset the height every time we get to a new width chunk (reset column every row)
 		placingHeight = 0
+		# Parse through columns
 		while placingHeight < image.get_height():
+
+			# Update loading bar each chunk is loaded
 			if gui:
 				var rateValue = float(progressBarNode.max_value - 30)
 				progressBarNode.value = 30 + (rateValue * (count / loadRate))
+
 			# Make children sprites of overall sprite with sub-images
 			var childSprite = Sprite.new()
 			childSprite.name = name + "-" + str(count)
@@ -337,10 +380,7 @@ func loadThread(arguments : Array):
 			# Track whether the sub-image is fully transparent or not
 			var transparent = true
 			var opaque = false
-			var bitmap := BitMap.new()
-			bitmap.create_from_image_alpha(image2)
-			
-			var bitmapsize = bitmap.get_size()
+
 			# Checks if transparent so it can save time and not have to add destructible nodes if fully transparent
 			for w in image2.get_width():
 				for h in image2.get_height():
@@ -349,7 +389,8 @@ func loadThread(arguments : Array):
 						if transparent:
 							transparent = false
 							break
-			
+
+			# Checks if completely opaque so it can save time and not have to perform dilation/smoothing to a completely filled chunk
 			if !transparent:
 				opaque = true
 				for w in image2.get_width():
@@ -359,12 +400,18 @@ func loadThread(arguments : Array):
 							if opaque:
 								opaque = false
 								break
-				
+
+			# For all other chunks perform smoothing
 			if !transparent and !opaque:
+				# Convert to bitmap for smoothing
+				var bitmap := BitMap.new()
+				bitmap.create_from_image_alpha(image2)
+				var bitmapsize = bitmap.get_size()
 				
+				# Smooth terrain with built-in dilation function
 				bitmap.grow_mask(10, Rect2(Vector2(), bitmap.get_size()))
 				
-				# for each pixel in bitmap, set pixel in image2
+				# Convert bitmap back to terrain
 				for w in image2.get_width():
 					for h in image2.get_height():
 						if bitmap.get_bit(Vector2(w, h)):
@@ -393,10 +440,12 @@ func loadThread(arguments : Array):
 				var destructible_scene = load("res://Environment/Destructible.tscn")
 				var destructible       = destructible_scene.instance()
 				childSprite.call_deferred("add_child", destructible)
-
+			
+			# Iterate
 			count += 1
-
 			placingHeight += cropHeight
 		placingWidth += cropWidth
+
+	# After completion, hide the loading screen
 	if gui:
 		controlNode.visible = false

@@ -1,42 +1,49 @@
 extends Node2D
 
+##### This node handles the state of the parent node, is required for all nodes
+# For example, to manage whether the node is hidden, paused, etc
+
 # Track if actions are allowed at all
 export var allowActions = false
 
+# Show the sprite only
 func showSpriteOnly():
 	$Sprite.visible = true
 
+# Put the pawn back into play
 func show():
 	$Sprite.visible = true
-	if has_node("../HealthManager"):
-		get_node("../HealthManager").immortal = false
-		get_node("../HealthManager").enableDamageCollision()
+	if get_parent().has_node("HealthManager"):
+		get_parent().get_node("HealthManager").immortal = false
+		get_parent().get_node("HealthManager").enableDamageCollision()
 	# Re-Enable collisions
 	get_parent().enableCollision()
 
+# Remove the pawn from play
 func hide():
 	$Sprite.visible = false
-	if has_node("../HealthManager"):
-		get_node("../HealthManager").immortal = true
-		get_node("../HealthManager").disableDamageCollision()
+	if get_parent().has_node("HealthManager"):
+		get_parent().get_node("HealthManager").immortal = true
+		get_parent().get_node("HealthManager").disableDamageCollision()
 	# Disable Collisions
 	get_parent().disableCollision()
 
-# Instructions for freezing character
+# Pausing a pawn in place
 func freeze():
 	allowActions = false
 	get_parent().allowMovement = false
-	if has_node("../AttackManager"):
+	if get_parent().has_node("AttackManager"):
 		# Reset attack charge
-		get_node("../AttackManager").resetAttack()
+		get_parent().get_node("AttackManager").resetAttack()
 
-# Instructions for unfreezing AND resetting character values (jumping, attacking, etc)
+# Resuming a pawn from pause AND resetting character values (jumping, attacking, etc)
 func reset():
 	allowActions = true
 	get_parent().allowMovement = true
 	# Reset physics
 	get_parent().resetPhysics()
 
+# Change the sprite direction
 func flipSprite(vel):
 	if vel > 0:
 		$Sprite.flip_h = false

@@ -1,6 +1,6 @@
 extends Node2D
 
-### This node is a component of projectile, purely visual and creates explosion effect
+##### This node is a component of projectile, purely visual and creates explosion effect
 
 func _ready():
 	# Play explosion sprite

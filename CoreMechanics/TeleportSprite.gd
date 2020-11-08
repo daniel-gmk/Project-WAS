@@ -1,5 +1,7 @@
 extends Area2D
 
+##### This node handles the teleport cursor icon that shows whether the location at cursor is valid to teleport on
+
 # Sets visuals for allowed/not allowed teleporting
 func _physics_process(_delta : float):
 	if get_overlapping_bodies().size() == 0:

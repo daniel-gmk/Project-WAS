@@ -1,6 +1,6 @@
 extends Node
 
-### Network node component in charge of creating games, joining game, connection, disconnection
+##### Network node component in charge of creating games, joining game, connection, disconnection
 
 # Port used for the game
 const DEFAULT_PORT = 31416
@@ -61,6 +61,10 @@ func start_server_dedicated():
 func start_server_peertopeer():
 	hostingMode = 1
 	# Name can be customizable, but for server will not be visible anyway
+	#var upnp = UPNP.new()
+	#upnp.discover(2000, 2, "InternetGatewayDevice")
+	#upnp.add_port_mapping(DEFAULT_PORT)
+
 	player_name = 'Server'
 	host    = NetworkedMultiplayerENet.new()
 	# Atempt to create server
@@ -169,7 +173,6 @@ func spawn_player(id, loadedTerrain):
 		event_manager.set_name(str(id))
 		get_node("/root/").call_deferred("add_child", event_manager)
 		if hostingMode == 1 and get_tree().is_network_server():
-			event_manager.player_id = id
 			event_manager.control   = true
 	else:
 		# If player and terrain is now loaded
@@ -180,7 +183,6 @@ func spawn_player(id, loadedTerrain):
 		# Set variables locally for the actual client's player
 		if id == get_tree().get_network_unique_id():
 			player.set_network_master(id)
-			player.player_id = id
 			player.control   = true
 			
 		# Instantiate the character

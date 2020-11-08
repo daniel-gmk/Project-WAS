@@ -2,6 +2,7 @@ tool
 extends RichTextEffect
 class_name RichTextGhost
 
+##### This custom bbcode text effect fades chat out after a specific period of time
 # Syntax: [ghost freq=5.0 span=10.0][/ghost]
 
 # Define the tag name.

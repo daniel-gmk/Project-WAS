@@ -1,6 +1,9 @@
 extends Camera2D
 
-### Handles camera attached to the player. Camera focus can be on player or map
+##### Handles camera attached to the player. Camera focus can be on player or map
+
+# Tracks whether the node is initialized
+var initialized = false
 
 # Smoothing duration in seconds
 const SMOOTHING_DURATION: = 0.2
@@ -27,27 +30,38 @@ var root
 # Stores the player's MainPawn child for when the player is being focused.
 var playerOwner
 
-func _ready() -> void:
-	if (get_tree().is_network_server() and !get_parent().server_controlled) or !get_parent().control:
+# Called when node is initialized
+func initialize():
+	# Remove the camera if not local, no one else has a use for it
+	if !get_parent().control:
 		queue_free()
 	# Set camera focus to player
-	target = get_parent().get_node("MainPawn")
-	playerOwner = get_parent().get_node("MainPawn")
 	root = get_parent()
+	target = get_parent().currentActivePawn
+	playerOwner = target
 	lastPlayerOwnerPosition = false
-	#make_current()
+	# Set location
 	current_position = position
+	# Initialize GUI
+	get_node("CanvasLayer/GUI").camera_node = self
+	get_node("CanvasLayer/GUI").initialize(get_parent())
+	
+	# Initialize the node
+	initialized = true
 
+# Called every physics node
 func _physics_process(delta: float) -> void:
-	if !lastPlayerOwnerPosition:
+	# If focused on a player, interpolate to the player position (smoothing effect)
+	if initialized and !lastPlayerOwnerPosition:
 		destination_position = target.position
 		current_position += Vector2(destination_position.x - current_position.x, destination_position.y - current_position.y) / SMOOTHING_DURATION * delta
 		
 		position = current_position.round()
 		force_update_scroll()
 
+# Handle input
 func _unhandled_input(event):
-	if get_parent().control and !get_parent().menuPressed:
+	if initialized and get_parent().control and !get_parent().menuPressed:
 		# Handles the initial and final trigger for dragging the camera
 		if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT:
 			get_tree().set_input_as_handled()
@@ -84,6 +98,7 @@ func _unhandled_input(event):
 				get_tree().set_input_as_handled()
 				zoom = new_zoom
 
+# Handle when switched from focusing on a pawn to free panning
 func switchFromPlayerCamera():
 	# Reset current camera
 	lastPlayerOwnerPosition = false
@@ -94,6 +109,7 @@ func switchFromPlayerCamera():
 	# Set mouse location and view
 	get_viewport().warp_mouse(get_viewport_rect().size / 2)
 
+# Handle when switching from free panning to a pawn
 func switchToPlayerCamera():
 	# Set mouse location and view
 	get_viewport().warp_mouse(get_viewport_rect().size / 2)
@@ -104,16 +120,19 @@ func switchToPlayerCamera():
 	lastPlayerOwnerPosition = false
 	position = Vector2.ZERO
 
+# Hide the GUI
 func hideCamera():
 	# Disable HUD
 	if has_node("CanvasLayer/GUI"):
 		get_node("CanvasLayer").get_node("GUI").visible = false
 
+# Show the GUI
 func showCamera():
 	# Enable HUD
 	if has_node("CanvasLayer/GUI"):
 		get_node("CanvasLayer").get_node("GUI").visible = true
 
+# Change to a different pawn target
 func changeTarget(node):
 	target = node
 	playerOwner = node

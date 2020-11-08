@@ -1,10 +1,9 @@
 extends Node2D
 
-### This node is for terrain destruction as a part of Destructible.tscn, circle geometry drawn on terrain from an explosion
+##### This node is for terrain destruction as a part of Destructible.tscn, circle geometry drawn on terrain from an explosion
 
 # Controls the size of the explosion
 var _radius = 40
-
 
 # Reposition and redraw the circle
 func reposition(position : Vector2, radius : float):
@@ -17,7 +16,6 @@ func reposition(position : Vector2, radius : float):
 
 	# Now that we've been repositioned and resized we need to call update to force a redraw
 	update()
-
 
 # Note - this is only called once after the node is added to the scene.
 # In order to redraw we need our update() method to be called!
