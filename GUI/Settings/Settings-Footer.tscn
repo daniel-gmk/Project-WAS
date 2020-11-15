@@ -1,0 +1,95 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Footer.gd" type="Script" id=1]
+
+[node name="Footer" type="ColorRect"]
+margin_right = 1024.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 1024, 56 )
+color = Color( 0.384314, 0.384314, 0.384314, 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+buttonBaseNodePath = NodePath("MainFooterContainer/HBoxContainer")
+
+[node name="MainFooterContainer" type="VBoxContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 56.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="MainFooterContainer"]
+margin_right = 1024.0
+margin_bottom = 10.0
+rect_min_size = Vector2( 0, 10 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainFooterContainer"]
+margin_top = 14.0
+margin_right = 1024.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 0, 32 )
+
+[node name="EscMargin" type="MarginContainer" parent="MainFooterContainer/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainFooterContainer/HBoxContainer/EscMargin"]
+margin_right = 160.0
+margin_bottom = 32.0
+
+[node name="MarginContainer" type="MarginContainer" parent="MainFooterContainer/HBoxContainer/EscMargin/HBoxContainer"]
+margin_right = 8.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 8, 0 )
+
+[node name="BackButton" type="Button" parent="MainFooterContainer/HBoxContainer/EscMargin/HBoxContainer"]
+margin_left = 12.0
+margin_right = 87.0
+margin_bottom = 32.0
+text = "Back (Esc)"
+
+[node name="SaveButton" type="Button" parent="MainFooterContainer/HBoxContainer"]
+margin_left = 164.0
+margin_right = 324.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 160, 0 )
+disabled = true
+text = "Save Changes"
+
+[node name="Margin2" type="MarginContainer" parent="MainFooterContainer/HBoxContainer"]
+margin_left = 328.0
+margin_right = 398.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 70, 0 )
+
+[node name="DiscardButton" type="Button" parent="MainFooterContainer/HBoxContainer"]
+margin_left = 402.0
+margin_right = 562.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 160, 0 )
+text = "Discard Changes"
+
+[node name="Margin3" type="MarginContainer" parent="MainFooterContainer/HBoxContainer"]
+margin_left = 566.0
+margin_right = 846.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 280, 0 )
+
+[node name="ResetButton" type="Button" parent="MainFooterContainer/HBoxContainer"]
+margin_left = 850.0
+margin_right = 1010.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 160, 0 )
+text = "Reset to Default"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MainFooterContainer"]
+margin_top = 50.0
+margin_right = 1024.0
+margin_bottom = 56.0
+rect_min_size = Vector2( 0, 6 )
+[connection signal="pressed" from="MainFooterContainer/HBoxContainer/EscMargin/HBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="MainFooterContainer/HBoxContainer/DiscardButton" to="." method="_on_DiscardButton_pressed"]
+[connection signal="pressed" from="MainFooterContainer/HBoxContainer/ResetButton" to="." method="_on_ResetButton_pressed"]

@@ -79,10 +79,10 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-minimap_gui_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight")
 teleport_cooldown_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/MainAttacksContainer/Panel/AttacksBorderHContainer2/RightMargin/VBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer/TPCooldownContainer/TPCooldown")
-chat_nodepath = NodePath("MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel")
 teleport_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerLeft/TeleportTimeLeftPanel")
+minimap_gui_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/MapContainerRight")
+chat_nodepath = NodePath("MainGUIContainer/MainVContainer/TwoThirdContainer/HBoxContainer/VBoxContainer/Panel")
 healthbar_nodepath = NodePath("MainGUIContainer/MainVContainer/ThreeThirdContainer2/ThreeThirdHContainer/ActionContainer/HealthCenterContainer/CenterContainer/VerticalCenter/MainHealthBar")
 
 [node name="MainGUIContainer" type="MarginContainer" parent="."]

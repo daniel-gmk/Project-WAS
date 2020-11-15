@@ -1,0 +1,392 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Control-Menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://GUI/Settings/Settings-Control-Button.tres" type="Theme" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 2 )
+
+[node name="General" type="VBoxContainer"]
+margin_right = 818.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 818, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 818.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 818, 30 )
+
+[node name="Label" type="Label" parent="MarginContainer"]
+margin_top = 5.0
+margin_right = 818.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "General"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_top = 34.0
+margin_right = 818.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 16 )
+color = Color( 0.0235294, 0.0941176, 0.811765, 1 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+margin_top = 54.0
+margin_right = 818.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Move Left" type="ColorRect" parent="."]
+margin_top = 62.0
+margin_right = 818.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Move Left"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Move Left/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Move Left/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Move Left"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Move Left/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="left" type="Button" parent="Move Left/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer3" type="MarginContainer" parent="."]
+margin_top = 96.0
+margin_right = 818.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Move Right" type="ColorRect" parent="."]
+margin_top = 104.0
+margin_right = 818.0
+margin_bottom = 134.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Move Right"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Move Right/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Move Right/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Move Right"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Move Right/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="right" type="Button" parent="Move Right/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer4" type="MarginContainer" parent="."]
+margin_top = 138.0
+margin_right = 818.0
+margin_bottom = 142.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Jump" type="ColorRect" parent="."]
+margin_top = 146.0
+margin_right = 818.0
+margin_bottom = 176.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Jump"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Jump/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Jump/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Jump"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Jump/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="jump" type="Button" parent="Jump/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer5" type="MarginContainer" parent="."]
+margin_top = 180.0
+margin_right = 818.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Shoot" type="ColorRect" parent="."]
+margin_top = 188.0
+margin_right = 818.0
+margin_bottom = 218.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Shoot"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Shoot/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Shoot/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Shoot/Activate Skill"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Shoot/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="shoot" type="Button" parent="Shoot/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer6" type="MarginContainer" parent="."]
+margin_top = 222.0
+margin_right = 818.0
+margin_bottom = 226.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Switch Minion Control" type="ColorRect" parent="."]
+margin_top = 230.0
+margin_right = 818.0
+margin_bottom = 260.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Switch Minion Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Switch Minion Control/HBoxContainer"]
+margin_right = 170.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Switch Minion Control/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 170.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Switch Minion Control"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Switch Minion Control/HBoxContainer"]
+margin_left = 174.0
+margin_right = 566.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 392, 0 )
+
+[node name="MinionSwitch" type="Button" parent="Switch Minion Control/HBoxContainer"]
+margin_left = 570.0
+margin_right = 570.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer7" type="MarginContainer" parent="."]
+margin_top = 264.0
+margin_right = 818.0
+margin_bottom = 268.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Scoreboard" type="ColorRect" parent="."]
+margin_top = 272.0
+margin_right = 818.0
+margin_bottom = 302.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scoreboard"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Scoreboard/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Scoreboard/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Scoreboard"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Scoreboard/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Scoreboard" type="Button" parent="Scoreboard/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer8" type="MarginContainer" parent="."]
+margin_top = 306.0
+margin_right = 818.0
+margin_bottom = 310.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Chat" type="ColorRect" parent="."]
+margin_top = 314.0
+margin_right = 818.0
+margin_bottom = 344.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Chat"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Chat/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Chat/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Chat"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Chat/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Chat" type="Button" parent="Chat/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )

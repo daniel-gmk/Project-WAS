@@ -1,0 +1,571 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Control-Menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://GUI/Settings/Settings-Control-Button.tres" type="Theme" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 2 )
+
+[node name="Skills" type="VBoxContainer"]
+margin_right = 818.0
+rect_min_size = Vector2( 818, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 818.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="Label" type="Label" parent="MarginContainer"]
+margin_top = 5.0
+margin_right = 818.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Skills"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_top = 34.0
+margin_right = 818.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 16 )
+color = Color( 0.0235294, 0.0941176, 0.811765, 1 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+margin_top = 54.0
+margin_right = 818.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill Layout" type="ColorRect" parent="."]
+margin_top = 62.0
+margin_right = 818.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill Layout"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Skill Layout/HBoxContainer"]
+margin_top = 5.0
+margin_right = 96.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill Layout"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill Layout/HBoxContainer"]
+margin_left = 100.0
+margin_right = 560.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 460, 0 )
+
+[node name="OptionButton" type="OptionButton" parent="Skill Layout/HBoxContainer"]
+margin_left = 564.0
+margin_right = 633.0
+margin_bottom = 30.0
+text = "Expert"
+
+[node name="MarginContainer3" type="MarginContainer" parent="."]
+margin_top = 96.0
+margin_right = 818.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Casting Mode" type="ColorRect" parent="."]
+margin_top = 104.0
+margin_right = 818.0
+margin_bottom = 134.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Casting Mode"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Casting Mode/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Casting Mode/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Casting Mode"
+
+[node name="MarginContainer" type="MarginContainer" parent="Casting Mode/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="CastMode" type="Button" parent="Casting Mode/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer9" type="MarginContainer" parent="."]
+margin_top = 138.0
+margin_right = 818.0
+margin_bottom = 142.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill1" type="ColorRect" parent="."]
+margin_top = 146.0
+margin_right = 818.0
+margin_bottom = 176.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill1/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill1/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 1"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill1/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill1" type="Button" parent="Skill1/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer4" type="MarginContainer" parent="."]
+margin_top = 180.0
+margin_right = 818.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill2" type="ColorRect" parent="."]
+margin_top = 188.0
+margin_right = 818.0
+margin_bottom = 218.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill2/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill2/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 2"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill2/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill2" type="Button" parent="Skill2/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer5" type="MarginContainer" parent="."]
+margin_top = 222.0
+margin_right = 818.0
+margin_bottom = 226.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill3" type="ColorRect" parent="."]
+margin_top = 230.0
+margin_right = 818.0
+margin_bottom = 260.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill3/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill3/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 3"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill3/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill3" type="Button" parent="Skill3/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer6" type="MarginContainer" parent="."]
+margin_top = 264.0
+margin_right = 818.0
+margin_bottom = 268.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill4" type="ColorRect" parent="."]
+margin_top = 272.0
+margin_right = 818.0
+margin_bottom = 302.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill4/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill4/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 4"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill4/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill4" type="Button" parent="Skill4/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer7" type="MarginContainer" parent="."]
+margin_top = 306.0
+margin_right = 818.0
+margin_bottom = 310.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill5" type="ColorRect" parent="."]
+margin_top = 314.0
+margin_right = 818.0
+margin_bottom = 344.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill5"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill5/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill5/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 5"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill5/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill5" type="Button" parent="Skill5/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer8" type="MarginContainer" parent="."]
+margin_top = 348.0
+margin_right = 818.0
+margin_bottom = 352.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Skill6" type="ColorRect" parent="."]
+margin_top = 356.0
+margin_right = 818.0
+margin_bottom = 386.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Skill6"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Skill6/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Skill6/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Skill 6"
+
+[node name="MarginContainer" type="MarginContainer" parent="Skill6/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Skill6" type="Button" parent="Skill6/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer10" type="MarginContainer" parent="."]
+margin_top = 390.0
+margin_right = 818.0
+margin_bottom = 394.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Ultimate 1" type="ColorRect" parent="."]
+margin_top = 398.0
+margin_right = 818.0
+margin_bottom = 428.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Ultimate 1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Ultimate 1/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Ultimate 1/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Ultimate 1"
+
+[node name="MarginContainer" type="MarginContainer" parent="Ultimate 1/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Ultimate1" type="Button" parent="Ultimate 1/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer11" type="MarginContainer" parent="."]
+margin_top = 432.0
+margin_right = 818.0
+margin_bottom = 436.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Ultimate 2" type="ColorRect" parent="."]
+margin_top = 440.0
+margin_right = 818.0
+margin_bottom = 470.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Ultimate 2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Ultimate 2/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Ultimate 2/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Ultimate 2"
+
+[node name="MarginContainer" type="MarginContainer" parent="Ultimate 2/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Ultimate2" type="Button" parent="Ultimate 2/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer12" type="MarginContainer" parent="."]
+margin_top = 474.0
+margin_right = 818.0
+margin_bottom = 478.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Ultimate 3" type="ColorRect" parent="."]
+margin_top = 482.0
+margin_right = 818.0
+margin_bottom = 512.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Ultimate 3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Ultimate 3/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Ultimate 3/HBoxContainer/MarginContainer2"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Ultimate 3"
+
+[node name="MarginContainer" type="MarginContainer" parent="Ultimate 3/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="Ultimate3" type="Button" parent="Ultimate 3/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )

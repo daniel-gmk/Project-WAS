@@ -1,0 +1,115 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Control-Keybind-Menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[node name="Keybind-Menu" type="ColorRect"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -160.0
+margin_top = -100.0
+margin_right = 160.0
+margin_bottom = 100.0
+color = Color( 0.792157, 0.792157, 0.792157, 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+inputLabelNodePath = NodePath("VBoxContainer/MarginContainer/InputLabel")
+mouseButtonNodePath = NodePath("VBoxContainer/HBoxContainer/MouseButton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -159.0
+margin_top = -100.5
+margin_right = 159.0
+margin_bottom = 100.5
+rect_min_size = Vector2( 200, 200 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 318.0
+margin_bottom = 19.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Press a key to set keybind"
+align = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 23.0
+margin_right = 318.0
+margin_bottom = 149.0
+rect_min_size = Vector2( 0, 126 )
+
+[node name="InputLabel" type="Label" parent="VBoxContainer/MarginContainer"]
+margin_top = 56.0
+margin_right = 318.0
+margin_bottom = 70.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+align = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_top = 153.0
+margin_right = 318.0
+margin_bottom = 167.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Or select a mouse button"
+align = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 171.0
+margin_right = 318.0
+margin_bottom = 201.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="ConfirmButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 60.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 60, 0 )
+text = "Set"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 64.0
+margin_right = 74.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 10, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MouseButton" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+margin_left = 78.0
+margin_right = 240.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 162, 0 )
+text = "Scroll Wheel (Down)"
+align = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 244.0
+margin_right = 254.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 10, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CancelButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 258.0
+margin_right = 318.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 60, 0 )
+text = "Cancel"
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ConfirmButton" to="." method="_on_ConfirmButton_pressed"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/MouseButton" to="." method="_on_MouseButton_item_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]

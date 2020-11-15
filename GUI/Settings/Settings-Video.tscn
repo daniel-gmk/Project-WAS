@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Video-Display.tscn" type="PackedScene" id=1]
+[ext_resource path="res://GUI/Settings/Settings-Video-Quality.tscn" type="PackedScene" id=2]
+
+[node name="Settings-Video" type="VBoxContainer"]
+margin_right = 818.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Display" parent="." instance=ExtResource( 1 )]
+margin_bottom = 218.0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_top = 222.0
+margin_right = 818.0
+margin_bottom = 242.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="Quality" parent="." instance=ExtResource( 2 )]
+margin_top = 246.0
+margin_bottom = 464.0

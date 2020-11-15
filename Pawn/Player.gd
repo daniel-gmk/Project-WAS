@@ -64,7 +64,7 @@ func _input(event):
 	
 	# Temporary inputs on switching pawns
 	if control and !menuPressed and !$TeleportManager.teleporting:
-		if event.is_action_pressed("test"):
+		if event.is_action_pressed("MinionSwitch"):
 			if selectMinion:
 				removeMinionSelectLocation(true)
 			

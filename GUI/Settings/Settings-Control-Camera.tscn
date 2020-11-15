@@ -1,0 +1,237 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings-Control-Menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://GUI/Settings/Settings-Control-Button.tres" type="Theme" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 2 )
+
+[node name="Camera" type="VBoxContainer"]
+margin_right = 818.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 818.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="Label" type="Label" parent="MarginContainer"]
+margin_top = 5.0
+margin_right = 818.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Camera"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_top = 34.0
+margin_right = 818.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 16 )
+color = Color( 0.0235294, 0.0941176, 0.811765, 1 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+margin_top = 54.0
+margin_right = 818.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Drag Camera" type="ColorRect" parent="."]
+margin_top = 62.0
+margin_right = 818.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Drag Camera"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Drag Camera/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Drag Camera/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Drag Camera"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Drag Camera/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="DragCamera" type="Button" parent="Drag Camera/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer3" type="MarginContainer" parent="."]
+margin_top = 96.0
+margin_right = 818.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Reset Camera" type="ColorRect" parent="."]
+margin_top = 104.0
+margin_right = 818.0
+margin_bottom = 134.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Reset Camera"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Reset Camera/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Reset Camera/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Reset Camera"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Reset Camera/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="ResetCamera" type="Button" parent="Reset Camera/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer4" type="MarginContainer" parent="."]
+margin_top = 138.0
+margin_right = 818.0
+margin_bottom = 142.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Camera Zoom-In" type="ColorRect" parent="."]
+margin_top = 146.0
+margin_right = 818.0
+margin_bottom = 176.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera Zoom-In"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Camera Zoom-In/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Camera Zoom-In/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Camera Zoom-In"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Camera Zoom-In/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="CameraZoomIn" type="Button" parent="Camera Zoom-In/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+
+[node name="MarginContainer5" type="MarginContainer" parent="."]
+margin_top = 180.0
+margin_right = 818.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="Camera Zoom-Out" type="ColorRect" parent="."]
+margin_top = 188.0
+margin_right = 818.0
+margin_bottom = 218.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera Zoom-Out"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Camera Zoom-Out/HBoxContainer"]
+margin_right = 160.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 160, 0 )
+
+[node name="Label" type="Label" parent="Camera Zoom-Out/HBoxContainer/MarginContainer"]
+margin_top = 5.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "    Camera Zoom-Out"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Camera Zoom-Out/HBoxContainer"]
+margin_left = 164.0
+margin_right = 564.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 400, 0 )
+
+[node name="CameraZoomOut" type="Button" parent="Camera Zoom-Out/HBoxContainer"]
+margin_left = 568.0
+margin_right = 568.0
+margin_bottom = 30.0
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )

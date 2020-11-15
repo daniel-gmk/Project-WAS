@@ -63,19 +63,19 @@ func _physics_process(delta: float) -> void:
 func _unhandled_input(event):
 	if initialized and get_parent().control and !get_parent().menuPressed:
 		# Handles the initial and final trigger for dragging the camera
-		if event is InputEventMouseButton and event.button_index == BUTTON_RIGHT:
+		if event.is_action_pressed("DragCamera") or event.is_action_released("DragCamera"):
 			get_tree().set_input_as_handled()
-			if event.is_pressed():
+			if event.is_action_pressed("DragCamera"):
 				if lastPlayerOwnerPosition == false:
 					position = playerOwner.position
 					lastPlayerOwnerPosition = true
 				_previous_position = event.position
 				_move_camera = true
-			else:
+			elif event.is_action_released("DragCamera"):
 				_move_camera = false
 	
 		# Reset camera focus back to the player when reset button is pressed
-		if event.is_action_pressed("reset_camera"):
+		if event.is_action_pressed("ResetCamera"):
 			lastPlayerOwnerPosition = false
 			position = Vector2.ZERO
 			current_position = playerOwner.position
@@ -87,11 +87,11 @@ func _unhandled_input(event):
 			_previous_position = event.position
 	
 		# Zoom, this will be turned off for non-spectators eventually
-		elif event is InputEventMouseButton and event.pressed:
+		elif event.is_action_pressed("CameraZoomIn") or event.is_action_pressed("CameraZoomOut"):
 			var new_zoom := Vector2.ZERO
-			if event.button_index == BUTTON_WHEEL_UP:
+			if event.is_action_pressed("CameraZoomIn"):
 				new_zoom = zoom.linear_interpolate(Vector2(0.5, 0.5), 0.2)
-			elif event.button_index == BUTTON_WHEEL_DOWN:
+			elif event.is_action_pressed("CameraZoomOut"):
 				new_zoom = zoom.linear_interpolate(Vector2(1,1), 0.2)
 			
 			if (new_zoom != Vector2.ZERO):

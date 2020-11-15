@@ -38,3 +38,7 @@ func _on_ExitConfirm_pressed():
 # Cancelation on exit, goes back to menu
 func _on_ExitCancel_pressed():
 	get_node("ExitMenu").visible = false
+
+# When options button is pressed
+func _on_OptionsButton_pressed():
+	get_tree().change_scene("res://GUI/Settings/Settings.tscn")

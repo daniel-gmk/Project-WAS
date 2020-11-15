@@ -289,6 +289,10 @@ Button/styles/pressed = SubResource( 62 )
 [node name="MainMenu" type="Node2D"]
 
 [node name="Control" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 margin_right = 1024.0
 margin_bottom = 600.0
 script = ExtResource( 1 )
@@ -619,6 +623,7 @@ custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
 custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
 text = "NATTY"
 [connection signal="pressed" from="Control/PlayScrollContainer/HBoxContainer/VBoxContainer/QuickPlayButton" to="Control" method="_on_QuickPlayButton_pressed"]
+[connection signal="pressed" from="Control/OptionsButton" to="Control" method="_on_OptionsButton_pressed"]
 [connection signal="pressed" from="Control/ExitButton" to="Control" method="_on_ExitButton_pressed"]
 [connection signal="pressed" from="Control/ExitMenu/VBoxContainer/HBoxContainer/ExitConfirm" to="Control" method="_on_ExitConfirm_pressed"]
 [connection signal="pressed" from="Control/ExitMenu/VBoxContainer/HBoxContainer/ExitCancel" to="Control" method="_on_ExitCancel_pressed"]

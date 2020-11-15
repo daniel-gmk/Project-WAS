@@ -1,0 +1,244 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://GUI/Settings/Settings.gd" type="Script" id=1]
+[ext_resource path="res://GUI/Settings/Settings-Footer.tscn" type="PackedScene" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.901961, 0.901961, 0.901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.823529, 0.823529, 0.823529, 1 )
+
+[sub_resource type="Theme" id=4]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 1 )
+Button/styles/normal = SubResource( 2 )
+Button/styles/pressed = SubResource( 3 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.901961, 0.901961, 0.901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 0.823529, 0.823529, 0.823529, 1 )
+
+[sub_resource type="Theme" id=8]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 5 )
+Button/styles/normal = SubResource( 6 )
+Button/styles/pressed = SubResource( 7 )
+
+[sub_resource type="StyleBoxFlat" id=9]
+bg_color = Color( 0.901961, 0.901961, 0.901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=10]
+bg_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=11]
+bg_color = Color( 0.823529, 0.823529, 0.823529, 1 )
+
+[sub_resource type="Theme" id=12]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 9 )
+Button/styles/normal = SubResource( 10 )
+Button/styles/pressed = SubResource( 11 )
+
+[sub_resource type="StyleBoxFlat" id=13]
+bg_color = Color( 0.901961, 0.901961, 0.901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=15]
+bg_color = Color( 0.823529, 0.823529, 0.823529, 1 )
+
+[sub_resource type="Theme" id=16]
+Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = SubResource( 13 )
+Button/styles/normal = SubResource( 14 )
+Button/styles/pressed = SubResource( 15 )
+
+[node name="Settings" type="Node2D"]
+
+[node name="Control" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_right = 1024.0
+margin_bottom = 600.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+mainCenterContainerPath = NodePath("HBoxContainer/MainCenterContainer/Content")
+
+[node name="Background" type="ColorRect" parent="Control"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -300.0
+margin_right = 512.0
+margin_bottom = 300.0
+color = Color( 0.72549, 0.858824, 0.882353, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/HBoxContainer"]
+margin_right = 100.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 100, 0 )
+
+[node name="MainCenterContainer" type="VBoxContainer" parent="Control/HBoxContainer"]
+margin_left = 104.0
+margin_right = 942.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 816, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/HBoxContainer/MainCenterContainer"]
+margin_right = 838.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 0, 16 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/HBoxContainer/MainCenterContainer"]
+margin_top = 20.0
+margin_right = 838.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="General" type="Button" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_right = 176.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 176, 0 )
+theme = SubResource( 4 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+text = "GENERAL"
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 180.0
+margin_right = 210.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="Controls" type="Button" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 214.0
+margin_right = 390.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 176, 0 )
+theme = SubResource( 8 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+text = "CONTROLS"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 394.0
+margin_right = 424.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="Video" type="Button" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 428.0
+margin_right = 604.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 176, 0 )
+theme = SubResource( 12 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+text = "VIDEO"
+
+[node name="MarginContainer3" type="MarginContainer" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 608.0
+margin_right = 638.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="Audio" type="Button" parent="Control/HBoxContainer/MainCenterContainer/HBoxContainer"]
+margin_left = 642.0
+margin_right = 818.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 176, 0 )
+theme = SubResource( 16 )
+custom_colors/font_color_disabled = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+text = "AUDIO"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/HBoxContainer/MainCenterContainer"]
+margin_top = 54.0
+margin_right = 838.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 0, 24 )
+
+[node name="Content" type="ScrollContainer" parent="Control/HBoxContainer/MainCenterContainer"]
+margin_top = 82.0
+margin_right = 838.0
+margin_bottom = 544.0
+rect_min_size = Vector2( 838, 462 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/HBoxContainer"]
+margin_left = 946.0
+margin_right = 1022.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 76, 0 )
+
+[node name="Footer" parent="Control" instance=ExtResource( 2 )]
+margin_top = 544.0
+margin_bottom = 600.0
+[connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/General" to="Control" method="_on_General_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/Controls" to="Control" method="_on_Controls_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/Video" to="Control" method="_on_Video_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/Audio" to="Control" method="_on_Audio_pressed"]

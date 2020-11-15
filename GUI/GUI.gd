@@ -153,7 +153,7 @@ func _input(event):
 				player_node.menu(false)
 				closeEsc()
 		# When tab button is pressed (scoreboard or chat)
-		elif event.is_action_pressed("tab") and chatOpen:
+		elif event.is_action_pressed("Scoreboard") and chatOpen:
 			rotateTextFlagPlacement()
 
 # Helper function to close all other menus as priority
