@@ -25,6 +25,8 @@ var selectMinion = false
 ### GUI Management
 # Tracks whether a GUI menu is open or not
 var menuPressed = false
+# Tracks whether the leaderboard is open or not
+var leaderboardPressed = false
 # Tracks the GUI for ingame pawn
 var player_gui
 # Tracks the GUI for teleporting menu
@@ -33,6 +35,10 @@ var teleport_gui
 ### Map Management
 # Tracks the path to the map, used by VisionManagers for now
 var map_path = "/root/environment/TestMap"
+
+func _ready():
+	# Add to player group for leaderboard
+	add_to_group("Player")
 
 # When node initializes
 func initialize():
@@ -63,7 +69,7 @@ func initialize_children():
 func _input(event):
 	
 	# Temporary inputs on switching pawns
-	if control and !menuPressed and !$TeleportManager.teleporting:
+	if control and !menuPressed and !$TeleportManager.teleporting and !leaderboardPressed:
 		if event.is_action_pressed("MinionSwitch"):
 			if selectMinion:
 				removeMinionSelectLocation(true)
@@ -91,12 +97,7 @@ func menu(shouldOpen):
 # Actions taken when a menu is opened (actions are reset/stopped)
 func menuPress():
 	menuPressed = true
-	if currentActivePawn.has_node("MovementInputManager"):
-		currentActivePawn.get_node("MovementInputManager").movement.x = 0
-	if currentActivePawn.has_node("AttackManager"):
-		var attackManager = currentActivePawn.get_node("AttackManager")
-		if attackManager._attack_power > 0:
-			attackManager.shoot(attackManager.currentSelectedAttack)
+	resetPlayer()
 
 # Actions taken when a menu is closed (actions resumed)
 func menuRelease():
@@ -111,6 +112,26 @@ func switch_gui_to_teleport():
 func switch_gui_to_player():
 	player_gui.enabled = true
 	teleport_gui.enabled = false
+
+# Reset player
+func resetPlayer():
+	resetMovement()
+	resetAttack(true)
+
+# Reset movement
+func resetMovement():
+	if currentActivePawn.has_node("MovementInputManager"):
+		currentActivePawn.get_node("MovementInputManager").movement.x = 0
+
+# Reset attack
+func resetAttack(shoot):
+	if currentActivePawn.has_node("AttackManager"):
+		var attackManager = currentActivePawn.get_node("AttackManager")
+		if shoot:
+			if attackManager._attack_power > 0:
+				attackManager.shoot(attackManager.currentSelectedAttack)
+		else:
+			attackManager.resetAttack()
 
 #################################PAWN MANAGEMENT FUNCTIONS
 

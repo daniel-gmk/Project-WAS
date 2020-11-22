@@ -86,10 +86,10 @@ script = ExtResource( 7 )
 
 [node name="GUI" parent="PlayerCamera/CanvasLayer" instance=ExtResource( 1 )]
 light_mask = 0
-margin_left = -512.42
-margin_top = -601.261
-margin_right = 511.58
-margin_bottom = -1.26135
+margin_left = -512.0
+margin_top = -300.0
+margin_right = 512.0
+margin_bottom = 300.0
 
 [node name="TeleportManager" type="Node" parent="."]
 script = ExtResource( 13 )

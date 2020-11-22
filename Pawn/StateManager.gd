@@ -37,7 +37,7 @@ func freeze():
 		get_parent().get_node("AttackManager").resetAttack()
 
 # Resuming a pawn from pause AND resetting character values (jumping, attacking, etc)
-func reset():
+func reset(): # Should probably be renamed to unfreeze instead
 	allowActions = true
 	get_parent().allowMovement = true
 	# Reset physics

@@ -117,6 +117,7 @@ func _player_disconnected(id):
 remote func unregister_player(id):
 	if get_node("/root/").has_node(str(id)):
 		get_node("/root/" + str(id)).queue_free()
+	get_node("/root/Gamemode").player_count -= 1
 	if players.has(id):
 		players.erase(id)
 	
@@ -159,7 +160,9 @@ remote func register_new_player(id, name, loadedTerrain):
 		# Loop through other players and register/spawn their characters in to the new client
 		for peer_id in players:
 			rpc_id(id, "register_new_player", peer_id, players[peer_id], loadedTerrain)
-		
+	
+	get_node("/root/Gamemode").player_count += 1
+	
 	# Populate list of players, including new player
 	players[id] = name
 	# Spawn the character/nodes

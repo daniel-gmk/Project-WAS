@@ -28,6 +28,7 @@ config/icon="res://icon.png"
 
 Network="*res://Networking/Network.gd"
 GlobalConfigFile="*res://GUI/Settings/ConfigFile.gd"
+Gamemode="*res://Gamemode.gd"
 
 [debug]
 

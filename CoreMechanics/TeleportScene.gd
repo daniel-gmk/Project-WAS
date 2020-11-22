@@ -10,7 +10,7 @@ func _ready():
 	$TeleportCamera.initialize(get_parent())
 
 # Every frame set the position to the mouse
-func _process(delta):
+func _process(_delta):
 	$Sprite.position = get_global_mouse_position()
 
 # If the spot is available for teleporting, send instructions to player node to teleport

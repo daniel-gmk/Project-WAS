@@ -1,0 +1,145 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://GUI/Ingame-Leaderboard-Element.gd" type="Script" id=1]
+
+[node name="LeaderboardElement" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -622.0
+margin_bottom = -560.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+playerIconPath = NodePath("HBoxContainer/PlayerIconContainer/PlayerIcon")
+playerNamePath = NodePath("HBoxContainer/PlayerNameContainer/PlayerName")
+playerScorePath = NodePath("HBoxContainer/ScoreContainer/Score")
+playerKillsPath = NodePath("HBoxContainer/KAContainer/KAHBoxContainer/Kills")
+playerAssistsPath = NodePath("HBoxContainer/KAContainer/KAHBoxContainer/Assists")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 402.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+color = Color( 0.156863, 0.156863, 0.156863, 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 402.0
+margin_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_right = 6.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 6, 0 )
+
+[node name="PlayerIconContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 10.0
+margin_right = 50.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 0 )
+
+[node name="PlayerIcon" type="Sprite" parent="HBoxContainer/PlayerIconContainer"]
+position = Vector2( -10, 0 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 54.0
+margin_right = 58.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 4, 0 )
+
+[node name="PlayerNameContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 62.0
+margin_right = 142.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 80, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerName" type="Label" parent="HBoxContainer/PlayerNameContainer"]
+margin_top = 13.0
+margin_right = 80.0
+margin_bottom = 27.0
+text = "1234567890"
+align = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 146.0
+margin_right = 166.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 20, 0 )
+
+[node name="ScoreContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 170.0
+margin_right = 218.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 48, 0 )
+
+[node name="Score" type="Label" parent="HBoxContainer/ScoreContainer"]
+margin_top = 13.0
+margin_right = 48.0
+margin_bottom = 27.0
+text = "100000"
+align = 1
+
+[node name="MarginContainer4" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 222.0
+margin_right = 242.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 20, 0 )
+
+[node name="KAContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 246.0
+margin_right = 276.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="KAHBoxContainer" type="HBoxContainer" parent="HBoxContainer/KAContainer"]
+margin_right = 30.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 30, 0 )
+
+[node name="Kills" type="Label" parent="HBoxContainer/KAContainer/KAHBoxContainer"]
+margin_top = 13.0
+margin_right = 8.0
+margin_bottom = 27.0
+text = "6"
+
+[node name="Divider" type="Label" parent="HBoxContainer/KAContainer/KAHBoxContainer"]
+margin_left = 12.0
+margin_top = 13.0
+margin_right = 17.0
+margin_bottom = 27.0
+text = "/"
+
+[node name="Assists" type="Label" parent="HBoxContainer/KAContainer/KAHBoxContainer"]
+margin_left = 21.0
+margin_top = 13.0
+margin_right = 29.0
+margin_bottom = 27.0
+text = "6"
+
+[node name="MarginContainer5" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 280.0
+margin_right = 300.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 20, 0 )
+
+[node name="MuteButton" type="Button" parent="HBoxContainer"]
+margin_left = 304.0
+margin_right = 344.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 0 )
+text = "<<"
+
+[node name="Ping" type="TextureProgress" parent="HBoxContainer"]
+margin_left = 348.0
+margin_right = 388.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 0 )
+
+[node name="MarginContainer6" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 392.0
+margin_right = 402.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 10, 0 )

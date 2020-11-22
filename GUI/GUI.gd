@@ -78,7 +78,7 @@ func initialize(playerNode):
 	sentMessages = chatInner.get_node("MarginContainer/SentMessages")
 	chatInner.get_node("SendingMessage/TextFlag").bbcode_text = textFlagOptions[textFlagPlacement]
 	
-	if player_node.control:
+	if player_node.control or (get_tree().is_network_server() and player_node.server_controlled):
 		local = true
 	
 	# Initiate if teleport mode
@@ -126,6 +126,9 @@ func initialize(playerNode):
 	
 	# Add GUI group so both teleport and non teleport GUI are together
 	add_to_group("GUI")
+	# Initialize leaderboard
+	if local:
+		get_node("Ingame-Leaderboard-Base").call_deferred("initialize")
 	# Set Initialized
 	initialized = true
 
@@ -153,8 +156,29 @@ func _input(event):
 				player_node.menu(false)
 				closeEsc()
 		# When tab button is pressed (scoreboard or chat)
-		elif event.is_action_pressed("Scoreboard") and chatOpen:
-			rotateTextFlagPlacement()
+		elif event.is_action_pressed("Scoreboard"):
+			if chatOpen:
+				rotateTextFlagPlacement()
+			else:
+				# Open leaderboard menu
+				if !escOpen and !player_node.menuPressed:
+					var leaderboard = get_node("Ingame-Leaderboard-Base")
+					leaderboard.visible = true
+					leaderboard.active = true
+					# Sort leaderboard elements
+					leaderboard.sortElements()
+					# Set menu settings for player
+					player_node.leaderboardPressed = true
+					player_node.resetAttack(false)
+					player_node.removeMinionSelectLocation(true)
+		# When tab button is released 
+		elif event.is_action_released("Scoreboard") and !chatOpen:
+			# Close leaderboard menu
+			var leaderboard = get_node("Ingame-Leaderboard-Base")
+			if leaderboard.visible:
+				leaderboard.visible = false
+				leaderboard.active = false
+				player_node.leaderboardPressed = false
 
 # Helper function to close all other menus as priority
 func closeOtherMenus():
@@ -268,7 +292,7 @@ func rotateTextFlagPlacement():
 	textFlagPlacement += 1
 	if textFlagPlacement == textFlagOptions.size():
 		textFlagPlacement = 0
-	sentMessages.get_node("TextFlag").bbcode_text = textFlagColors[textFlagPlacement] + textFlagOptions[textFlagPlacement] + "[/color]"
+	chatInner.get_node("SendingMessage/TextFlag").bbcode_text = textFlagColors[textFlagPlacement] + textFlagOptions[textFlagPlacement] + "[/color]"
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

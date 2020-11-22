@@ -253,7 +253,8 @@ func actionAllowed():
 		and !player_node.menuPressed 
 		and !player_node.get_node("TeleportManager").teleporting 
 		and player_node.currentActivePawn == get_parent()
-		and get_parent().get_node("StateManager").allowActions):
+		and get_parent().get_node("StateManager").allowActions
+		and !player_node.leaderboardPressed):
 			return true
 	else:
 		return false

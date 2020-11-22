@@ -1,0 +1,134 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://GUI/Ingame-Leaderboard-Base.gd" type="Script" id=1]
+[ext_resource path="res://assets/DroidSans-Bold.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 15
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 15
+font_data = ExtResource( 2 )
+
+[node name="Ingame-Leaderboard-FFA-Base" type="MarginContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -201.0
+margin_top = -100.0
+margin_right = 201.0
+margin_bottom = -46.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+mainScoreElementsPath = NodePath("VBoxContainer/MainScoreElements")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 402.0
+margin_bottom = 80.0
+color = Color( 0.239216, 0.239216, 0.239216, 0.596078 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 402.0
+margin_bottom = 80.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+margin_right = 402.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 0, 2 )
+
+[node name="Gamemode" type="Label" parent="VBoxContainer"]
+margin_top = 6.0
+margin_right = 402.0
+margin_bottom = 20.0
+custom_colors/font_color = Color( 0.686275, 0.686275, 0.686275, 1 )
+text = "FREE-FOR-ALL"
+align = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 402.0
+margin_bottom = 24.0
+
+[node name="LeadText" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 28.0
+margin_right = 402.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 180, 0 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/LeadText"]
+margin_right = 402.0
+margin_bottom = 18.0
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/LeadText/HBoxContainer"]
+margin_left = 101.0
+margin_right = 155.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 48, 0 )
+
+[node name="LeadPoints" type="Label" parent="VBoxContainer/LeadText/HBoxContainer/MarginContainer"]
+margin_right = 54.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 1 )
+text = "XXXXXX"
+align = 1
+
+[node name="LeadMessages" type="Label" parent="VBoxContainer/LeadText/HBoxContainer"]
+margin_left = 159.0
+margin_right = 300.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+text = "POINTS FROM LEAD"
+
+[node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 50.0
+margin_right = 402.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 0, 4 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 58.0
+margin_right = 402.0
+margin_bottom = 72.0
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+margin_right = 170.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 170, 0 )
+
+[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 174.0
+margin_right = 215.0
+margin_bottom = 14.0
+text = "SCORE"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 219.0
+margin_right = 243.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 24, 0 )
+
+[node name="Kills-Assist" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 247.0
+margin_right = 269.0
+margin_bottom = 14.0
+text = "K/A"
+align = 1
+
+[node name="MarginContainer4" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 76.0
+margin_right = 402.0
+margin_bottom = 76.0
+rect_min_size = Vector2( 170, 0 )
+
+[node name="MainScoreElements" type="VBoxContainer" parent="VBoxContainer"]
+margin_top = 80.0
+margin_right = 402.0
+margin_bottom = 80.0
