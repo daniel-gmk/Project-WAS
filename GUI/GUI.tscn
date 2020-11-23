@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://GUI/GUI.gd" type="Script" id=1]
 [ext_resource path="res://assets/minimap-character-indicator.png" type="Texture" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://GUI/RichTextGhost.gd" type="Script" id=7]
 [ext_resource path="res://GUI/ChatMenu.gd" type="Script" id=8]
 [ext_resource path="res://GUI/Ingame-Leaderboard-FFA-Base.tscn" type="PackedScene" id=9]
+[ext_resource path="res://GUI/Esc Menu.tscn" type="PackedScene" id=10]
 
 [sub_resource type="RichTextEffect" id=1]
 script = ExtResource( 7 )
@@ -561,5 +562,8 @@ scale = Vector2( 0.3, 0.3 )
 z_index = 6
 texture = ExtResource( 4 )
 
-[node name="Ingame-Leaderboard-Base" parent="." instance=ExtResource( 9 )]
+[node name="Esc Menu" parent="." instance=ExtResource( 10 )]
+visible = false
+
+[node name="Ingame-Leaderboard-FFA-Base" parent="." instance=ExtResource( 9 )]
 visible = false

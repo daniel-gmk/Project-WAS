@@ -28,17 +28,18 @@ func _process(delta):
 		updateList()
 
 func updateList():
+	if initialized:
 	# Tracks all players and whether players loaded in need to load a score element
-	var player_group = get_tree().get_nodes_in_group("Player")
-	for player in player_group:
-		if !elementList.has(player.clientName):
-			var leaderboardElementScene = load("res://GUI/Ingame-Leaderboard-Element.tscn")
-			var leaderboardElementInstance = leaderboardElementScene.instance()
-			leaderboardElementInstance.name = player.clientName
-			mainScoreElements.add_child(leaderboardElementInstance)
-			rect_position.y -= (leaderboardElementInstance.rect_size.y/2)
-			elementList[player.clientName] = player
-			leaderboardElementInstance.initialize(player)
+		var player_group = get_tree().get_nodes_in_group("Player")
+		for player in player_group:
+			if !elementList.has(player.clientName):
+				var leaderboardElementScene = load("res://GUI/Ingame-Leaderboard-Element.tscn")
+				var leaderboardElementInstance = leaderboardElementScene.instance()
+				leaderboardElementInstance.name = player.clientName
+				mainScoreElements.add_child(leaderboardElementInstance)
+				rect_position.y -= (leaderboardElementInstance.rect_size.y/2)
+				elementList[player.clientName] = player
+				leaderboardElementInstance.initialize(player)
 
 # Sorts the elements for players by score with a quicksort algorithm
 func sortElements():

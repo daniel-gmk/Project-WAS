@@ -238,6 +238,7 @@ rect_min_size = Vector2( 76, 0 )
 [node name="Footer" parent="Control" instance=ExtResource( 2 )]
 margin_top = 544.0
 margin_bottom = 600.0
+buttonBaseNodePath = NodePath("../HBoxContainer/MainCenterContainer/Footer/MainFooterContainer/HBoxContainer")
 [connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/General" to="Control" method="_on_General_pressed"]
 [connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/Controls" to="Control" method="_on_Controls_pressed"]
 [connection signal="pressed" from="Control/HBoxContainer/MainCenterContainer/HBoxContainer/Video" to="Control" method="_on_Video_pressed"]

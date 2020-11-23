@@ -6,6 +6,9 @@ extends ColorRect
 export var buttonBaseNodePath : NodePath
 var buttonBaseNode
 
+# Tracks if the owner is main menu or ingame menu
+var inGame = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	buttonBaseNode = get_node(buttonBaseNodePath)
@@ -44,7 +47,14 @@ func saveButtonCheck():
 # Handles logic for leaving back to main menu if keybind menu is not up
 func exit_menu():
 	if !get_parent().keybindUse:
+		if !inGame:
 			get_tree().change_scene("res://MainMenu.tscn")
+		else:
+			for gui in get_tree().get_nodes_in_group("GUI"):
+				if gui.enabled:
+					gui.openEsc()
+					gui.settings_open = false
+			get_parent().get_parent().queue_free()
 
 # If back button is pressed, call to go back to main menu
 func _on_BackButton_pressed():

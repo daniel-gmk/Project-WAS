@@ -11,6 +11,8 @@ var player_node
 var local = false
 # Tracks camera node that owns this GUI
 var camera_node
+# Tracks if settings are open or not
+var settings_open = false
 # Tracks whether the node is initialized
 var initialized = false
 
@@ -128,7 +130,7 @@ func initialize(playerNode):
 	add_to_group("GUI")
 	# Initialize leaderboard
 	if local:
-		get_node("Ingame-Leaderboard-Base").call_deferred("initialize")
+		get_node("Ingame-Leaderboard-FFA-Base").call_deferred("initialize")
 	# Set Initialized
 	initialized = true
 
@@ -146,14 +148,14 @@ func _input(event):
 					closeChat()
 					player_node.menu(false)
 		# When esc button is pressed (toggle)
-		elif event.is_action_pressed("EscMenu"):
+		elif event.is_action_pressed("EscMenu") and !settings_open:
 			if !escOpen:
 				if !player_node.menuPressed:
 					player_node.menu(true)
+				get_node(minimap_gui_nodepath).visible = false
 				closeOtherMenus()
 				openEsc()
 			else:
-				player_node.menu(false)
 				closeEsc()
 		# When tab button is pressed (scoreboard or chat)
 		elif event.is_action_pressed("Scoreboard"):
@@ -162,7 +164,7 @@ func _input(event):
 			else:
 				# Open leaderboard menu
 				if !escOpen and !player_node.menuPressed:
-					var leaderboard = get_node("Ingame-Leaderboard-Base")
+					var leaderboard = get_node("Ingame-Leaderboard-FFA-Base")
 					leaderboard.visible = true
 					leaderboard.active = true
 					# Sort leaderboard elements
@@ -174,7 +176,7 @@ func _input(event):
 		# When tab button is released 
 		elif event.is_action_released("Scoreboard") and !chatOpen:
 			# Close leaderboard menu
-			var leaderboard = get_node("Ingame-Leaderboard-Base")
+			var leaderboard = get_node("Ingame-Leaderboard-FFA-Base")
 			if leaderboard.visible:
 				leaderboard.visible = false
 				leaderboard.active = false
@@ -187,11 +189,24 @@ func closeOtherMenus():
 
 # Open escape menu
 func openEsc():
+	get_node("Esc Menu").visible = true
+	player_node.resetAttack(false)
 	escOpen = true
 
 # Close escape menu
 func closeEsc():
+	get_node("Esc Menu").visible = false
 	escOpen = false
+	get_node(minimap_gui_nodepath).visible = true
+	player_node.menu(false)
+
+# Open settings menu
+func addSettings():
+	var settingsScene = load("res://GUI/Settings/Settings.tscn")
+	var settingsInstance = settingsScene.instance()
+	settingsInstance.get_node("Control/Footer").inGame = true
+	settings_open = true
+	add_child(settingsInstance)
 
 # Open chat
 func openChat():
