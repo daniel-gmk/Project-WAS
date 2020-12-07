@@ -63,6 +63,15 @@ var _settings_default = {
 		"MusicVolume" : 100,
 		"EffectsVolume" : 100,
 		"VolumeWhileMinimized" : 100
+	},
+	"Character" : {
+		"Selected" : 0,
+		"OverallDefensesPreset" : [0,1,2,3,4,5],
+		"0" : {
+			"Attacks" : ["Projectile"],
+			"Ultimates" : [0,1,2],
+			"DefensesPreset" : [0,1,2,3,4,5]
+		}
 	}
 }
 
@@ -76,7 +85,7 @@ func _ready():
 	if error != OK:
 		# If config file does not exist, load default settings for the first time
 		if error == 7:
-			save_settings(_settings_default)
+			save_settings(_settings)
 			load_settings(true)
 		# If there is some other error then that is bad :(
 		else:

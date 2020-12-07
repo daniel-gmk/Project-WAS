@@ -1,0 +1,11 @@
+{
+    "0": {
+        "Name": "Test Character",
+        "Description": "Powerful wizard..?",
+        "ProfileDir": "character.png",
+        "AttackOptions": [
+            "Projectile"
+        ],
+        "UltimateOptions": []
+    }
+}

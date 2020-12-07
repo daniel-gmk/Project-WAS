@@ -1,5 +1,9 @@
 {
     "Projectile": {
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
         "Ignore_Attacker": false,
         "Physics_Data": {
             "Projectile_Speed": 30,
