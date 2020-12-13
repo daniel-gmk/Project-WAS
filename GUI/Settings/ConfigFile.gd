@@ -68,8 +68,8 @@ var _settings_default = {
 		"Selected" : 0,
 		"OverallDefensesPreset" : [0,1,2,3,4,5],
 		"0" : {
-			"Attacks" : ["Projectile"],
-			"Ultimates" : [0,1,2],
+			"Attacks" : ["Projectile","Projectile2","Projectile3","Projectile4","Projectile5","Projectile6"],
+			"Ultimates" : ["Projectile","Projectile2","Projectile3"],
 			"DefensesPreset" : [0,1,2,3,4,5]
 		}
 	}

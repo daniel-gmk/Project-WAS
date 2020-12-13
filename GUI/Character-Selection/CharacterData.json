@@ -4,8 +4,26 @@
         "Description": "Powerful wizard..?",
         "ProfileDir": "character.png",
         "AttackOptions": [
-            "Projectile"
+            "Projectile",
+            "Projectile2",
+            "Projectile3",
+            "Projectile4",
+            "Projectile5",
+            "Projectile6",
+            "Projectile7",
+            "Projectile8",
+            "Projectile9",
+            "Projectile10"
         ],
-        "UltimateOptions": []
+        "UltimateOptions": [
+            "Projectile",
+            "Projectile2",
+            "Projectile3",
+            "Projectile4",
+            "Projectile5"
+        ],
+        "UtilityOptions": {
+            "Category1": []
+        }
     }
 }

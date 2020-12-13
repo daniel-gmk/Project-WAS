@@ -95,14 +95,14 @@ func _input(event):
 		# If not selecting a minion, otherwise it also shoots when selecting a minion location
 		if !player_node.selectMinion:
 			# Handle charging projectile strength when shoot input is pressed and held
-			if event.is_action_pressed("shoot"):
+			if event.is_action_pressed("shoot") and skill_data[currentSelectedAttack] == "Projectile":
 					_attack_clicked = true
 					# Shows reticule when attacking
 					chargeProgress.max_value = reticule_max
 					chargeProgress.visible = true
 		
 			# Handle launching projectile based on charge strength when input is let go
-			elif event.is_action_released("shoot"):
+			elif event.is_action_released("shoot") and skill_data[currentSelectedAttack] == "Projectile":
 				if _attack_clicked:
 					# Standard typeless attack
 					shoot(currentSelectedAttack)

@@ -169,7 +169,7 @@ margin_left = 155.0
 margin_right = 275.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
-text = "Customize Skills"
+text = "Select Skills"
 
 [node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer2"]
 margin_top = 586.0
@@ -183,3 +183,4 @@ margin_right = 1030.0
 margin_bottom = 602.0
 rect_min_size = Vector2( 142, 0 )
 [connection signal="pressed" from="HBoxContainer/VBoxContainer2/CharacterList/TestCharacter" to="." method="_on_TestCharacter_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer2/HBoxContainer/SkillsButton" to="." method="_on_SkillsButton_pressed"]

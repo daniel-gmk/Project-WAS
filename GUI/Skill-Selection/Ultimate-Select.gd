@@ -1,6 +1,6 @@
 extends Control
 
-##### This node handles the menu that allows attack selection
+##### This node handles the menu that allows ultimate selection
 
 ### Nodes and Node Paths
 export var save_menu_path : NodePath
@@ -9,18 +9,18 @@ export var video_node_path : NodePath
 var video_node
 export var keybind_node_path : NodePath
 var keybind_node
-export var attack_description_path : NodePath
-var attack_description
-export var attack_name_path : NodePath
-var attack_name
+export var ultimate_description_path : NodePath
+var ultimate_description
+export var ultimate_name_path : NodePath
+var ultimate_name
 export var damage_rating_path : NodePath
 var damage_rating
 export var effect_rating_path : NodePath
 var effect_rating
 export var difficulty_rating_path : NodePath
 var difficulty_rating
-export var attack_options_container_path : NodePath
-var attack_options_container
+export var ultimate_options_container_path : NodePath
+var ultimate_options_container
 
 ### Data files
 
@@ -37,16 +37,16 @@ export var characterdata_file_path = "res://GUI/Character-Selection/CharacterDat
 # Extracted Character data to local memory
 var character_data
 # Attacks that the selected Character can perform
-var attack_options
+var ultimate_options
 
 ### Currently selected setting (the one being modified or set)
 
 # The character that the player selected
 var selected_character
 # The attacks the player selected for the character in their local settings
-var selected_character_attacks
-# Placing of the currently selected attack for the selected keybind
-var current_selected_attack_index
+var selected_character_ultimates
+# Placing of the currently selected ultimate for the selected keybind
+var current_selected_ultimate_index
 
 # Tracks the button that is selected for choosing skills for the keybind
 var selected_keybind_button
@@ -95,11 +95,11 @@ func _ready():
 	# Load config file info
 	configFileNode = get_node("/root/GlobalConfigFile")
 	selected_character = configFileNode.get_setting("Character", "Selected")
-	selected_character_attacks = configFileNode.get_setting("Character", str(selected_character))["Attacks"]
+	selected_character_ultimates = configFileNode.get_setting("Character", str(selected_character))["Ultimates"]
 
 	# Loading keybinds
 	keybind_node = get_node(keybind_node_path)
-	selected_keybind_button = keybind_node.get_node("Skill1")
+	selected_keybind_button = keybind_node.get_node("Ultimate1")
 	selected_keybind_button.disabled = true
 	var index = 0
 	for skillButton in keybind_node.get_children():
@@ -111,39 +111,39 @@ func _ready():
 			index += 1
 
 	# Load Attack Options
-	attack_options_container = get_node(attack_options_container_path)
-	attack_options = character_data[str(selected_character)]["AttackOptions"]
-	var container_children = attack_options_container.get_children()
+	ultimate_options_container = get_node(ultimate_options_container_path)
+	ultimate_options = character_data[str(selected_character)]["UltimateOptions"]
+	var container_children = ultimate_options_container.get_children()
 	var container_counter = 0
-	var attack_counter = 0
+	var ultimate_counter = 0
 	for child_container in container_children:
-		if container_counter < attack_options.size():
-			child_container.get_node("ColorRect/SkillButton/AttackLabel").text = attack_options[container_counter]
-			child_container.initialize(self, attack_options[container_counter], container_counter + 1)
+		if container_counter < ultimate_options.size():
+			child_container.get_node("ColorRect/SkillButton/UltimateLabel").text = ultimate_options[container_counter]
+			child_container.initialize(self, ultimate_options[container_counter], container_counter + 1)
 			container_counter += 1
 		else:
 			break
 
 	# Load whether attack is selected or not
-	for attack in selected_character_attacks:
+	for ultimate in selected_character_ultimates:
 		for child_container in container_children:
-			var toggled = child_container.skillName == attack
+			var toggled = child_container.skillName == str(ultimate)
 			if toggled:
 				child_container.toggle_on()
-				var keybind = OS.get_scancode_string(configFileNode.get_setting("Controls", "Skill" + str(attack_counter + 1)))
+				var keybind = OS.get_scancode_string(configFileNode.get_setting("Controls", "Ultimate" + str(ultimate_counter + 1)))
 				child_container.keybind = keybind
-				child_container.selectedSkillPlacing = attack_counter
-				if attack_counter == 0:
-					current_selected_attack_index = child_container.skillName
-					selected_keybind_value = configFileNode.get_setting("Controls", "Skill" + str(attack_counter + 1))
+				child_container.selectedSkillPlacing = ultimate_counter
+				if ultimate_counter == 0:
+					current_selected_ultimate_index = child_container.skillName
+					selected_keybind_value = configFileNode.get_setting("Controls", "Ultimate" + str(ultimate_counter + 1))
 				mappings[child_container.selectedSkillPlacing] = child_container
-				child_container.keybindValue = configFileNode.get_setting("Controls", "Skill" + str(child_container.selectedSkillPlacing + 1))
+				child_container.keybindValue = configFileNode.get_setting("Controls", "Ultimate" + str(child_container.selectedSkillPlacing + 1))
 				if child_container.bindLabel != null:
 					child_container.bindLabel.text = keybind
 					child_container.get_node("ColorRect/SkillButton/BindLabelDesc").visible = true
 					child_container.bindLabel.visible = true
 	
-				attack_counter += 1
+				ultimate_counter += 1
 				break
 
 	# Set original mappings to detect changes
@@ -155,22 +155,22 @@ func _ready():
 # Sets the display to reflect current/updated settings
 func update_display():
 	# Load attack data text
-	attack_description = get_node(attack_description_path)
-	attack_description.text = skill_data[current_selected_attack_index]["Description"]
-	attack_name = get_node(attack_name_path)
-	attack_name.text = current_selected_attack_index
+	ultimate_description = get_node(ultimate_description_path)
+	ultimate_description.text = skill_data[current_selected_ultimate_index]["Description"]
+	ultimate_name = get_node(ultimate_name_path)
+	ultimate_name.text = current_selected_ultimate_index
 
 	# Load Attack Stats
 	damage_rating = get_node(damage_rating_path)
-	damage_rating.value = skill_data[current_selected_attack_index]["Damage_Rating"]
+	damage_rating.value = skill_data[current_selected_ultimate_index]["Damage_Rating"]
 	effect_rating = get_node(effect_rating_path)
-	effect_rating.value = skill_data[current_selected_attack_index]["Effect_Rating"]
+	effect_rating.value = skill_data[current_selected_ultimate_index]["Effect_Rating"]
 	difficulty_rating = get_node(difficulty_rating_path)
-	difficulty_rating.value = skill_data[current_selected_attack_index]["Difficulty_Rating"]
+	difficulty_rating.value = skill_data[current_selected_ultimate_index]["Difficulty_Rating"]
 
 	# Load video
 	video_node = get_node(video_node_path)
-	video_node.stream = load("res://Skills/Video-Demos/" + current_selected_attack_index + ".webm")
+	video_node.stream = load("res://Skills/Video-Demos/" + current_selected_ultimate_index + ".webm")
 	video_node.set_volume(0.0)
 	video_node.play()
 
@@ -181,7 +181,7 @@ func skillButtonPressed(skillButton):
 
 # When a new skill is selected it unbinds the old one and binds the new one
 func replaceButton(oldButton, newButton):
-	var keybind = OS.get_scancode_string(configFileNode.get_setting("Controls", "Skill" + str(oldButton.selectedSkillPlacing + 1)))
+	var keybind = OS.get_scancode_string(configFileNode.get_setting("Controls", "Ultimate" + str(oldButton.selectedSkillPlacing + 1)))
 	# Disable old button/skill
 	oldButton.toggle_off()
 	oldButton.get_node("ColorRect/SkillButton/BindLabelDesc").visible = false
@@ -190,9 +190,9 @@ func replaceButton(oldButton, newButton):
 	# Change settings from old to new skill
 	mappings[selected_keybind_index] = newButton
 	newButton.keybind = keybind
-	newButton.keybindValue = configFileNode.get_setting("Controls", "Skill" + str(oldButton.selectedSkillPlacing + 1))
+	newButton.keybindValue = configFileNode.get_setting("Controls", "Ultimate" + str(oldButton.selectedSkillPlacing + 1))
 	newButton.selectedSkillPlacing = oldButton.selectedSkillPlacing
-	current_selected_attack_index = newButton.skillName
+	current_selected_ultimate_index = newButton.skillName
 	
 	# Enable new button/skill
 	newButton.toggle_on()
@@ -211,35 +211,30 @@ func keybindButtonPressed(skillButton):
 	selected_keybind_index = skillButton.index
 	selected_keybind_button.disabled = true
 
-# Loops skill video indefinitely
+func _on_Yes_pressed():
+	exit()
+
+func _on_No_pressed():
+	save_menu.visible = false
+
 func _on_VideoPlayer_finished():
 	video_node.play()
 
-# When exit is selected
 func _on_ExitButton_pressed():
 	if mappings.hash() != original_mappings.hash():
 		save_menu.visible = true
 	else:
 		exit()
 
-# When save is selected
 func _on_SaveButton_pressed():
-	var newAttacks = []
+	var newUltimates = []
 	for keybind in mappings:
-		newAttacks.append(mappings[keybind].skillName)
+		newUltimates.append(mappings[keybind].skillName)
 	original_mappings = mappings.duplicate()
 	var newConfig = configFileNode.get_setting("Character", str(selected_character))
-	newConfig["Attacks"] = newAttacks
+	newConfig["Ultimates"] = newUltimates
 	configFileNode.set_setting("Character", str(selected_character), newConfig)
 	configFileNode.save_settings(configFileNode._settings)
-
-# When canceling confirmation on exit
-func _on_No_pressed():
-	save_menu.visible = false
-
-# When confirming exit
-func _on_Yes_pressed():
-	exit()
 
 # Switches back to overall skill menu
 func exit():

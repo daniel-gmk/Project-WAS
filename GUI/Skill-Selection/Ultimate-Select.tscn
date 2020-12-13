@@ -1,0 +1,738 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://GUI/Skill-Selection/Ultimate-Select.gd" type="Script" id=1]
+[ext_resource path="res://GUI/Skill-Selection/KeybindButton.gd" type="Script" id=2]
+[ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://assets/Projectile-base.png" type="Texture" id=4]
+[ext_resource path="res://assets/skill-rating-full.png" type="Texture" id=5]
+[ext_resource path="res://assets/skill-rating-empty.png" type="Texture" id=6]
+[ext_resource path="res://Skills/Video-Demos/Projectile.webm" type="VideoStream" id=7]
+[ext_resource path="res://GUI/Skill-Selection/Skill-Button.gd" type="Script" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 3 )
+
+[node name="Ultimate-Select" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+save_menu_path = NodePath("SaveMenu")
+video_node_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VideoPlayer")
+keybind_node_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/KeybindSelect")
+ultimate_description_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/UltimateDescription")
+ultimate_name_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/UltimateName")
+damage_rating_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/VBoxContainer/DamageRating")
+effect_rating_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer2/VBoxContainer/EffectRating")
+difficulty_rating_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer3/VBoxContainer/DifficultyRating")
+ultimate_options_container_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0862745, 0.529412, 0.611765, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+margin_right = 8.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 8, 604 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+margin_left = 12.0
+margin_right = 1012.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 1000, 0 )
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+margin_right = 1000.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer"]
+margin_top = 12.0
+margin_right = 1000.0
+margin_bottom = 590.0
+rect_min_size = Vector2( 0, 578 )
+
+[node name="KeybindSelect" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+margin_left = 35.0
+margin_top = 102.0
+margin_right = 187.0
+margin_bottom = 454.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Ultimate1" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_right = 152.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+script = ExtResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 36.0
+margin_right = 152.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 0, 24 )
+
+[node name="Ultimate2" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 64.0
+margin_right = 152.0
+margin_bottom = 96.0
+rect_min_size = Vector2( 0, 32 )
+script = ExtResource( 2 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 100.0
+margin_right = 152.0
+margin_bottom = 124.0
+rect_min_size = Vector2( 0, 24 )
+
+[node name="Ultimate3" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 128.0
+margin_right = 152.0
+margin_bottom = 160.0
+rect_min_size = Vector2( 0, 32 )
+script = ExtResource( 2 )
+
+[node name="Title" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -267.0
+margin_top = 8.0
+margin_right = 123.0
+margin_bottom = 46.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Select Skill" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
+margin_left = 120.0
+margin_right = 270.0
+margin_bottom = 38.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Select Skill"
+
+[node name="HBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -280.0
+margin_top = 80.0
+margin_right = 140.0
+margin_bottom = 494.0
+rect_min_size = Vector2( 420, 180 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer"]
+margin_right = 420.0
+margin_bottom = 180.0
+rect_min_size = Vector2( 396, 180 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer"]
+margin_right = 420.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 86 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_right = 64.0
+margin_bottom = 104.0
+alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 20.0
+margin_right = 64.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 64, 64 )
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/ColorRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 64, 64 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 68.0
+margin_right = 76.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 8, 0 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 80.0
+margin_right = 400.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 316, 0 )
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_right = 320.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+
+[node name="UltimateName" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 12.0
+margin_right = 320.0
+margin_bottom = 26.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 30.0
+margin_right = 320.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 0, 62 )
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_right = 104.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 104, 0 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer"]
+margin_right = 104.0
+margin_bottom = 62.0
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/VBoxContainer"]
+margin_right = 104.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Damage Rating"
+
+[node name="DamageRating" type="TextureProgress" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/VBoxContainer"]
+margin_top = 18.0
+margin_right = 104.0
+margin_bottom = 51.0
+max_value = 5.0
+step = 0.1
+texture_under = ExtResource( 6 )
+texture_progress = ExtResource( 5 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_left = 108.0
+margin_right = 212.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 104, 0 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer2"]
+margin_right = 104.0
+margin_bottom = 62.0
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer2/VBoxContainer"]
+margin_right = 104.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Effect Rating"
+
+[node name="EffectRating" type="TextureProgress" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer2/VBoxContainer"]
+margin_top = 18.0
+margin_right = 104.0
+margin_bottom = 51.0
+max_value = 5.0
+step = 0.1
+texture_under = ExtResource( 6 )
+texture_progress = ExtResource( 5 )
+
+[node name="MarginContainer3" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_left = 216.0
+margin_right = 320.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 104, 0 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer3"]
+margin_right = 104.0
+margin_bottom = 62.0
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer3/VBoxContainer"]
+margin_right = 104.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Difficulty Rating"
+
+[node name="DifficultyRating" type="TextureProgress" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer3/VBoxContainer"]
+margin_top = 18.0
+margin_right = 104.0
+margin_bottom = 51.0
+max_value = 5.0
+step = 0.1
+texture_under = ExtResource( 6 )
+texture_progress = ExtResource( 5 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 96.0
+margin_right = 320.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 8 )
+
+[node name="UltimateDescription" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer"]
+margin_top = 108.0
+margin_right = 420.0
+margin_bottom = 122.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+autowrap = true
+
+[node name="VideoPlayer" type="VideoPlayer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer"]
+margin_top = 184.0
+margin_right = 420.0
+margin_bottom = 414.0
+rect_min_size = Vector2( 398, 230 )
+stream = ExtResource( 7 )
+
+[node name="UltimateListContainer" type="GridContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+margin_left = 742.0
+margin_top = 27.0
+margin_right = 902.0
+margin_bottom = 494.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill1" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer"]
+margin_right = 160.0
+margin_bottom = 90.0
+rect_min_size = Vector2( 160, 90 )
+script = ExtResource( 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1"]
+margin_right = 160.0
+margin_bottom = 90.0
+color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect/SkillButton"]
+margin_top = 13.0
+margin_right = 64.0
+margin_bottom = 77.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect/SkillButton/Cover"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+
+[node name="UltimateLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect/SkillButton"]
+margin_left = 75.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to"
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill1/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill2" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer"]
+margin_top = 94.0
+margin_right = 160.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 160, 90 )
+script = ExtResource( 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2"]
+margin_right = 160.0
+margin_bottom = 90.0
+color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect/SkillButton"]
+margin_top = 13.0
+margin_right = 64.0
+margin_bottom = 77.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect/SkillButton/Cover"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+
+[node name="UltimateLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect/SkillButton"]
+margin_left = 75.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to"
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill2/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill3" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer"]
+margin_top = 188.0
+margin_right = 160.0
+margin_bottom = 278.0
+rect_min_size = Vector2( 160, 90 )
+script = ExtResource( 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3"]
+margin_right = 160.0
+margin_bottom = 90.0
+color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect/SkillButton"]
+margin_top = 13.0
+margin_right = 64.0
+margin_bottom = 77.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect/SkillButton/Cover"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+
+[node name="UltimateLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect/SkillButton"]
+margin_left = 75.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to"
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill3/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill4" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer"]
+margin_top = 282.0
+margin_right = 160.0
+margin_bottom = 372.0
+rect_min_size = Vector2( 160, 90 )
+script = ExtResource( 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4"]
+margin_right = 160.0
+margin_bottom = 90.0
+color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect/SkillButton"]
+margin_top = 13.0
+margin_right = 64.0
+margin_bottom = 77.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect/SkillButton/Cover"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+
+[node name="UltimateLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect/SkillButton"]
+margin_left = 75.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to"
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill4/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill5" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer"]
+margin_top = 376.0
+margin_right = 160.0
+margin_bottom = 466.0
+rect_min_size = Vector2( 160, 90 )
+script = ExtResource( 8 )
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5"]
+margin_right = 160.0
+margin_bottom = 90.0
+color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect/SkillButton"]
+margin_top = 13.0
+margin_right = 64.0
+margin_bottom = 77.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect/SkillButton/Cover"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+
+[node name="UltimateLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect/SkillButton"]
+margin_left = 75.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to"
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/UltimateListContainer/Skill5/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -409.5
+margin_top = -47.0
+margin_right = 410.5
+margin_bottom = 1.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExitButton" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 7.0
+margin_right = 107.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 100, 0 )
+text = "Exit"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 111.0
+margin_right = 711.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 600, 0 )
+
+[node name="SaveButton" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 715.0
+margin_right = 813.0
+margin_bottom = 48.0
+text = "Save Changes"
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+margin_top = 594.0
+margin_right = 1000.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 0, 10 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer"]
+margin_left = 1016.0
+margin_right = 1026.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 10, 0 )
+
+[node name="SaveMenu" type="ColorRect" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -237.5
+margin_top = -107.0
+margin_right = 237.5
+margin_bottom = 107.0
+color = Color( 0.705882, 0.705882, 0.705882, 1 )
+
+[node name="Label" type="Label" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -62.0
+margin_right = 203.0
+margin_bottom = -48.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "There are unsaved changes, are you sure you want to exit?"
+align = 1
+
+[node name="Label2" type="Label" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -25.0
+margin_right = 203.0
+margin_bottom = -11.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Any unsaved changes will be lost."
+align = 1
+
+[node name="Yes" type="Button" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 78.5
+margin_top = -33.568
+margin_right = 153.5
+margin_bottom = -8.56799
+text = "Yes"
+
+[node name="No" type="Button" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -159.0
+margin_top = -32.568
+margin_right = -84.0
+margin_bottom = -7.56799
+text = "No"
+[connection signal="finished" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VideoPlayer" to="." method="_on_VideoPlayer_finished"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2/ExitButton" to="." method="_on_ExitButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="SaveMenu/Yes" to="." method="_on_Yes_pressed"]
+[connection signal="pressed" from="SaveMenu/No" to="." method="_on_No_pressed"]

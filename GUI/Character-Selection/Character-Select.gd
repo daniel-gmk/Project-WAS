@@ -55,3 +55,6 @@ func _on_TestCharacter_pressed():
 	configFileNode.save_settings(configFileNode._settings)
 	
 	set_character_data()
+
+func _on_SkillsButton_pressed():
+	get_tree().change_scene("res://GUI/Skill-Selection/Overall-Skill-Select.tscn")

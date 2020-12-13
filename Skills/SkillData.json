@@ -1,5 +1,177 @@
 {
     "Projectile": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile2": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile3": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile4": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile5": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile6": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile7": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile8": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile9": {
+        "Type": "Projectile",
+        "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
+        "Damage_Rating": 1.6,
+        "Effect_Rating": 0.8,
+        "Difficulty_Rating": 0.8,
+        "Ignore_Attacker": false,
+        "Physics_Data": {
+            "Projectile_Speed": 30,
+            "Knockback_Force": 500,
+            "Knockback_Dropoff": false
+        },
+        "Attack_Data": {
+            "Damage": 500,
+            "Explosion_Radius": 42,
+            "Damage_Falloff": true,
+            "Effects": {}
+        }
+    },
+    "Projectile10": {
+        "Type": "Projectile",
         "Description": "Shoots a charged yellow projectile that explodes on impact, dealing damage and knockback",
         "Damage_Rating": 1.6,
         "Effect_Rating": 0.8,

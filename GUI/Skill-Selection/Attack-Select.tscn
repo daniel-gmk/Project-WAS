@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://assets/DroidSans.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://GUI/Skill-Selection/Attack-Select.gd" type="Script" id=2]
@@ -6,24 +6,58 @@
 [ext_resource path="res://assets/skill-rating-full.png" type="Texture" id=4]
 [ext_resource path="res://assets/skill-rating-empty.png" type="Texture" id=5]
 [ext_resource path="res://GUI/Skill-Selection/Skill-Button.gd" type="Script" id=6]
+[ext_resource path="res://Skills/Video-Demos/Projectile.webm" type="VideoStream" id=7]
+[ext_resource path="res://GUI/Skill-Selection/KeybindButton.gd" type="Script" id=8]
 
-[sub_resource type="DynamicFont" id=1]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
 
-[sub_resource type="DynamicFont" id=2]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
 
-[sub_resource type="DynamicFont" id=3]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
 
-[sub_resource type="DynamicFont" id=4]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color( 0.67451, 0.67451, 0.67451, 1 )
+
+[sub_resource type="DynamicFont" id=7]
 size = 32
 font_data = ExtResource( 1 )
 
@@ -34,9 +68,9 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+save_menu_path = NodePath("SaveMenu")
 video_node_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VideoPlayer")
-attack_slot_number_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/Title/AttackSlotNumber")
-attack_slot_keybind_value_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/Title/KeybindValue")
+keybind_node_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/KeybindSelect")
 attack_description_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/AttackDescription")
 attack_name_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/AttackName")
 damage_rating_path = NodePath("HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/VBoxContainer/DamageRating")
@@ -60,103 +94,176 @@ __meta__ = {
 }
 
 [node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer"]
-margin_right = 100.0
-margin_bottom = 602.0
-rect_min_size = Vector2( 100, 0 )
+margin_right = 8.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 8, 604 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 104.0
-margin_right = 921.0
-margin_bottom = 602.0
-rect_min_size = Vector2( 817, 0 )
+margin_left = 12.0
+margin_right = 1012.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 1000, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
-margin_right = 817.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 0, 30 )
+margin_right = 1000.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer"]
-margin_top = 34.0
-margin_right = 817.0
-margin_bottom = 518.0
-rect_min_size = Vector2( 0, 484 )
+margin_top = 12.0
+margin_right = 1000.0
+margin_bottom = 590.0
+rect_min_size = Vector2( 0, 578 )
+
+[node name="KeybindSelect" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+margin_left = 35.0
+margin_top = 102.0
+margin_right = 187.0
+margin_bottom = 454.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill1" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_right = 152.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 1 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 36.0
+margin_right = 152.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 0, 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill2" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 64.0
+margin_right = 152.0
+margin_bottom = 96.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 2 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 100.0
+margin_right = 152.0
+margin_bottom = 124.0
+rect_min_size = Vector2( 0, 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill3" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 128.0
+margin_right = 152.0
+margin_bottom = 160.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 3 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer3" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 164.0
+margin_right = 152.0
+margin_bottom = 188.0
+rect_min_size = Vector2( 0, 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill4" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 192.0
+margin_right = 152.0
+margin_bottom = 224.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 4 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer4" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 228.0
+margin_right = 152.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 0, 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill5" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 256.0
+margin_right = 152.0
+margin_bottom = 288.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 5 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer5" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 292.0
+margin_right = 152.0
+margin_bottom = 316.0
+rect_min_size = Vector2( 0, 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skill6" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/KeybindSelect"]
+margin_top = 320.0
+margin_right = 152.0
+margin_bottom = 352.0
+rect_min_size = Vector2( 0, 32 )
+custom_styles/disabled = SubResource( 6 )
+script = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Title" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -408.5
-margin_right = 408.5
-margin_bottom = 38.0
+margin_left = -267.0
+margin_top = 8.0
+margin_right = 123.0
+margin_bottom = 46.0
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Attack Slot" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
-margin_left = 226.0
-margin_right = 385.0
+[node name="Select Skill" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
+margin_left = 120.0
+margin_right = 270.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "Attack Slot "
+text = "Select Skill"
 
-[node name="AttackSlotNumber" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
-margin_left = 389.0
-margin_right = 407.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "2"
-
-[node name="KEYBIND1" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
-margin_left = 411.0
-margin_right = 555.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "(Keybind: "
-
-[node name="KeybindValue" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
-margin_left = 559.0
-margin_right = 577.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 4 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "X"
-
-[node name="KEYBIND2" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/Title"]
-margin_left = 581.0
-margin_right = 591.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 5 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = ")"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
+[node name="HBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -398.5
-margin_top = 48.0
-margin_right = 398.5
-margin_bottom = 228.0
-rect_min_size = Vector2( 797, 180 )
+margin_left = -280.0
+margin_top = 80.0
+margin_right = 140.0
+margin_bottom = 406.0
+rect_min_size = Vector2( 420, 180 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer"]
-margin_right = 400.0
+margin_right = 420.0
 margin_bottom = 180.0
-rect_min_size = Vector2( 396, 0 )
+rect_min_size = Vector2( 396, 180 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer"]
-margin_right = 400.0
+margin_right = 420.0
 margin_bottom = 104.0
 rect_min_size = Vector2( 0, 86 )
 
@@ -297,27 +404,28 @@ rect_min_size = Vector2( 0, 8 )
 
 [node name="AttackDescription" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VBoxContainer"]
 margin_top = 108.0
-margin_right = 400.0
+margin_right = 420.0
 margin_bottom = 122.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 autowrap = true
 
 [node name="VideoPlayer" type="VideoPlayer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer"]
-margin_left = 404.0
-margin_right = 802.0
-margin_bottom = 180.0
-rect_min_size = Vector2( 398, 0 )
+margin_top = 184.0
+margin_right = 420.0
+margin_bottom = 414.0
+rect_min_size = Vector2( 398, 230 )
+stream = ExtResource( 7 )
 
 [node name="AttackListContainer" type="GridContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -408.5
-margin_top = -14.0
-margin_right = 409.5
-margin_bottom = 170.0
-columns = 5
+margin_left = 152.0
+margin_top = -262.0
+margin_right = 476.0
+margin_bottom = 205.0
+columns = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -371,10 +479,33 @@ anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 margin_left = -85.0
-margin_top = -7.0
-margin_bottom = 7.0
+margin_top = -35.0
+margin_bottom = -21.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill1/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill1/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -391,10 +522,76 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
-[node name="Skill3" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 328.0
-margin_right = 488.0
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect"]
+margin_right = 160.0
 margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill2/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="Skill3" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
+margin_top = 94.0
+margin_right = 160.0
+margin_bottom = 184.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -403,10 +600,77 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
-[node name="Skill4" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 492.0
-margin_right = 652.0
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect"]
+margin_right = 160.0
 margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill3/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="Skill4" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
+margin_left = 164.0
+margin_top = 94.0
+margin_right = 324.0
+margin_bottom = 184.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -415,10 +679,76 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
-[node name="Skill5" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 656.0
-margin_right = 816.0
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect"]
+margin_right = 160.0
 margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill4/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="Skill5" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
+margin_top = 188.0
+margin_right = 160.0
+margin_bottom = 278.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -427,10 +757,77 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
-[node name="Skill6" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_top = 94.0
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect"]
 margin_right = 160.0
-margin_bottom = 184.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill5/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="Skill6" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
+margin_left = 164.0
+margin_top = 188.0
+margin_right = 324.0
+margin_bottom = 278.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -439,11 +836,76 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect"]
+margin_right = 160.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill6/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
 [node name="Skill7" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 164.0
-margin_top = 94.0
-margin_right = 324.0
-margin_bottom = 184.0
+margin_top = 282.0
+margin_right = 160.0
+margin_bottom = 372.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -452,11 +914,77 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect"]
+margin_right = 160.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill7/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
 [node name="Skill8" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 328.0
-margin_top = 94.0
-margin_right = 488.0
-margin_bottom = 184.0
+margin_left = 164.0
+margin_top = 282.0
+margin_right = 324.0
+margin_bottom = 372.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -465,11 +993,76 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect"]
+margin_right = 160.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill8/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
 [node name="Skill9" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 492.0
-margin_top = 94.0
-margin_right = 652.0
-margin_bottom = 184.0
+margin_top = 376.0
+margin_right = 160.0
+margin_bottom = 466.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -478,11 +1071,77 @@ margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
 
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect"]
+margin_right = 160.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill9/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
 [node name="Skill10" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer"]
-margin_left = 656.0
-margin_top = 94.0
-margin_right = 816.0
-margin_bottom = 184.0
+margin_left = 164.0
+margin_top = 376.0
+margin_right = 324.0
+margin_bottom = 466.0
 rect_min_size = Vector2( 160, 90 )
 script = ExtResource( 6 )
 
@@ -490,6 +1149,72 @@ script = ExtResource( 6 )
 margin_right = 160.0
 margin_bottom = 90.0
 color = Color( 0.54902, 0.54902, 0.54902, 1 )
+
+[node name="SkillButton" type="TextureButton" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect"]
+margin_right = 160.0
+margin_bottom = 90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cover" type="ColorRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect/SkillButton"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0.627451, 0.627451, 0.627451, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect/SkillButton/Cover"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -32.0
+margin_right = 64.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttackLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect/SkillButton"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = -35.0
+margin_bottom = -21.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabelDesc" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 48.0
+margin_right = 137.0
+margin_bottom = 62.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Bound to:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BindLabel" type="Label" parent="HBoxContainer/VBoxContainer/ColorRect/AttackListContainer/Skill10/ColorRect/SkillButton"]
+visible = false
+margin_left = 75.0
+margin_top = 65.0
+margin_right = 145.0
+margin_bottom = 79.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/ColorRect"]
 anchor_left = 0.5
@@ -505,25 +1230,111 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
-margin_left = 360.0
-margin_right = 460.0
+[node name="ExitButton" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 6.0
+margin_right = 106.0
 margin_bottom = 48.0
 rect_min_size = Vector2( 100, 0 )
-text = "Save and Exit"
+text = "Exit"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 110.0
+margin_right = 710.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 600, 0 )
+
+[node name="SaveButton" type="Button" parent="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2"]
+margin_left = 714.0
+margin_right = 814.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 100, 0 )
+text = "Save Changes"
 
 [node name="MarginContainer3" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
-margin_top = 522.0
-margin_right = 817.0
-margin_bottom = 602.0
-rect_min_size = Vector2( 0, 80 )
+margin_top = 594.0
+margin_right = 1000.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 0, 10 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
-margin_left = 925.0
-margin_right = 1025.0
-margin_bottom = 602.0
-rect_min_size = Vector2( 100, 0 )
+margin_left = 1016.0
+margin_right = 1026.0
+margin_bottom = 604.0
+rect_min_size = Vector2( 10, 0 )
+
+[node name="SaveMenu" type="ColorRect" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -237.5
+margin_top = -107.0
+margin_right = 237.5
+margin_bottom = 107.0
+color = Color( 0.705882, 0.705882, 0.705882, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -62.0
+margin_right = 203.0
+margin_bottom = -48.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "There are unsaved changes, are you sure you want to exit?"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -25.0
+margin_right = 203.0
+margin_bottom = -11.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Any unsaved changes will be lost."
+align = 1
+
+[node name="Yes" type="Button" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 78.5
+margin_top = -33.568
+margin_right = 153.5
+margin_bottom = -8.56799
+text = "Yes"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="No" type="Button" parent="SaveMenu"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -159.0
+margin_top = -32.568
+margin_right = -84.0
+margin_bottom = -7.56799
+text = "No"
 [connection signal="finished" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer/VideoPlayer" to="." method="_on_VideoPlayer_finished"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2/ExitButton" to="." method="_on_ExitButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/ColorRect/HBoxContainer2/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="SaveMenu/Yes" to="." method="_on_Yes_pressed"]
+[connection signal="pressed" from="SaveMenu/No" to="." method="_on_No_pressed"]
